@@ -1,13 +1,14 @@
 #include "MouseSelector.h"
-#include "glm/gtc/matrix_inverse.hpp"
 
 MouseSelector::MouseSelector(unsigned int windowWidth, unsigned int windowHeight) {
 	this->pixelInfo.init(windowWidth, windowHeight);
 }
 
-void MouseSelector::pickingPhase(std::vector<Mesh*>& meshes, const glm::mat4& projection, const glm::mat4& view) {
+void MouseSelector::pickingPhase(std::vector<Mesh*>& meshes, const glm::mat4& projection,
+	const glm::mat4& view, GLuint framebuffer) 
+{
 	this->pixelInfo.enableWriting();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	glUseProgram(this->shader.getProgramID());
 
@@ -22,7 +23,7 @@ void MouseSelector::pickingPhase(std::vector<Mesh*>& meshes, const glm::mat4& pr
 		meshes[i]->renderMesh(GL_TRIANGLES);
 	}
 
-	this->pixelInfo.disableWriting();
+	this->pixelInfo.disableWriting(framebuffer);
 }
 
 int MouseSelector::mouseSelectionResult(int windowHeight, int x, int y) {

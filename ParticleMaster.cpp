@@ -1,5 +1,4 @@
 #include "ParticleMaster.h"
-#include <iterator>
 
 ParticleMaster::ParticleMaster(const ParticleMaster& source) noexcept {
 	CParticle* sourceParticle = nullptr;

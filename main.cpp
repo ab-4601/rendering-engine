@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Skybox.h"
 #include "Overlay.h"
+#include "HDR.h"
 #include "MouseSelector.h"
 #include "SelectionTexture.h"
 #include "CoordinateSystem.h"
@@ -46,8 +47,8 @@ int main() {
 
     Camera camera{ {0, 10, -10} };
     Window window;
-    //Crosshair crosshair;
     Overlay overlay;
+    HDR hdrBuffer;
     Grid grid;
     MouseSelector selection(window.getBufferWidth(), window.getBufferHeight());
     CoordinateSystem coordSystem;
@@ -105,11 +106,11 @@ int main() {
     cube.setColor({ 1.f, 0.05f, 0.05f });
     cube.createUnindexedMesh();
 
-    Terrain terrain{ gridSize, gridSize, 100 };
+    /*Terrain terrain{ gridSize, gridSize, 100 };
     terrain.setColor({ 1.f, 0.05f, 0.05f });
     terrain.generateHeightMaps(3);
     terrain.generateTerrain();
-    terrain.createMeshWithNormals();
+    terrain.createMeshFinal();*/
 
     meshes = Mesh::meshList;
 
@@ -125,6 +126,11 @@ int main() {
 
     ImGuiIO& io = overlay._init(window.getGlfwWindow());
 
+    /*Texture soilTex{ "Textures/muddy-terrain.png" };
+    soilTex.loadTexture();*/
+
+    hdrBuffer._init(window.getBufferWidth(), window.getBufferHeight());
+
     // main render loop
     while (!glfwWindowShouldClose(window.getMainWindow())) {
         // Calculate delta time
@@ -139,8 +145,10 @@ int main() {
 
         view = camera.generateViewMatrix();
 
+        hdrBuffer.enableHDRWriting();
+
         // Clear window
-        glClearColor(0.f, 0.005f, 0.01f, 1.f);
+        glClearColor(0.005f, 0.005f, 0.01f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         overlay._newFrame();
@@ -154,9 +162,12 @@ int main() {
             pointLightCount, spotLightCount);
 
 // ----------------------------------------------------------------------------------------------------------------
-        
-        selection.pickingPhase(meshes, projection, view);
+
+        selection.pickingPhase(meshes, projection, view, hdrBuffer.getFramebufferID());
+
         cube.setShader(mainLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view);
+
+        //soilTex.useTexture();
 
         glm::vec2 mouseClickCoords = window.getViewportCoord();
 
@@ -196,11 +207,10 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-        //crosshair.drawCrosshair();
-
-// ----------------------------------------------------------------------------------------------------------------
-
         overlay.renderGUIWindow(io, drawSkybox);
+
+        hdrBuffer.disableHDRWriting();
+        hdrBuffer.renderToDefaultBuffer();
 
         glfwSwapBuffers(window.getMainWindow());
     }

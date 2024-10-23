@@ -13,7 +13,8 @@ private:
 public:
 	MouseSelector(unsigned int windowWidth, unsigned int windowHeight);
 
-	void pickingPhase(std::vector<Mesh*>& meshes, const glm::mat4& projection, const glm::mat4& view);
+	void pickingPhase(std::vector<Mesh*>& meshes, const glm::mat4& projection,
+		const glm::mat4& view, GLuint framebuffer = 0);
 	int mouseSelectionResult(int windowHeight, int x, int y);
 
 	~MouseSelector() = default;

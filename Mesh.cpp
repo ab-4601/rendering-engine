@@ -254,6 +254,7 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	DirectionalLight& dirLight, std::vector<PointLight>& pointLights, int pointLightCount,
 	std::vector<SpotLight>& spotLights, int spotLightCount)
 {
+	glClear(GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
