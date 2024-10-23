@@ -1,0 +1,527 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{d21959f3-094c-4c36-947b-3ef73ff56811}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ParticleSystem">
+      <UniqueIdentifier>{41939331-6959-4004-88b3-97a19ef26457}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lighting">
+      <UniqueIdentifier>{52525fb0-2623-41f4-9d07-ea2f3f5fec08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ParticleSystem">
+      <UniqueIdentifier>{5b05bd6f-e6d3-4c11-a003-4d734987b426}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Lighting">
+      <UniqueIdentifier>{d2efa2f5-a4d7-4131-bc8b-8da1860c8e5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Geometry">
+      <UniqueIdentifier>{470c2b84-2db5-4bc8-852c-03cd22acb577}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Geometry">
+      <UniqueIdentifier>{f89244ad-33db-4834-8f76-913220fda893}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreDependencies">
+      <UniqueIdentifier>{03b99fe3-ff27-497f-aed3-fe1feec2253e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreDependencies">
+      <UniqueIdentifier>{33a719ac-94a6-4e5c-95a4-683fc0310971}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TerrainGenerator">
+      <UniqueIdentifier>{415b3cd1-6204-4129-92bd-33eb9b27e758}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TerrainGenerator">
+      <UniqueIdentifier>{152aa130-dcf3-44e1-80ef-f81880bf0df3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Crosshair">
+      <UniqueIdentifier>{6bc54ed6-aa5e-4f9a-ae34-f2336fa09e30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Grid">
+      <UniqueIdentifier>{1b8b3909-8107-4007-85e8-d08ffcc83e10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Lighting">
+      <UniqueIdentifier>{79a5bec0-c94b-4237-890a-30e30654c8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Particle">
+      <UniqueIdentifier>{d5876c39-0d0b-4525-b554-3a70d96a8867}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Coordinate System">
+      <UniqueIdentifier>{1264cb46-847a-42a9-b6e7-579092238a7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Water">
+      <UniqueIdentifier>{8c5ddd77-db26-4849-9121-02b5a78de091}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Water">
+      <UniqueIdentifier>{d279890f-80ea-4e65-9333-568d5225234c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Water">
+      <UniqueIdentifier>{446acecc-1d0e-4d8d-8288-4235b6674980}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Skybox">
+      <UniqueIdentifier>{45f99647-aa72-4f2b-91f8-0b6eea32701b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Lighting\blinn-phong">
+      <UniqueIdentifier>{fe632654-7fc3-487d-8ec1-1f65e959da5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Lighting\PBR">
+      <UniqueIdentifier>{ebc5ed1c-7780-4f4c-ae6a-477f4339a057}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreDependencies\CoreHeaders">
+      <UniqueIdentifier>{dac5e7d8-0826-464b-b6a1-551d598ac8bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreDependencies\ShaderLoaders">
+      <UniqueIdentifier>{162bb18b-07bc-4064-a3d8-4c1baf1399a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreDependencies\CoreHeaders">
+      <UniqueIdentifier>{cd05d163-2b89-455e-974a-2cd9e41a44f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreDependencies\ShaderLoaders">
+      <UniqueIdentifier>{1c34a81c-bad2-49cf-a314-dd0c1b2c6a09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Highlight">
+      <UniqueIdentifier>{b19a2c8e-11bb-47a1-88f1-a29049d766f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Lights">
+      <UniqueIdentifier>{a3e161ca-609f-40e0-b19b-e308d2467b70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Selection">
+      <UniqueIdentifier>{87d4072c-9652-4adc-a4ff-565f4d0d5fc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\imGUI">
+      <UniqueIdentifier>{826e3d34-a3ab-4c97-a834-ceebd00215c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\imGUI">
+      <UniqueIdentifier>{b0d4c54c-da2c-46c4-ade9-d74e84fa8129}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreDependencies\UI">
+      <UniqueIdentifier>{1f690ff7-ecdd-48cc-b28f-b25d0b0e5068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreDependencies\UI">
+      <UniqueIdentifier>{1cfda8a6-2131-43f7-85fd-e6623c81082b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Source Files\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleMaster.cpp">
+      <Filter>Source Files\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleRenderer.cpp">
+      <Filter>Source Files\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleShader.cpp">
+      <Filter>Source Files\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Source Files\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Source Files\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLight.cpp">
+      <Filter>Source Files\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Icosphere.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Source Files\TerrainGenerator</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleTexture.cpp">
+      <Filter>Source Files\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="UVSphere.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="PerlinNoise.cpp">
+      <Filter>Source Files\TerrainGenerator</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Water.cpp">
+      <Filter>Source Files\Water</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterShader.cpp">
+      <Filter>Source Files\Water</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Crosshair.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="CrosshairShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="GridShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="LightingShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseSelector.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderLoader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="HighlightShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="LightMeshShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectionTexture.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="CoordinateSystem.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="CoordinateShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectionShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_draw.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_impl_glfw.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_impl_opengl3.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_tables.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_widgets.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\ImGuizmo.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\ImSequencer.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\GraphEditor.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\ImCurveEdit.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\ImGradient.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_demo.cpp">
+      <Filter>Source Files\imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="LightSources.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Overlay.cpp">
+      <Filter>Source Files\CoreDependencies\UI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Particle.h">
+      <Filter>Header Files\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleMaster.h">
+      <Filter>Header Files\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleRenderer.h">
+      <Filter>Header Files\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleShader.h">
+      <Filter>Header Files\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Header Files\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Header Files\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Header Files\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="Icosphere.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Header Files\TerrainGenerator</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleTexture.h">
+      <Filter>Header Files\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files\ParticleSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="UVSphere.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="PerlinNoise.h">
+      <Filter>Header Files\TerrainGenerator</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Water.h">
+      <Filter>Header Files\Water</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterShader.h">
+      <Filter>Header Files\Water</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Core.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Crosshair.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseSelector.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CrosshairShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="GridShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="LightingShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderLoader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyboxShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="HighlightShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="LightMeshShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectionTexture.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CoordinateSystem.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CoordinateShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectionShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imgui_impl_opengl3_loader.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imgui_internal.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\ImGuizmo.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\ImSequencer.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imstb_rectpack.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imstb_textedit.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imstb_truetype.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\ImZoomSlider.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\GraphEditor.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imconfig.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\ImCurveEdit.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\ImGradient.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imgui.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imgui_impl_glfw.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imgui_impl_opengl3.h">
+      <Filter>Header Files\imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="LightSources.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay.h">
+      <Filter>Header Files\CoreDependencies\UI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vertices.txt">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="particle.frag">
+      <Filter>Shaders\Particle</Filter>
+    </None>
+    <None Include="particle.vert">
+      <Filter>Shaders\Particle</Filter>
+    </None>
+    <None Include="particle.geom">
+      <Filter>Shaders\Particle</Filter>
+    </None>
+    <None Include="crosshair.frag">
+      <Filter>Shaders\Crosshair</Filter>
+    </None>
+    <None Include="crosshair.vert">
+      <Filter>Shaders\Crosshair</Filter>
+    </None>
+    <None Include="grid.frag">
+      <Filter>Shaders\Grid</Filter>
+    </None>
+    <None Include="grid.vert">
+      <Filter>Shaders\Grid</Filter>
+    </None>
+    <None Include="coord.frag">
+      <Filter>Shaders\Coordinate System</Filter>
+    </None>
+    <None Include="coord.vert">
+      <Filter>Shaders\Coordinate System</Filter>
+    </None>
+    <None Include="water.vert">
+      <Filter>Shaders\Water</Filter>
+    </None>
+    <None Include="water.frag">
+      <Filter>Shaders\Water</Filter>
+    </None>
+    <None Include="skybox.frag">
+      <Filter>Shaders\Skybox</Filter>
+    </None>
+    <None Include="skybox.vert">
+      <Filter>Shaders\Skybox</Filter>
+    </None>
+    <None Include="blinn-phong.frag">
+      <Filter>Shaders\Lighting\blinn-phong</Filter>
+    </None>
+    <None Include="blinn-phong.geom">
+      <Filter>Shaders\Lighting\blinn-phong</Filter>
+    </None>
+    <None Include="blinn-phong.vert">
+      <Filter>Shaders\Lighting\blinn-phong</Filter>
+    </None>
+    <None Include="PBR.frag">
+      <Filter>Shaders\Lighting\PBR</Filter>
+    </None>
+    <None Include="PBR.geom">
+      <Filter>Shaders\Lighting\PBR</Filter>
+    </None>
+    <None Include="PBR.vert">
+      <Filter>Shaders\Lighting\PBR</Filter>
+    </None>
+    <None Include="highlight.frag">
+      <Filter>Shaders\Highlight</Filter>
+    </None>
+    <None Include="highlight.vert">
+      <Filter>Shaders\Highlight</Filter>
+    </None>
+    <None Include="light.vert">
+      <Filter>Shaders\Lights</Filter>
+    </None>
+    <None Include="light.frag">
+      <Filter>Shaders\Lights</Filter>
+    </None>
+    <None Include="selection.vert">
+      <Filter>Shaders\Selection</Filter>
+    </None>
+    <None Include="selection.frag">
+      <Filter>Shaders\Selection</Filter>
+    </None>
+  </ItemGroup>
+</Project>
