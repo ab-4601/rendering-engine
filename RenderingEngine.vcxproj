@@ -139,6 +139,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bloom.cpp" />
+    <ClCompile Include="BloomShader.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CoordinateShader.cpp" />
     <ClCompile Include="Cube.cpp" />
@@ -181,6 +183,7 @@
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParticleRenderer.cpp" />
+    <ClCompile Include="Quad.cpp" />
     <ClCompile Include="SelectionShader.cpp" />
     <ClCompile Include="SelectionTexture.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
@@ -196,6 +199,8 @@
     <ClCompile Include="Grid.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bloom.h" />
+    <ClInclude Include="BloomShader.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CoordinateShader.h" />
     <ClInclude Include="Cube.h" />
@@ -241,6 +246,7 @@
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="ParticleRenderer.h" />
+    <ClInclude Include="Quad.h" />
     <ClInclude Include="SelectionShader.h" />
     <ClInclude Include="SelectionTexture.h" />
     <ClInclude Include="ShaderLoader.h" />
@@ -256,6 +262,8 @@
     <ClInclude Include="Grid.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bloom.frag" />
+    <None Include="bloom.vert" />
     <None Include="coord.frag" />
     <None Include="coord.vert" />
     <None Include="crosshair.frag" />

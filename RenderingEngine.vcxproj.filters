@@ -115,6 +115,15 @@
     <Filter Include="Shaders\HDR">
       <UniqueIdentifier>{e7064fa9-6c3f-4f10-be53-bd39b34273e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Gaussian Blur">
+      <UniqueIdentifier>{ab556f33-2551-4c63-b34f-e68548fbd859}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreDependencies\PostProcessing">
+      <UniqueIdentifier>{c86dde0c-1f62-4c0b-b9fb-6acc7be8ca2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreDependencies\PostProcessing">
+      <UniqueIdentifier>{b669b3bc-bde8-44e7-893e-34a8647831e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -219,9 +228,6 @@
     <ClCompile Include="LightMeshShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="SelectionTexture.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
     </ClCompile>
@@ -276,11 +282,23 @@
     <ClCompile Include="Overlay.cpp">
       <Filter>Source Files\CoreDependencies\UI</Filter>
     </ClCompile>
-    <ClCompile Include="HDR.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
     <ClCompile Include="HDRShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="BloomShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Quad.cpp">
+      <Filter>Source Files\CoreDependencies\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Bloom.cpp">
+      <Filter>Source Files\CoreDependencies\PostProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="HDR.cpp">
+      <Filter>Source Files\CoreDependencies\PostProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectionTexture.cpp">
+      <Filter>Source Files\CoreDependencies\PostProcessing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -386,9 +404,6 @@
     <ClInclude Include="LightMeshShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
-    <ClInclude Include="SelectionTexture.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
     </ClInclude>
@@ -452,11 +467,23 @@
     <ClInclude Include="Overlay.h">
       <Filter>Header Files\CoreDependencies\UI</Filter>
     </ClInclude>
-    <ClInclude Include="HDR.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
     <ClInclude Include="HDRShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="BloomShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Quad.h">
+      <Filter>Header Files\CoreDependencies\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="HDR.h">
+      <Filter>Header Files\CoreDependencies\PostProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Bloom.h">
+      <Filter>Header Files\CoreDependencies\PostProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectionTexture.h">
+      <Filter>Header Files\CoreDependencies\PostProcessing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -540,6 +567,12 @@
     </None>
     <None Include="hdr.frag">
       <Filter>Shaders\HDR</Filter>
+    </None>
+    <None Include="bloom.vert">
+      <Filter>Shaders\Gaussian Blur</Filter>
+    </None>
+    <None Include="bloom.frag">
+      <Filter>Shaders\Gaussian Blur</Filter>
     </None>
   </ItemGroup>
 </Project>

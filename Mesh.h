@@ -56,16 +56,15 @@ public:
 
 	virtual void setShader(DirectionalLight& directionalLight,
 		std::vector<PointLight>& pointLights, int pointLightCount, std::vector<SpotLight>& spotLights, int spotLightCount,
-		const glm::mat4& projection, const glm::mat4& view);
+		const glm::mat4& projection, const glm::mat4& view, glm::vec3 cameraPos);
 
 	virtual void renderMesh(GLenum renderMode);
 
 	virtual void renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection, const glm::mat4& view,
 		DirectionalLight& dirLight, std::vector<PointLight>& pointLights, int pointLightCount,
-		std::vector<SpotLight>& spotLights, int spotLightCount);
+		std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition);
 
-	virtual void setMeshMaterial(GLuint specularIntensityLocation, GLuint specularPowerLocation,
-		GLfloat sIntensity = 1.f, GLfloat sPower = 32.f);
+	virtual void setMeshMaterial(GLfloat sIntensity = 1.f, GLfloat sPower = 32.f);
 
 	void clearMesh();
 

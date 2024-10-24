@@ -207,18 +207,18 @@ void Mesh::createMeshFinal() {
 	glBindVertexArray(0);
 }
 
-void Mesh::setMeshMaterial(GLuint specularIntensityLocation, GLuint specularPowerLocation,
-	GLfloat sIntensity, GLfloat sPower) {
+void Mesh::setMeshMaterial(GLfloat sIntensity, GLfloat sPower) {
 
 	this->specularIntensity = sIntensity;
 	this->specularPower = sPower;
 
-	glUniform1f(specularIntensityLocation, this->specularIntensity);
-	glUniform1f(specularPowerLocation, this->specularPower);
+	glUniform1f(this->meshShader.getSpecularIntensity(), this->specularIntensity);
+	glUniform1f(this->meshShader.getSpecularPower(), this->specularPower);
 }
 
 void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>& pointLights, int pointLightCount, 
-	std::vector<SpotLight>& spotLights, int spotLightCount, const glm::mat4& projection, const glm::mat4& view) 
+	std::vector<SpotLight>& spotLights, int spotLightCount, const glm::mat4& projection, const glm::mat4& view,
+	glm::vec3 cameraPos) 
 {
 	glUseProgram(this->meshShader.getProgramID());
 
@@ -228,6 +228,7 @@ void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>
 
 	glUniformMatrix4fv(this->meshShader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(this->meshShader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
+	glUniform3fv(this->meshShader.getEyePosition(), 1, glm::value_ptr(cameraPos));
 }
 
 void Mesh::renderMesh(GLenum renderMode)  {
@@ -242,7 +243,7 @@ void Mesh::renderMesh(GLenum renderMode)  {
 	else {
 		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 
-		glDrawArrays(renderMode, 0, (GLsizei)this->vertices.size());
+		glDrawArrays(renderMode, 0, (GLsizei)this->vertices.size() / 6);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
@@ -252,7 +253,7 @@ void Mesh::renderMesh(GLenum renderMode)  {
 
 void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection, const glm::mat4& view,
 	DirectionalLight& dirLight, std::vector<PointLight>& pointLights, int pointLightCount,
-	std::vector<SpotLight>& spotLights, int spotLightCount)
+	std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition)
 {
 	glClear(GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_STENCIL_TEST);
@@ -284,7 +285,7 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	glDisable(GL_STENCIL_TEST);
 	glEnable(GL_DEPTH_TEST);
 
-	this->setShader(dirLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view);
+	this->setShader(dirLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view, cameraPosition);
 }
 
 void Mesh::clearMesh() {

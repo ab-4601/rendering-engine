@@ -21,5 +21,5 @@ void main() {
 	if(finalColor.a < 0.1)
 		discard;
 
-	fragColor = pow(finalColor * 2.f, vec4(2.2f));
+	fragColor = finalColor * 1.5f;
 }

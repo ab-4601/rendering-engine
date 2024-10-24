@@ -1,10 +1,12 @@
 #ifndef _CORE_H_
 #define _CORE_H_
 
-enum CONTEXT_VERSION {MAJOR = 4, MINOR = 5};
+enum CONTEXT_VERSION { MAJOR = 4, MINOR = 5 };
 
-const unsigned int MAX_POINT_LIGHTS = 3;
-const unsigned int MAX_SPOT_LIGHTS = 3;
+typedef unsigned int uint;
+
+const uint MAX_POINT_LIGHTS = 3;
+const uint MAX_SPOT_LIGHTS = 3;
 
 const double PI = 3.14159265;
 const float GRAVITY = -10.f;

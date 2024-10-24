@@ -48,7 +48,7 @@ void CoordinateSystem::drawCoordinateSystem(GLint windowHeight, GLint windowWidt
     glUniformMatrix4fv(shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(model));
 
     glEnable(GL_LINE_SMOOTH);
-    glLineWidth(3.f);
+    glLineWidth(5.f);
 
     for (const auto& elem : this->axes) {
         glUniform3fv(shader.getUniformColor(), 1, glm::value_ptr(elem->getColor()));
@@ -65,7 +65,7 @@ void CoordinateSystem::drawCoordinateSystem(GLint windowHeight, GLint windowWidt
 
     glViewport(windowWidth / 50, windowHeight / 50, bufferWidth / 12, bufferHeight / 12);
 
-    glLineWidth(2.f);
+    glLineWidth(4.f);
     for (const auto& elem : this->axes) {
         glUniform3fv(shader.getUniformColor(), 1, glm::value_ptr(elem->getColor()));
         elem->renderMesh();
