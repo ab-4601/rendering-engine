@@ -57,9 +57,9 @@ void ParticleMaster::generateParticle(vec3 position, vec3 velocity, vec3 color, 
 		rotation, scale, lifeTime);
 	this->particles.push_back(particle);
 
-	auto compare = [](CParticle* a, CParticle* b) -> bool {
+	/*auto compare = [](CParticle* a, CParticle* b) -> bool {
 		return a->getDistance() < b->getDistance();
 	};
 
-	std::sort(this->particles.begin(), this->particles.end(), compare);
+	std::sort(this->particles.begin(), this->particles.end(), compare);*/
 }

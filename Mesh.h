@@ -6,14 +6,14 @@
 
 class Mesh {
 protected:
-	static unsigned int meshCount;
-	unsigned int objectID;
+	static uint meshCount;
+	uint objectID;
 
 	glm::vec3 color;
 	glm::mat4 model;
 	glm::mat4 outlineModel;
 	std::vector<GLfloat> vertices;
-	std::vector<unsigned int> indices;
+	std::vector<uint> indices;
 	std::vector<GLfloat> texCoords;
 	std::vector<GLfloat> normals;
 
@@ -36,7 +36,7 @@ public:
 	Mesh(GLfloat specularIntensity = 0.f, GLfloat specularPower = 0.f);
 
 	virtual void setVertices(const std::vector<GLfloat>& vertices) { this->vertices = vertices; }
-	virtual void setIndices(const std::vector<unsigned int>& indices) { this->indices = indices; }
+	virtual void setIndices(const std::vector<uint>& indices) { this->indices = indices; }
 	virtual void setTexCoords(const std::vector<GLfloat>& texCoords) { this->texCoords = texCoords; }
 	virtual void setNormals(const std::vector<GLfloat>& normals) { this->normals = normals; }
 
@@ -45,7 +45,7 @@ public:
 	virtual inline bool isDrawIndexed() const { return this->drawIndexed; }
 	virtual inline void setColor(glm::vec3 color) { this->color = color; }
 	virtual inline glm::vec3 getColor() const { return this->color; }
-	virtual inline unsigned int getObjectID() const { return this->objectID; }
+	virtual inline uint getObjectID() const { return this->objectID; }
 
 	virtual void createUnindexedMesh();
 	virtual void createUnindexedTexturedMesh();

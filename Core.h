@@ -7,6 +7,7 @@ typedef unsigned int uint;
 
 const uint MAX_POINT_LIGHTS = 3;
 const uint MAX_SPOT_LIGHTS = 3;
+const uint samples = 15;
 
 const double PI = 3.14159265;
 const float GRAVITY = -10.f;

@@ -149,7 +149,7 @@ void ParticleRenderer::render(const std::vector<CParticle*>& particles, const Wi
 
 	glDepthMask(false);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_ONE, GL_ONE);
 
 	this->drawParticleSprites(particles.size());
 

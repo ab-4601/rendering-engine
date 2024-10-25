@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Cube.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
 #include "LightMeshShader.h"
 
 struct LightMesh {

@@ -67,10 +67,10 @@ void Window::getMouseButton(GLFWwindow* window, int button, int action, int mods
     Window* currWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
 
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-        currWindow->setLMBPressed(true);
+        currWindow->setLMBPressed(!currWindow->getLMBPressed());
 
-    else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
-        currWindow->setLMBPressed(false);
+    /*else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+        currWindow->setLMBPressed(false);*/
 
     else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
         currWindow->setRMBPressed(true);

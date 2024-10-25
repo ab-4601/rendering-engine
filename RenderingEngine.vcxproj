@@ -264,6 +264,8 @@
   <ItemGroup>
     <None Include="bloom.frag" />
     <None Include="bloom.vert" />
+    <None Include="downsample.frag" />
+    <None Include="upsample.frag" />
     <None Include="coord.frag" />
     <None Include="coord.vert" />
     <None Include="crosshair.frag" />

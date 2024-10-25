@@ -143,6 +143,8 @@ void main() {
 		finalColor *= texture(textureUnit, data_in.texCoord);
 	}
 
+	finalColor = pow(finalColor, vec4(2.2f));
+
 	fragColor = finalColor;
 
 	float brightness = dot(finalColor.rgb, vec3(0.2125f, 0.7152f, 0.0722f));

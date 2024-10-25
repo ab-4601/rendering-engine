@@ -50,7 +50,7 @@ int main() {
     Window window;
     Overlay overlay;
     HDR hdrBuffer;
-    Bloom bloom;
+    Bloom bloom(true);
     Crosshair crosshair;
     Grid grid;
     MouseSelector selection(window.getBufferWidth(), window.getBufferHeight());
@@ -96,7 +96,7 @@ int main() {
 
     Icosphere sphere;
     sphere.smoothSphere(5);
-    sphere.setColor({ 1.f, 0.05f, 0.05f });
+    sphere.setColor({ 0.5f, 1.f, 0.f });
     sphere.createMeshWithNormals();
 
     model = glm::mat4(1.f);
@@ -105,14 +105,14 @@ int main() {
     sphere.setModelMatrix(model);
 
     Cube cube;
-    cube.setColor({ 1.f, 0.05f, 0.05f });
+    cube.setColor({ 0.1f, 1.f, 1.f });
     cube.createUnindexedMesh();
 
     /*Texture gridTex("Textures/prototype.png");
     gridTex.loadTexture();
 
     Terrain terrain{ gridSize, gridSize, 50 };
-    terrain.setColor({ 1.f, 0.05f, 0.05f });
+    terrain.setColor({ 0.1f, 1.f, 1.f });
     terrain.generateHeightMaps(3);
     terrain.generateTerrain();
     terrain.createMeshFinal();*/
@@ -125,7 +125,8 @@ int main() {
     sphere.generateSphere();
     sphere.createMeshWithNormals();*/
 
-    ParticleTexture partTex("Textures/cosmic.png", 4.f);
+
+    ParticleTexture partTex("Textures/particleAtlas.png", 4.f);
     glm::vec3 particlePosition{ 20.f, 20.f, 20.f }, velocity{ 10.f, 50.f, 10.f }, particleColor{ 1.f, 0.5f, 0.05f };
     ParticleSystem pSystem(particleColor, 10, 0.f, 1.f, 3.f, partTex);
 
@@ -134,7 +135,7 @@ int main() {
     /*Texture soilTex{ "Textures/muddy-terrain.png" };
     soilTex.loadTexture();*/
 
-    hdrBuffer._init(window.getBufferWidth(), window.getBufferHeight());
+    hdrBuffer._initMSAA(window.getBufferWidth(), window.getBufferHeight());
     bloom._init(window.getBufferWidth(), window.getBufferHeight());
 
     // main render loop
@@ -159,9 +160,6 @@ int main() {
 
         overlay._newFrame();
 
-        if (drawSkybox)
-            skybox.renderSkybox(projection, camera);
-
 // ----------------------------------------------------------------------------------------------------------------
 
         lightSources.renderLightSources(projection, view, mainLight, pointLights, spotLights, 
@@ -169,11 +167,26 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
+        particlePosition = camera.getCameraPosition() + camera.getCameraLookDirection() * 90.f;
+
+        if (window.getKeyPress(GLFW_KEY_R)) {
+            pSystem.generateParticles(particlePosition, 0.f);
+        }
+
+        pSystem.updateParticles(deltaTime, camera.getCameraPosition());
+        pSystem.renderParticles(&window, &camera, model, projection);
+
+        bloom.processFramebufferMSAA(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID(),
+            window.getWindowWidth(), window.getWindowHeight());
+
+// ----------------------------------------------------------------------------------------------------------------
+
         selection.pickingPhase(meshes, projection, view, hdrBuffer.getFramebufferID());
 
         cube.setShader(mainLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view,
             camera.getCameraPosition());
-        cube.setMeshMaterial(1.f, 32.f);
+        cube.setMeshMaterial(0.5f, 4.f);
+        sphere.setMeshMaterial(0.5f, 32.f);
         //gridTex.useTexture();
 
         glm::vec2 mouseClickCoords = window.getViewportCoord();
@@ -197,6 +210,8 @@ int main() {
                 meshes[i]->renderMesh(GL_TRIANGLES);
         }
 
+        //glBindTexture(GL_TEXTURE_2D, 0);
+
         //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 // ----------------------------------------------------------------------------------------------------------------
@@ -205,16 +220,8 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-        particlePosition = camera.getCameraPosition() + camera.getCameraLookDirection() * 90.f;
-
-        if (window.getLMBPressed() && window.getRMBPressed()) {
-            pSystem.generateParticles(particlePosition, 0.f);
-        }
-
-        pSystem.updateParticles(deltaTime, camera.getCameraPosition());
-        pSystem.renderParticles(&window, &camera, model, projection);
-
-        bloom.processFramebuffer(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID());
+        if (drawSkybox)
+            skybox.renderSkybox(projection, camera);
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -234,7 +241,10 @@ int main() {
         overlay.renderGUIWindow(io, drawSkybox);
 
         hdrBuffer.disableHDRWriting();
-        hdrBuffer.renderToDefaultBuffer(2.f, bloom.getColorBuffers(), bloom.getBlurFlag());
+        //hdrBuffer.renderToDefaultBuffer(1.f, bloom.getColorBuffers(), bloom.getBlurFlag());
+        hdrBuffer.renderToDefaultBufferMSAA(
+            1.f, bloom.getColorBuffers(), bloom.getBlurFlag(), window.getWindowWidth(), window.getWindowHeight()
+        );
 
         glfwSwapBuffers(window.getMainWindow());
     }

@@ -48,37 +48,14 @@ public:
 	inline unsigned int getWindowWidth() const { return this->windowWidth; }
 	inline unsigned int getWindowHeight() const { return this->windowHeight; }
 
-	bool getKeyPress(unsigned int keyVal) const {
-		return this->keys[keyVal];
-	}
-
-	GLFWwindow* getGlfwWindow() const {
-		return this->window;
-	}
-
-	const Window* getCurrWindow() const {
-		return this;
-	}
-
-	void setLMBPressed(bool val) {
-		this->LMBPressed = val;
-	}
-
-	void setRMBPressed(bool val) {
-		this->RMBPressed = val;
-	}
-
-	inline bool getLMBPressed() const {
-		return this->LMBPressed;
-	}
-
-	inline bool getRMBPressed() const {
-		return this->RMBPressed;
-	}
-
-	inline glm::vec2 getViewportCoord() const {
-		return glm::vec2(this->viewportX, this->viewportY);
-	}
+	inline bool getKeyPress(unsigned int keyVal) const { return this->keys[keyVal]; }
+	inline GLFWwindow* getGlfwWindow() const { return this->window; }
+	const Window* getCurrWindow() const { return this; }
+	void setLMBPressed(bool val) { this->LMBPressed = val; }
+	void setRMBPressed(bool val) { this->RMBPressed = val; }
+	inline bool getLMBPressed() const { return this->LMBPressed; }
+	inline bool getRMBPressed() const { return this->RMBPressed; }
+	inline glm::vec2 getViewportCoord() const { return glm::vec2(this->viewportX, this->viewportY); }
 
 	GLfloat getXChange() {
 		GLfloat delta = this->XChange;
@@ -101,6 +78,7 @@ public:
 	~Window() {
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_FRAMEBUFFER_SRGB);
+		glDisable(GL_MULTISAMPLE);
 
 		glfwDestroyWindow(this->window);
 		glfwTerminate();

@@ -115,14 +115,20 @@
     <Filter Include="Shaders\HDR">
       <UniqueIdentifier>{e7064fa9-6c3f-4f10-be53-bd39b34273e9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\Gaussian Blur">
-      <UniqueIdentifier>{ab556f33-2551-4c63-b34f-e68548fbd859}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\CoreDependencies\PostProcessing">
       <UniqueIdentifier>{c86dde0c-1f62-4c0b-b9fb-6acc7be8ca2b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\CoreDependencies\PostProcessing">
       <UniqueIdentifier>{b669b3bc-bde8-44e7-893e-34a8647831e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Bloom">
+      <UniqueIdentifier>{763b0354-b674-4ca4-84b4-8f0661dd89aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Bloom\Gaussian Blur">
+      <UniqueIdentifier>{ab556f33-2551-4c63-b34f-e68548fbd859}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Bloom\Downsampling">
+      <UniqueIdentifier>{bf996524-a793-49a4-8e8a-fed38abc7100}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -569,10 +575,16 @@
       <Filter>Shaders\HDR</Filter>
     </None>
     <None Include="bloom.vert">
-      <Filter>Shaders\Gaussian Blur</Filter>
+      <Filter>Shaders\Bloom\Gaussian Blur</Filter>
     </None>
     <None Include="bloom.frag">
-      <Filter>Shaders\Gaussian Blur</Filter>
+      <Filter>Shaders\Bloom\Gaussian Blur</Filter>
+    </None>
+    <None Include="downsample.frag">
+      <Filter>Shaders\Bloom\Downsampling</Filter>
+    </None>
+    <None Include="upsample.frag">
+      <Filter>Shaders\Bloom\Downsampling</Filter>
     </None>
   </ItemGroup>
 </Project>

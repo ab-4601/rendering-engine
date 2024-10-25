@@ -71,7 +71,7 @@ void Mesh::createMesh() {
 	// Generate index buffer object and bind it
 	glGenBuffers(1, &this->IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(unsigned int), this->indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(uint), this->indices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -103,7 +103,7 @@ void Mesh::createTexturedMesh() {
 
 	glGenBuffers(1, &this->IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(unsigned int), this->indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(uint), this->indices.data(), GL_STATIC_DRAW);
 
 	glGenBuffers(1, &this->VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
@@ -153,7 +153,7 @@ void Mesh::createMeshWithNormals() {
 
 	glGenBuffers(1, &this->IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(unsigned int), this->indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(uint), this->indices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -200,7 +200,7 @@ void Mesh::createMeshFinal() {
 
 	glGenBuffers(1, &this->IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(unsigned int), this->indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(uint), this->indices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

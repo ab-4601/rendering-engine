@@ -8,7 +8,7 @@ out vec4 fragColor;
 
 uniform float gridCellSize = 0.025f;
 uniform float minPixelBetweenCells = 2.f;
-uniform vec4 gridColorThin = vec4(0.5f, 0.5f, 0.5f, 1.f);
+uniform vec4 gridColorThin = vec4(0.4f, 0.4f, 0.4f, 1.f);
 uniform vec4 gridColorThick = vec4(1.f, 1.f, 1.f, 1.f);
 
 float log10(float val) {
@@ -34,7 +34,7 @@ void main() {
 	float lx = length(dvx);
 	float ly = length(dvy);
 
-	vec2 dudv = 3.f * vec2(lx, ly);
+	vec2 dudv = 4.f * vec2(lx, ly);
 
 	float l = length(dudv);
 
