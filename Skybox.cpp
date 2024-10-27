@@ -67,13 +67,12 @@ void Skybox::loadHDRCubemap(const char* file_name) {
 }
 
 void Skybox::renderSkybox(const glm::mat4& projection, const Camera& camera) {
-	glDepthMask(GL_FALSE);
+	glDepthMask(false);
 	glDepthFunc(GL_LEQUAL);
 
 	glUseProgram(this->shader.getProgramID());
 
 	glm::mat4 view = glm::mat4(glm::mat3(camera.generateViewMatrix()));
-	//glm::mat4 view = camera.generateViewMatrix();
 
 	glUniformMatrix4fv(this->shader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
@@ -88,5 +87,5 @@ void Skybox::renderSkybox(const glm::mat4& projection, const Camera& camera) {
 	glBindVertexArray(0);
 
 	glDepthFunc(GL_LESS);
-	glDepthMask(GL_TRUE);
+	glDepthMask(true);
 }

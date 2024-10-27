@@ -57,10 +57,12 @@ int main() {
     MouseSelector selection(window.getBufferWidth(), window.getBufferHeight());
     CoordinateSystem coordSystem;
     Skybox skybox;
-    DirectionalLight mainLight{ 0.01f, 0.5f, lightDirection };
+    DirectionalLight mainLight{ 0.01f, 0.8f, lightDirection };
     LightSources lightSources;
 
     std::vector<Mesh*> meshes{};
+
+    GLenum attachments[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
     GLfloat aspect = (float)window.getBufferWidth() / window.getBufferHeight();
 
@@ -92,7 +94,8 @@ int main() {
     LightingShader shader("blinn-phong.vert", "blinn-phong.frag", "blinn-phong.geom");
 
     bool drawSkybox = false;
-    bool enableBloom = true;
+    bool enableBloom = false;
+    bool drawWireframe = false;
 
     GLuint gridSize = 250;
 
@@ -162,13 +165,13 @@ int main() {
 
         view = camera.generateViewMatrix();
 
+        overlay._newFrame();
+
         hdrBuffer.enableHDRWriting();
 
         // Clear window
         glClearColor(0.f, 0.005f, 0.005f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        overlay._newFrame();
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -177,25 +180,15 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-        particlePosition = camera.getCameraPosition() + camera.getCameraLookDirection() * 90.f;
-
-        if (window.getKeyPress(GLFW_KEY_R)) {
-            pSystem.generateParticles(particlePosition, 0.f);
-        }
-
-        pSystem.updateParticles(deltaTime, camera.getCameraPosition());
-        pSystem.renderParticles(&window, &camera, model, projection);
-
-// ----------------------------------------------------------------------------------------------------------------
-
         selection.pickingPhase(meshes, projection, view, hdrBuffer.getFramebufferID());
 
         meshes[0]->setShader(mainLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view,
             camera.getCameraPosition());
 
-        sponza.renderModel();
+        if(drawWireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-        //sponza.renderModel();
+        sponza.renderModel();
 
         //soilTex.useTexture();
 
@@ -217,41 +210,46 @@ int main() {
                 index = prevIndex;
         }
 
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        /*for (size_t i = 0; i < meshes.size(); i++) {
+        for (size_t i = 0; i < meshes.size(); i++) {
             if ((int)i != index)
                 meshes[i]->renderMesh(GL_TRIANGLES);
-        }*/
+        }
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-        bloom.processFramebufferMSAA(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID(),
-            window.getWindowWidth(), window.getWindowHeight());
-
-        meshes[0]->setShader(mainLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view,
-            camera.getCameraPosition());
-
-        //soilTex.useTexture();
+        /*meshes[0]->setShader(mainLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view,
+            camera.getCameraPosition());*/
 
         if (index < meshes.size() && index != -1) {
-            meshes[index]->renderMeshWithOutline(GL_TRIANGLES, projection, view, mainLight, pointLights,
-                pointLightCount, spotLights, spotLightCount, camera.getCameraPosition());
-
             overlay._updateTransformOperation(window);
 
             overlay.renderTransformWidget(window.getWindowWidth(), window.getWindowHeight(), projection, view,
                 meshes[index]->getModelMatrix());
+
+            meshes[index]->renderMeshWithOutline(GL_TRIANGLES, projection, view, mainLight, pointLights,
+                pointLightCount, spotLights, spotLightCount, camera.getCameraPosition());
         }
 
         //glBindTexture(GL_TEXTURE_2D, 0);
 
         //bloom.processFramebuffer(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID());
 
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 // ----------------------------------------------------------------------------------------------------------------
 
+        particlePosition = camera.getCameraPosition() + camera.getCameraLookDirection() * 90.f;
+
+        if (window.getKeyPress(GLFW_KEY_R)) {
+            pSystem.generateParticles(particlePosition, 0.f);
+        }
+
+        pSystem.updateParticles(deltaTime, camera.getCameraPosition());
+        pSystem.renderParticles(&window, &camera, model, projection);
+
+        bloom.processFramebufferMSAA(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID(),
+            window.getWindowWidth(), window.getWindowHeight());
+
+// ----------------------------------------------------------------------------------------------------------------
+        
         //water.render(projection, model, camera);
 
 // ----------------------------------------------------------------------------------------------------------------
@@ -274,7 +272,7 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-        overlay.renderGUIWindow(io, drawSkybox, enableBloom);
+        overlay.renderGUIWindow(io, drawSkybox, enableBloom, drawWireframe);
 
         hdrBuffer.disableHDRWriting();
         //hdrBuffer.renderToDefaultBuffer(1.f, bloom.getColorBuffers(), bloom.getBlurFlag(), enableBloom);

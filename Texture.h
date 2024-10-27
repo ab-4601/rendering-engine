@@ -21,6 +21,7 @@ public:
 
 	bool loadTexture();
 	void useTexture();
+	void useNormalMap();
 	void clearTexture();
 
 	inline GLuint getTextureID() const { return this->textureID; }

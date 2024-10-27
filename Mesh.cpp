@@ -209,6 +209,39 @@ void Mesh::createMesh() {
 	glBindVertexArray(0);
 }
 
+void Mesh::createNormalMappedMesh() {
+	this->useTexture = true;
+	this->drawIndexed = true;
+	this->useNormalMap = true;
+
+	glGenVertexArrays(1, &this->VAO);
+	glBindVertexArray(this->VAO);
+
+	glGenBuffers(1, &this->VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(float), this->vertices.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)(sizeof(float) * 5));
+	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)(sizeof(float) * 8));
+	glEnableVertexAttribArray(3);
+
+	glGenBuffers(1, &this->IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(uint), this->indices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
 void Mesh::setMeshMaterial(GLfloat sIntensity, GLfloat sPower) {
 
 	this->specularIntensity = sIntensity;
@@ -234,6 +267,11 @@ void Mesh::renderMesh(GLenum renderMode)  {
 	glUniform1f(this->meshShader.getSpecularIntensity(), this->specularIntensity);
 	glUniform1f(this->meshShader.getSpecularPower(), this->specularPower);
 	glUniform1i(this->meshShader.getUniformTextureBool(), this->useTexture);
+	glUniform1i(this->meshShader.getUniformNormalMap(), this->useNormalMap);
+
+	glUniform1i(this->meshShader.getUniformTextureSampler(), 0);
+	glUniform1i(this->meshShader.getUniformNormalSampler(), 1);
+
 	glUniform3fv(this->meshShader.getUniformColor(), 1, glm::value_ptr(this->color));
 	glUniformMatrix4fv(this->meshShader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->model));
 	glBindVertexArray(this->VAO);
@@ -256,7 +294,6 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	DirectionalLight& dirLight, std::vector<PointLight>& pointLights, int pointLightCount,
 	std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition)
 {
-	glClear(GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
@@ -269,7 +306,7 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilMask(0x00);
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
 
 	glUseProgram(this->outlineShader.getProgramID());
 
@@ -284,7 +321,7 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	glStencilMask(0xFF);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glDisable(GL_STENCIL_TEST);
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 
 	this->setShader(dirLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view, cameraPosition);
 }

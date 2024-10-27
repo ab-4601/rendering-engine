@@ -41,12 +41,13 @@ void Overlay::_updateTransformOperation(const Window& window) {
         transformOperation = ImGuizmo::SCALE;
 }
 
-void Overlay::renderGUIWindow(ImGuiIO& io, bool& drawSkybox, bool& enableBloom) {
+void Overlay::renderGUIWindow(ImGuiIO& io, bool& drawSkybox, bool& enableBloom, bool& enableWireframe) {
     ImGui::PushFont(this->mainfont);
     ImGui::Begin("ImGui window");
     ImGui::Text("Scene Information and modifiers");
     ImGui::Checkbox("Render Skybox", &drawSkybox);
     ImGui::Checkbox("Enable bloom", &enableBloom);
+    ImGui::Checkbox("Wireframe", &enableWireframe);
     ImGui::ColorEdit4("Mesh Color", this->colorBuffer);
     ImGui::NewLine();
     ImGui::LabelText("", "Transform");

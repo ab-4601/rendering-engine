@@ -8,6 +8,7 @@ class Model {
 private:
 	std::vector<Mesh*> meshList;
 	std::vector<Texture*> textureList;
+	std::vector<Texture*> normalMaps;
 	std::vector<unsigned int> meshToTex;
 
 	std::vector<GLfloat> vertices;
@@ -15,15 +16,17 @@ private:
 
 	void _loadNode(aiNode* node, const aiScene* const scene);
 	void _loadMesh(aiMesh* mesh, const aiScene* const scene);
-	void _loadMaterial(const aiScene* const scene);
+	void _loadMaterialTextures(const aiScene* const scene);
+	void _loadMaterialNormalMaps(const aiScene* const scene);
 
 public:
 	Model(std::string fileName = "");
 
 	void loadModel(std::string fileName = "");
 	void renderModel();
-	void renderModelWithOutline();
 	void clearModel();
 
-	~Model() = default;
+	~Model() {
+		this->clearModel();
+	}
 };

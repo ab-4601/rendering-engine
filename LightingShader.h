@@ -8,45 +8,45 @@
 
 class LightingShader : public IShaderLoader {
 private:
-	GLuint uniformModel, uniformProjection, uniformColor, uniformView;
-	GLuint uniformSpecularIntensity, uniformSpecularPower, uniformEyePosition;
-	GLuint uniformTextureBool;
+	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformColor{ 0 }, uniformView{ 0 };
+	GLuint uniformSpecularIntensity{ 0 }, uniformSpecularPower{ 0 }, uniformEyePosition{ 0 };
+	GLuint uniformTextureBool{ 0 }, uniformNormalMap{ 0 }, uniformTextureSampler{ 0 }, uniformNormalSampler{ 0 };
 
-	GLuint uniformPointLightCount;
+	GLuint uniformPointLightCount = 0;
 
 	struct {
-		GLuint uniformAmbientColor;
-		GLuint uniformAmbientIntensity;
-		GLuint uniformDiffuseIntensity;
+		GLuint uniformAmbientColor = 0;
+		GLuint uniformAmbientIntensity = 0;
+		GLuint uniformDiffuseIntensity = 0;
 
-		GLuint uniformDirection;
+		GLuint uniformDirection = 0;
 	} uniformDirectionalLight;
 
 	struct {
-		GLuint uniformColor;
-		GLuint uniformAmbientIntensity;
-		GLuint uniformDiffuseIntensity;
+		GLuint uniformColor = 0;
+		GLuint uniformAmbientIntensity = 0;
+		GLuint uniformDiffuseIntensity = 0;
 
-		GLuint uniformPosition;
-		GLuint uniformConstant;
-		GLuint uniformLinear;
-		GLuint uniformExponent;
+		GLuint uniformPosition = 0;
+		GLuint uniformConstant = 0;
+		GLuint uniformLinear = 0;
+		GLuint uniformExponent = 0;
 	} uniformPointLight[MAX_POINT_LIGHTS];
 
-	GLuint uniformSpotLightCount;
+	GLuint uniformSpotLightCount = 0;
 
 	struct {
-		GLuint uniformColor;
-		GLuint uniformAmbientIntensity;
-		GLuint uniformDiffuseIntensity;
+		GLuint uniformColor = 0;
+		GLuint uniformAmbientIntensity = 0;
+		GLuint uniformDiffuseIntensity = 0;
 
-		GLuint uniformPosition;
-		GLuint uniformConstant;
-		GLuint uniformLinear;
-		GLuint uniformExponent;
+		GLuint uniformPosition = 0;
+		GLuint uniformConstant = 0;
+		GLuint uniformLinear = 0;
+		GLuint uniformExponent = 0;
 
-		GLuint uniformDirection;
-		GLuint uniformEdge;
+		GLuint uniformDirection = 0;
+		GLuint uniformEdge = 0;
 	} uniformSpotLight[MAX_SPOT_LIGHTS];
 
 public:
@@ -69,6 +69,9 @@ public:
 	inline GLuint getSpecularPower() const { return this->uniformSpecularPower; }
 	inline GLuint getEyePosition() const { return this->uniformEyePosition; }
 	inline GLuint getUniformTextureBool() const { return this->uniformTextureBool; }
+	inline GLuint getUniformNormalMap() const { return this->uniformNormalMap; }
+	inline GLuint getUniformTextureSampler() const { return this->uniformTextureSampler; }
+	inline GLuint getUniformNormalSampler() const { return this->uniformNormalSampler; }
 
 	virtual inline void getUniformLocations() override;
 

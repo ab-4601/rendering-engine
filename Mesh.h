@@ -26,6 +26,7 @@ protected:
 	GLuint IBO;
 
 	bool useTexture;
+	bool useNormalMap;
 	bool drawIndexed;
 
 	HighlightShader outlineShader;
@@ -53,6 +54,7 @@ public:
 	virtual void createTexturedMesh();
 	virtual void createMeshWithNormals();
 	virtual void createMesh();
+	virtual void createNormalMappedMesh();
 
 	virtual void setShader(DirectionalLight& directionalLight,
 		std::vector<PointLight>& pointLights, int pointLightCount, std::vector<SpotLight>& spotLights, int spotLightCount,

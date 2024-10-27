@@ -7,6 +7,7 @@ in DATA {
 	vec4 vColor;
     vec2 texCoord;
     vec3 normal;
+	vec3 tangent;
     vec4 fragPos;
 } data_in;
 
@@ -44,7 +45,10 @@ struct Material {
 };
 
 uniform bool useTexture = false;
+uniform bool useNormalMap = false;
+
 uniform sampler2D textureUnit;
+uniform sampler2D normalMap;
 
 uniform int pointLightCount;
 uniform int spotLightCount;
@@ -56,19 +60,30 @@ uniform Material material;
 
 uniform vec3 eyePosition;
 
-vec4 calcLightByDirection(Light light, vec3 direction) {
+mat3 TBN;
+
+vec4 calcLightByDirection(Light light, vec3 direction, vec3 normal) {
 	vec4 ambientColor = vec4(light.color, 1.f) * light.ambientIntensity;
 
-	float diffuseFactor = max(dot(normalize(data_in.normal), normalize(direction)), 0.f);
+	float diffuseFactor = max(dot(normalize(normal), normalize(direction)), 0.f);
 	vec4 diffuseColor = vec4(light.color, 1.f) * light.diffuseIntensity * diffuseFactor;
 
 	vec4 specularColor = vec4(0.f, 0.f, 0.f, 1.f);
 
 	// Calculate specular color (blinn-phong)
 	if(diffuseFactor > 0.f) {
-		vec3 fragToEye = normalize(eyePosition - vec3(data_in.fragPos));
-		vec3 halfwayDir = normalize(normalize(direction) + fragToEye);
-		float specularFactor = dot(normalize(data_in.normal), halfwayDir);
+		vec3 fragToEye = vec3(0.f);
+		vec3 halfwayDir = vec3(0.f);
+
+		fragToEye = normalize(eyePosition - vec3(data_in.fragPos));
+
+		if(useNormalMap) {
+			fragToEye = normalize(TBN * fragToEye);
+			direction = normalize(TBN * direction);
+		}
+
+		halfwayDir = normalize(normalize(direction) + fragToEye);
+		float specularFactor = dot(normalize(normal), halfwayDir);
 
 		//vec3 reflection = reflect(-normalize(direction), normalize(data_in.normal));
 		//float specularFactor = dot(normalize(fragToEye), normalize(reflection));
@@ -82,40 +97,40 @@ vec4 calcLightByDirection(Light light, vec3 direction) {
 	return (ambientColor + diffuseColor + specularColor);
 }
 
-vec4 calcDirectionalLight() {
+vec4 calcDirectionalLight(vec3 normal) {
 	vec3 direction = normalize(directionalLight.direction);
-	return calcLightByDirection(directionalLight.base, direction);
+	return calcLightByDirection(directionalLight.base, direction, normal);
 }
 
-vec4 calcPointLight(PointLight pointLight) {
+vec4 calcPointLight(PointLight pointLight, vec3 normal) {
 	vec3 direction = pointLight.position - vec3(data_in.fragPos);
 	float dist = length(direction);
 	direction = normalize(direction);
 
-	vec4 currColor = calcLightByDirection(pointLight.base, direction);
+	vec4 currColor = calcLightByDirection(pointLight.base, direction, normal);
 	float attenuation = (pointLight.exponent * pow(dist, 2)) + 
 						(pointLight.linear * dist) + pointLight.constant;
 
 	return currColor / attenuation;
 }
 
-vec4 calcPointLights() {
+vec4 calcPointLights(vec3 normal) {
 	vec4 totalPointLightColor = vec4(0.f, 0.f, 0.f, 1.f);
 
 	for(int i = 0; i < pointLightCount; i++)
-		totalPointLightColor += calcPointLight(pointLights[i]);
+		totalPointLightColor += calcPointLight(pointLights[i], normal);
 
 	return totalPointLightColor;
 }
 
-vec4 calcSpotLight(SpotLight spotLight) {
+vec4 calcSpotLight(SpotLight spotLight, vec3 normal) {
 	vec3 direction = normalize(spotLight.base.position - vec3(data_in.fragPos));
 	float theta = dot(direction, normalize(-spotLight.direction));
 	
 	vec4 spotLightColor = vec4(0.f, 0.f, 0.f, 1.f);
 
 	if(theta > spotLight.edge) {
-		spotLightColor = calcPointLight(spotLight.base);
+		spotLightColor = calcPointLight(spotLight.base, normal);
 		float clampVal = 1.f - ((1.f - theta) * (1.f/(1.f - spotLight.edge)));
 		spotLightColor *= clampVal;
 	}
@@ -123,23 +138,48 @@ vec4 calcSpotLight(SpotLight spotLight) {
 	return spotLightColor;
 }
 
-vec4 calcSpotLights() {
+vec4 calcSpotLights(vec3 normal) {
 	vec4 finalSpotLightColor = vec4(0.f, 0.f, 0.f, 1.f);
 
 	for(int i = 0; i < spotLightCount; i++) {
-		finalSpotLightColor += calcSpotLight(spotLights[i]);
+		finalSpotLightColor += calcSpotLight(spotLights[i], normal);
 	}
 
 	return finalSpotLightColor;
 }
 
-void main() {	
-	vec4 finalColor = calcDirectionalLight() + calcPointLights() + calcSpotLights();
+void main() {
+	vec3 normal;
+
+	if(useNormalMap) {
+		normal = texture(normalMap, data_in.texCoord).rgb;
+		normal = normalize(normal * 2.f - 1.f);
+		
+		vec3 T = normalize(data_in.tangent);
+		vec3 N = normalize(data_in.normal);
+
+		T = normalize(T - dot(T, N) * N);
+		vec3 B = cross(N, T);
+
+		TBN = mat3(T, B, N);
+		normal = normalize(TBN * normal);
+
+		TBN = transpose(TBN);
+	}
+	else
+		normal = data_in.normal;
+
+	vec4 finalColor = calcDirectionalLight(normal) + calcPointLights(normal) + calcSpotLights(normal);
 
 	if (!useTexture) {
 		finalColor *= data_in.vColor;
 	}
 	else {
+		vec4 texColor = texture(textureUnit, data_in.texCoord);
+
+		if(texColor.a < 0.1)
+			discard;
+
 		finalColor *= texture(textureUnit, data_in.texCoord);
 	}
 

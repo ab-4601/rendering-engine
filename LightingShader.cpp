@@ -1,17 +1,8 @@
 #include "LightingShader.h"
 
 LightingShader::LightingShader(std::string vertFileName, std::string fragFileName, std::string geomFileName)
-	:IShaderLoader(vertFileName, fragFileName, geomFileName), 
-	uniformModel{ 0 }, uniformProjection{ 0 }, uniformColor{ 0 }, uniformView{ 0 },
-	uniformEyePosition{ 0 }, uniformTextureBool{ 0 },
-	uniformPointLightCount{ 0 }, uniformPointLight{ 0 }, uniformSpotLight{ 0 }, uniformSpotLightCount{ 0 },
-	uniformDirectionalLight{ 0 }, uniformSpecularIntensity{ 0 }, uniformSpecularPower{ 0 } {
-
-	uniformDirectionalLight.uniformAmbientColor = 0;
-	uniformDirectionalLight.uniformAmbientIntensity = 0;
-	uniformDirectionalLight.uniformDiffuseIntensity = 0;
-	uniformDirectionalLight.uniformDirection = 0;
-
+	:IShaderLoader(vertFileName, fragFileName, geomFileName) 
+{
 	this->readFile(this->vertFileName, this->vertexShader);
 	this->readFile(this->fragFileName, this->fragmentShader);
 
@@ -30,14 +21,15 @@ LightingShader::LightingShader(std::string vertFileName, std::string fragFileNam
 
 	glDeleteShader(this->vertexShaderID);
 	glDeleteShader(this->fragmentShaderID);
-
 }
 
 void LightingShader::getUniformLocations() {
 	this->uniformModel = glGetUniformLocation(this->programID, "model");
 	this->uniformProjection = glGetUniformLocation(this->programID, "projection");
-	this->uniformColor = glGetUniformLocation(this->programID, "color");
 	this->uniformView = glGetUniformLocation(this->programID, "view");
+
+	this->uniformColor = glGetUniformLocation(this->programID, "color");
+
 	this->uniformDirectionalLight.uniformAmbientColor = glGetUniformLocation(this->programID,
 		"directionalLight.base.color");
 	this->uniformDirectionalLight.uniformAmbientIntensity = glGetUniformLocation(this->programID,
@@ -45,10 +37,17 @@ void LightingShader::getUniformLocations() {
 	this->uniformDirectionalLight.uniformDiffuseIntensity = glGetUniformLocation(this->programID,
 		"directionalLight.base.diffuseIntensity");
 	this->uniformDirectionalLight.uniformDirection = glGetUniformLocation(this->programID, "directionalLight.direction");
+
 	this->uniformSpecularIntensity = glGetUniformLocation(this->programID, "material.specularIntensity");
 	this->uniformSpecularPower = glGetUniformLocation(this->programID, "material.specularPower");
+
 	this->uniformEyePosition = glGetUniformLocation(this->programID, "eyePosition");
+
 	this->uniformTextureBool = glGetUniformLocation(this->programID, "useTexture");
+	this->uniformNormalMap = glGetUniformLocation(this->programID, "useNormalMap");
+
+	this->uniformTextureSampler = glGetUniformLocation(this->programID, "textureUnit");
+	this->uniformNormalSampler = glGetUniformLocation(this->programID, "normalMap");
 
 	this->uniformPointLightCount = glGetUniformLocation(this->programID, "pointLightCount");
 	this->uniformSpotLightCount = glGetUniformLocation(this->programID, "spotLightCount");

@@ -65,6 +65,11 @@ void Texture::useTexture() {
 	glBindTexture(GL_TEXTURE_2D, this->textureID);
 }
 
+void Texture::useNormalMap() {
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, this->textureID);
+}
+
 void Texture::clearTexture() {
 	glDeleteTextures(1, &this->textureID);
 
