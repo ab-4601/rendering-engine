@@ -67,10 +67,10 @@ void Window::getMouseButton(GLFWwindow* window, int button, int action, int mods
     Window* currWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
 
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-        currWindow->setLMBPressed(!currWindow->getLMBPressed());
+        currWindow->setLMBPressed(true);
 
-    /*else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
-        currWindow->setLMBPressed(false);*/
+    else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+        currWindow->setLMBPressed(false);
 
     else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
         currWindow->setRMBPressed(true);
@@ -139,7 +139,6 @@ void Window::setupWindow() {
 
     // Enable depth buffer to avoid drawing over faces
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_FRAMEBUFFER_SRGB);
 
     // Create viewport
     glViewport(0, 0, this->bufferWidth, this->bufferHeight);

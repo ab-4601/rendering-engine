@@ -6,7 +6,7 @@ layout (location = 1) out vec4 brightColor;
 in DATA {
 	vec4 vColor;
     vec2 texCoord;
-    smooth vec3 normal;
+    vec3 normal;
     vec4 fragPos;
 } data_in;
 
@@ -67,7 +67,7 @@ vec4 calcLightByDirection(Light light, vec3 direction) {
 	// Calculate specular color (blinn-phong)
 	if(diffuseFactor > 0.f) {
 		vec3 fragToEye = normalize(eyePosition - vec3(data_in.fragPos));
-		vec3 halfwayDir = normalize(direction + fragToEye);
+		vec3 halfwayDir = normalize(normalize(direction) + fragToEye);
 		float specularFactor = dot(normalize(data_in.normal), halfwayDir);
 
 		//vec3 reflection = reflect(-normalize(direction), normalize(data_in.normal));
@@ -142,8 +142,6 @@ void main() {
 	else {
 		finalColor *= texture(textureUnit, data_in.texCoord);
 	}
-
-	finalColor = pow(finalColor, vec4(2.2f));
 
 	fragColor = finalColor;
 

@@ -2,10 +2,10 @@
 
 out vec4 fragColor;
 
-in vec3 texCoords;
+in vec3 texel;
 
 uniform samplerCube skybox;
 
 void main() {
-	fragColor = pow(texture(skybox, texCoords), vec4(2.2f));
+	fragColor = pow(texture(skybox, texel), vec4(2.2f));
 }

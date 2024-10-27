@@ -14,6 +14,7 @@
 #include "Icosphere.h"
 #include "Cube.h"
 #include "UVSphere.h"
+#include "Model.h"
 #include "Terrain.h"
 #include "LightSources.h"
 #include "LightMeshShader.h"
@@ -56,7 +57,7 @@ int main() {
     MouseSelector selection(window.getBufferWidth(), window.getBufferHeight());
     CoordinateSystem coordSystem;
     Skybox skybox;
-    DirectionalLight mainLight{ 0.1f, 0.9f, lightDirection };
+    DirectionalLight mainLight{ 0.01f, 0.5f, lightDirection };
     LightSources lightSources;
 
     std::vector<Mesh*> meshes{};
@@ -75,28 +76,31 @@ int main() {
     uint pointLightCount = 0;
     uint spotLightCount = 0;
 
-    int index{};
+    int index{-1}, prevIndex{-1};
 
-    pointLights.at(0) = PointLight(0.1f, 1.f, pointLightPosition1, 1.f, 0.001f, 0.001f);
+    /*pointLights.at(0) = PointLight(0.01f, 0.7f, pointLightPosition1, 1.f, 0.001f, 0.001f);
     pointLightCount++;
 
-    pointLights.at(1) = PointLight(0.1f, 1.f, pointLightPosition2, 1.f, 0.0001f, 0.0001f);
+    pointLights.at(1) = PointLight(0.01f, 0.7f, pointLightPosition2, 1.f, 0.0001f, 0.0001f);
     pointLightCount++;
 
-    spotLights.at(0) = SpotLight(0.1f, 1.f, spotLightPosition, 1.f, 0.0001f, 0.0001f, { 2.f, 2.f, 2.f }, { 0.f, -1.f, 0.f }, 45);
-    spotLightCount++;
+    spotLights.at(0) = SpotLight(0.01f, 0.7f, spotLightPosition, 1.f, 0.0001f, 0.0001f, { 0.f, 0.f, 1.f }, { 0.f, -1.f, 0.f }, 45);
+    spotLightCount++;*/
 
     // Get shader source code, compile and link to shader program
     LightMeshShader lightMeshShader;
     LightingShader shader("blinn-phong.vert", "blinn-phong.frag", "blinn-phong.geom");
 
     bool drawSkybox = false;
+    bool enableBloom = true;
 
-    GLuint gridSize = 500;
+    GLuint gridSize = 250;
+
+    Model sponza("Models/sponza.obj");
 
     Icosphere sphere;
     sphere.smoothSphere(5);
-    sphere.setColor({ 0.5f, 1.f, 0.f });
+    sphere.setColor({ 1.f, 0.02f, 0.02f });
     sphere.createMeshWithNormals();
 
     model = glm::mat4(1.f);
@@ -105,17 +109,17 @@ int main() {
     sphere.setModelMatrix(model);
 
     Cube cube;
-    cube.setColor({ 0.1f, 1.f, 1.f });
+    cube.setColor({ 0.01f, 1.f, 1.f });
     cube.createUnindexedMesh();
 
     /*Texture gridTex("Textures/prototype.png");
     gridTex.loadTexture();
 
-    Terrain terrain{ gridSize, gridSize, 50 };
+    Terrain terrain{ gridSize, gridSize, 80 };
     terrain.setColor({ 0.1f, 1.f, 1.f });
     terrain.generateHeightMaps(3);
     terrain.generateTerrain();
-    terrain.createMeshFinal();*/
+    terrain.createMesh();*/
 
     meshes = Mesh::meshList;
 
@@ -125,21 +129,27 @@ int main() {
     sphere.generateSphere();
     sphere.createMeshWithNormals();*/
 
+    for (size_t i = 0; i < meshes.size(); i++)
+        meshes[i]->setMeshMaterial(1.f, 32.f);
+
 
     ParticleTexture partTex("Textures/particleAtlas.png", 4.f);
     glm::vec3 particlePosition{ 20.f, 20.f, 20.f }, velocity{ 10.f, 50.f, 10.f }, particleColor{ 1.f, 0.5f, 0.05f };
-    ParticleSystem pSystem(particleColor, 10, 0.f, 1.f, 3.f, partTex);
+    ParticleSystem pSystem(particleColor, 10, 5.f, 1.f, 3.f, partTex);
 
     ImGuiIO& io = overlay._init(window.getGlfwWindow());
 
-    /*Texture soilTex{ "Textures/muddy-terrain.png" };
-    soilTex.loadTexture();*/
+    Texture soilTex{ "Textures/muddy-terrain.png" };
+    soilTex.loadTexture();
 
     hdrBuffer._initMSAA(window.getBufferWidth(), window.getBufferHeight());
     bloom._init(window.getBufferWidth(), window.getBufferHeight());
 
+    std::chrono::milliseconds delay{ 1 };
+
     // main render loop
     while (!glfwWindowShouldClose(window.getMainWindow())) {
+        std::this_thread::sleep_for(delay);
         // Calculate delta time
         currTime = (GLfloat)glfwGetTime();
         deltaTime = currTime - lastTime;
@@ -162,7 +172,7 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-        lightSources.renderLightSources(projection, view, mainLight, pointLights, spotLights, 
+        lightSources.renderLightSources(projection, view, mainLight, pointLights, spotLights,
             pointLightCount, spotLightCount);
 
 // ----------------------------------------------------------------------------------------------------------------
@@ -176,41 +186,67 @@ int main() {
         pSystem.updateParticles(deltaTime, camera.getCameraPosition());
         pSystem.renderParticles(&window, &camera, model, projection);
 
-        bloom.processFramebufferMSAA(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID(),
-            window.getWindowWidth(), window.getWindowHeight());
-
 // ----------------------------------------------------------------------------------------------------------------
 
         selection.pickingPhase(meshes, projection, view, hdrBuffer.getFramebufferID());
 
-        cube.setShader(mainLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view,
+        meshes[0]->setShader(mainLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view,
             camera.getCameraPosition());
-        cube.setMeshMaterial(0.5f, 4.f);
-        sphere.setMeshMaterial(0.5f, 32.f);
-        //gridTex.useTexture();
+
+        sponza.renderModel();
+
+        //sponza.renderModel();
+
+        //soilTex.useTexture();
 
         glm::vec2 mouseClickCoords = window.getViewportCoord();
 
-        index = selection.mouseSelectionResult(window.getWindowHeight(), mouseClickCoords.x, mouseClickCoords.y);
+        if (window.getKeyPress(GLFW_KEY_TAB))
+        {
+            index = -1;
+            prevIndex = -1;
+        }
 
-        if (index < meshes.size() && index != -1) {
-            overlay._updateTransformOperation(window);
+        if (window.getLMBPressed()) {
+            index = selection.mouseSelectionResult(window.getWindowHeight(), mouseClickCoords.x, mouseClickCoords.y);
 
-            overlay.renderTransformWidget(window.getWindowWidth(), window.getWindowHeight(), projection, view,
-                meshes[index]->getModelMatrix());
-
-            meshes[index]->renderMeshWithOutline(GL_TRIANGLES, projection, view, mainLight, pointLights,
-                pointLightCount, spotLights, spotLightCount, camera.getCameraPosition());
+            if (prevIndex != index)
+                if(index != -1)
+                    prevIndex = index;
+            else
+                index = prevIndex;
         }
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-        for (size_t i = 0; i < meshes.size(); i++) {
+        /*for (size_t i = 0; i < meshes.size(); i++) {
             if ((int)i != index)
                 meshes[i]->renderMesh(GL_TRIANGLES);
+        }*/
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        bloom.processFramebufferMSAA(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID(),
+            window.getWindowWidth(), window.getWindowHeight());
+
+        meshes[0]->setShader(mainLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view,
+            camera.getCameraPosition());
+
+        //soilTex.useTexture();
+
+        if (index < meshes.size() && index != -1) {
+            meshes[index]->renderMeshWithOutline(GL_TRIANGLES, projection, view, mainLight, pointLights,
+                pointLightCount, spotLights, spotLightCount, camera.getCameraPosition());
+
+            overlay._updateTransformOperation(window);
+
+            overlay.renderTransformWidget(window.getWindowWidth(), window.getWindowHeight(), projection, view,
+                meshes[index]->getModelMatrix());
         }
 
         //glBindTexture(GL_TEXTURE_2D, 0);
+
+        //bloom.processFramebuffer(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID());
 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -238,13 +274,13 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-        overlay.renderGUIWindow(io, drawSkybox);
+        overlay.renderGUIWindow(io, drawSkybox, enableBloom);
 
         hdrBuffer.disableHDRWriting();
-        //hdrBuffer.renderToDefaultBuffer(1.f, bloom.getColorBuffers(), bloom.getBlurFlag());
+        //hdrBuffer.renderToDefaultBuffer(1.f, bloom.getColorBuffers(), bloom.getBlurFlag(), enableBloom);
         hdrBuffer.renderToDefaultBufferMSAA(
-            1.f, bloom.getColorBuffers(), bloom.getBlurFlag(), window.getWindowWidth(), window.getWindowHeight()
-        );
+            1.f, bloom.getColorBuffers(), bloom.getBlurFlag(), window.getWindowWidth(), window.getWindowHeight(),
+        enableBloom);
 
         glfwSwapBuffers(window.getMainWindow());
     }

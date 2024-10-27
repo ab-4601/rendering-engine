@@ -38,9 +38,11 @@ public:
 	inline void enableHDRWriting() const { glBindFramebuffer(GL_FRAMEBUFFER, this->FBO); }
 	inline void disableHDRWriting() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-	void renderToDefaultBuffer(float exposure = 1.f, const GLuint* bloomBuffer = nullptr, bool id = false);
+	void renderToDefaultBuffer(float exposure = 1.f, const GLuint* bloomBuffer = nullptr, bool id = false,
+		bool enableBloom = false);
 	void renderToDefaultBufferMSAA(
-		float exposure = 1.f, const GLuint* bloomBuffer = nullptr, bool id = false, int width = 0, int height = 0
+		float exposure = 1.f, const GLuint* bloomBuffer = nullptr, bool id = false, int width = 0, int height = 0,
+		bool enableBloom = false
 	);
 
 	~HDR();

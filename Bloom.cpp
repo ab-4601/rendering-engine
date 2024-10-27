@@ -67,6 +67,8 @@ void Bloom::processFramebuffer(int iterations, GLuint colorBufferID, GLuint fram
 	
 	glUseProgram(this->shader.getProgramID());
 
+	glActiveTexture(GL_TEXTURE0);
+
 	for (int i = 0; i < iterations; i++) {
 		glBindFramebuffer(GL_FRAMEBUFFER, this->FBO[this->blurFlag]);
 		
@@ -93,6 +95,8 @@ void Bloom::processFramebufferMSAA(int iterations, GLuint colorBufferID, GLuint 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->intermediateFBO);
 	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
+	glActiveTexture(GL_TEXTURE0);
+
 	for (int i = 0; i < iterations; i++) {
 		glBindFramebuffer(GL_FRAMEBUFFER, this->FBO[this->blurFlag]);
 
@@ -106,4 +110,6 @@ void Bloom::processFramebufferMSAA(int iterations, GLuint colorBufferID, GLuint 
 		if (flipFlag)
 			flipFlag = false;
 	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
 }

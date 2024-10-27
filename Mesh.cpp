@@ -53,7 +53,7 @@ void Mesh::createUnindexedTexturedMesh() {
 	glBindVertexArray(0);
 }
 
-void Mesh::createMesh() {
+void Mesh::createFlatMesh() {
 	this->drawIndexed = true;
 
 	// Generate vertex array object and bind it
@@ -160,27 +160,29 @@ void Mesh::createMeshWithNormals() {
 	glBindVertexArray(0);
 }
 
-void Mesh::createMeshFinal() {
-	std::vector<GLfloat> tmpVertices = this->vertices;
-	this->vertices.clear();
-
+void Mesh::createMesh() {
 	this->useTexture = true;
 	this->drawIndexed = true;
 
-	for (size_t i = 0, j = 0; i < tmpVertices.size(); i += 3) {
-		this->vertices.push_back(tmpVertices.at(i));
-		this->vertices.push_back(tmpVertices.at(i + 1));
-		this->vertices.push_back(tmpVertices.at(i + 2));
+	if(this->normals.size() != 0 && this->texCoords.size() != 0) {
+		std::vector<GLfloat> tmpVertices = this->vertices;
+		this->vertices.clear();
 
-		this->vertices.push_back(this->texCoords.at(j++));
-		this->vertices.push_back(this->texCoords.at(j++));
+		for (size_t i = 0, j = 0; i < tmpVertices.size(); i += 3) {
+			this->vertices.push_back(tmpVertices.at(i));
+			this->vertices.push_back(tmpVertices.at(i + 1));
+			this->vertices.push_back(tmpVertices.at(i + 2));
 
-		this->vertices.push_back(this->normals.at(i));
-		this->vertices.push_back(this->normals.at(i + 1));
-		this->vertices.push_back(this->normals.at(i + 2));
+			this->vertices.push_back(this->texCoords.at(j++));
+			this->vertices.push_back(this->texCoords.at(j++));
+
+			this->vertices.push_back(this->normals.at(i));
+			this->vertices.push_back(this->normals.at(i + 1));
+			this->vertices.push_back(this->normals.at(i + 2));
+		}
+
+		tmpVertices.clear();
 	}
-
-	tmpVertices.clear();
 
 	glGenVertexArrays(1, &this->VAO);
 	glBindVertexArray(this->VAO);
@@ -211,9 +213,6 @@ void Mesh::setMeshMaterial(GLfloat sIntensity, GLfloat sPower) {
 
 	this->specularIntensity = sIntensity;
 	this->specularPower = sPower;
-
-	glUniform1f(this->meshShader.getSpecularIntensity(), this->specularIntensity);
-	glUniform1f(this->meshShader.getSpecularPower(), this->specularPower);
 }
 
 void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>& pointLights, int pointLightCount, 
@@ -232,6 +231,8 @@ void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>
 }
 
 void Mesh::renderMesh(GLenum renderMode)  {
+	glUniform1f(this->meshShader.getSpecularIntensity(), this->specularIntensity);
+	glUniform1f(this->meshShader.getSpecularPower(), this->specularPower);
 	glUniform1i(this->meshShader.getUniformTextureBool(), this->useTexture);
 	glUniform3fv(this->meshShader.getUniformColor(), 1, glm::value_ptr(this->color));
 	glUniformMatrix4fv(this->meshShader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->model));

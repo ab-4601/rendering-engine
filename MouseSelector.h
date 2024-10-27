@@ -2,6 +2,7 @@
 
 #include "Window.h"
 #include "Mesh.h"
+#include "Overlay.h"
 #include "SelectionShader.h"
 #include "SelectionTexture.h"
 

@@ -45,6 +45,27 @@ void Skybox::loadCubemap() {
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
+void Skybox::loadHDRCubemap(const char* file_name) {
+	stbi_set_flip_vertically_on_load(true);
+
+	int width{}, height{}, nrComponents{};
+	float* data = stbi_loadf(file_name, &width, &height, &nrComponents, 0);
+
+	if (data) {
+		glGenTextures(1, &this->textureID);
+		glBindTexture(GL_TEXTURE_2D, this->textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	else {
+		std::cerr << "HDR skybox image load failed" << std::endl;
+	}
+}
+
 void Skybox::renderSkybox(const glm::mat4& projection, const Camera& camera) {
 	glDepthMask(GL_FALSE);
 	glDepthFunc(GL_LEQUAL);

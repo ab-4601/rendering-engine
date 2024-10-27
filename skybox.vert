@@ -2,13 +2,13 @@
 
 layout (location = 0) in vec3 aPos;
 
-out vec3 texCoords;
+out vec3 texel;
 
 uniform mat4 projection;
 uniform mat4 view;
 
 void main() {
-	texCoords = aPos;
+	texel = aPos;
 
 	vec4 pos = projection * view * vec4(aPos, 1.f);
 	gl_Position = pos.xyww;

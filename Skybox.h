@@ -65,6 +65,7 @@ public:
     "Textures/skybox/top.png", "Textures/skybox/bottom.png", "Textures/skybox/back.png", "Textures/skybox/front.png"} });*/
 
 	void loadCubemap();
+    void loadHDRCubemap(const char* file_name);
     void renderSkybox(const glm::mat4& projection, const Camera& camera);
 
 	~Skybox() = default;

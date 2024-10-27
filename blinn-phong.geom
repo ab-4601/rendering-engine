@@ -13,7 +13,7 @@ in DATA {
 out DATA {
 	vec4 vColor;
     vec2 texCoord;
-    smooth vec3 normal;
+    vec3 normal;
     vec4 fragPos;
 } data_out;
 

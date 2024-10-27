@@ -77,8 +77,6 @@ public:
 
 	~Window() {
 		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_FRAMEBUFFER_SRGB);
-		glDisable(GL_MULTISAMPLE);
 
 		glfwDestroyWindow(this->window);
 		glfwTerminate();

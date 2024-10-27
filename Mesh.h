@@ -49,10 +49,10 @@ public:
 
 	virtual void createUnindexedMesh();
 	virtual void createUnindexedTexturedMesh();
-	virtual void createMesh();
+	virtual void createFlatMesh();
 	virtual void createTexturedMesh();
 	virtual void createMeshWithNormals();
-	virtual void createMeshFinal();
+	virtual void createMesh();
 
 	virtual void setShader(DirectionalLight& directionalLight,
 		std::vector<PointLight>& pointLights, int pointLightCount, std::vector<SpotLight>& spotLights, int spotLightCount,

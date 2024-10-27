@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Mesh.h"
 #include "Window.h"
 
 class Overlay {
@@ -20,7 +21,7 @@ public:
 
 	void _newFrame();
 	void _updateTransformOperation(const Window& window);
-	void renderGUIWindow(ImGuiIO& io, bool& drawSkybox);
+	void renderGUIWindow(ImGuiIO& io, bool& drawSkybox, bool& enableBloom);
 	void renderTransformWidget(int bufferWidth, int bufferHeight, glm::mat4& projection, glm::mat4& view, glm::mat4& model);
 
 	~Overlay();

@@ -7,7 +7,7 @@ typedef unsigned int uint;
 
 const uint MAX_POINT_LIGHTS = 3;
 const uint MAX_SPOT_LIGHTS = 3;
-const uint samples = 15;
+const uint samples = 8;
 
 const double PI = 3.14159265;
 const float GRAVITY = -10.f;
@@ -18,6 +18,7 @@ const float GRAVITY = -10.f;
 #include <fstream>
 #include <unordered_map>
 #include <algorithm>
+#include <thread>
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>

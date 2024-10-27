@@ -1,9 +1,11 @@
 #include "Model.h"
 
-Model::Model() : Mesh() {
+Model::Model(std::string fileName) {
 	this->meshList.clear();
 	this->meshToTex.clear();
 	this->textureList.clear();
+
+	this->loadModel(fileName);
 }
 
 void Model::_loadNode(aiNode* node, const aiScene* const scene) {
@@ -15,6 +17,9 @@ void Model::_loadNode(aiNode* node, const aiScene* const scene) {
 }
 
 void Model::_loadMesh(aiMesh* mesh, const aiScene* const scene) {
+	this->vertices.clear();
+	this->indices.clear();
+
 	for (size_t i = 0; i < mesh->mNumVertices; i++) {
 		this->vertices.insert(this->vertices.end(), { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z });
 		
@@ -32,6 +37,14 @@ void Model::_loadMesh(aiMesh* mesh, const aiScene* const scene) {
 			this->indices.push_back(face.mIndices[j]);
 		}
 	}
+
+	Mesh* currMesh = new Mesh();
+	currMesh->setVertices(this->vertices);
+	currMesh->setIndices(this->indices);
+	currMesh->createMesh();
+
+	this->meshList.push_back(currMesh);
+	this->meshToTex.push_back(mesh->mMaterialIndex);
 }
 
 void Model::_loadMaterial(const aiScene* const scene) {
@@ -49,7 +62,7 @@ void Model::_loadMaterial(const aiScene* const scene) {
 				int idx = std::string(path.data).rfind("\\");
 				std::string filename = std::string(path.data).substr(idx + 1);
 
-				std::string texPath = std::string("Textures/") + filename;
+				std::string texPath = std::string("Models/") + filename;
 
 				this->textureList[i] = new Texture(texPath);
 
@@ -69,7 +82,7 @@ void Model::_loadMaterial(const aiScene* const scene) {
 	}
 }
 
-void Model::loadModel(const std::string& fileName) {
+void Model::loadModel(std::string fileName) {
 	if (fileName == "") {
 		std::cout << "No file path specified" << std::endl;
 		return;
@@ -87,6 +100,22 @@ void Model::loadModel(const std::string& fileName) {
 
 	this->_loadNode(scene->mRootNode, scene);
 	this->_loadMaterial(scene);
+}
+
+void Model::renderModel() {
+	for (size_t i = 0; i < this->meshList.size(); i++) {
+		unsigned int materialIndex = this->meshToTex[i];
+
+		if (materialIndex < this->textureList.size() && textureList[materialIndex]) {
+			this->textureList[materialIndex]->useTexture();
+		}
+
+		meshList[i]->renderMesh(GL_TRIANGLES);
+	}
+}
+
+void Model::renderModelWithOutline() {
+	
 }
 
 void Model::clearModel() {
