@@ -36,10 +36,14 @@ public:
 	static std::vector<Mesh*> meshList;
 	Mesh(GLfloat specularIntensity = 0.f, GLfloat specularPower = 0.f);
 
-	virtual void setVertices(const std::vector<GLfloat>& vertices) { this->vertices = vertices; }
-	virtual void setIndices(const std::vector<uint>& indices) { this->indices = indices; }
-	virtual void setTexCoords(const std::vector<GLfloat>& texCoords) { this->texCoords = texCoords; }
-	virtual void setNormals(const std::vector<GLfloat>& normals) { this->normals = normals; }
+	virtual inline void setVertices(const std::vector<GLfloat>& vertices) { this->vertices = vertices; }
+	virtual inline void setIndices(const std::vector<uint>& indices) { this->indices = indices; }
+	virtual inline void setTexCoords(const std::vector<GLfloat>& texCoords) { this->texCoords = texCoords; }
+	virtual inline void setNormals(const std::vector<GLfloat>& normals) { this->normals = normals; }
+	virtual inline void scale(float scaleFactor) {
+		for (auto& elem : this->vertices)
+			elem *= scaleFactor;
+	}
 
 	virtual inline void setModelMatrix(const glm::mat4& matrix) { this->model = matrix; }
 	virtual inline glm::mat4& getModelMatrix() { return this->model; }

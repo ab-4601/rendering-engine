@@ -63,8 +63,15 @@ void Overlay::renderGUIWindow(ImGuiIO& io, bool& drawSkybox, bool& enableBloom, 
 }
 
 void Overlay::renderTransformWidget(int windowWidth, int windowHeight, glm::mat4& projection, glm::mat4& view, 
-    glm::mat4& model)
+    Mesh* mesh)
 {
+    this->colorBuffer[0] = mesh->getColor().r;
+    this->colorBuffer[1] = mesh->getColor().g;
+    this->colorBuffer[2] = mesh->getColor().b;
+
+    glm::vec3 color{ this->colorBuffer[0], this->colorBuffer[1], this->colorBuffer[2] };
+
+    mesh->setColor(color);
     ImGuizmo::BeginFrame();
     ImGuizmo::Enable(true);
     ImGuizmo::AllowAxisFlip(false);
@@ -72,8 +79,10 @@ void Overlay::renderTransformWidget(int windowWidth, int windowHeight, glm::mat4
     ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
     ImGuizmo::SetRect(0, 0, windowWidth, windowHeight);
     ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection),
-        transformOperation, ImGuizmo::WORLD, glm::value_ptr(model));
-    ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(model), this->translation, this->rotation, this->scale);
+        transformOperation, ImGuizmo::WORLD, glm::value_ptr(mesh->getModelMatrix()));
+    ImGuizmo::DecomposeMatrixToComponents(
+        glm::value_ptr(mesh->getModelMatrix()), this->translation, this->rotation, this->scale
+    );
 }
 
 Overlay::~Overlay() {

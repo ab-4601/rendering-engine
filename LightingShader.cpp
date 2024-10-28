@@ -44,10 +44,12 @@ void LightingShader::getUniformLocations() {
 	this->uniformEyePosition = glGetUniformLocation(this->programID, "eyePosition");
 
 	this->uniformTextureBool = glGetUniformLocation(this->programID, "useTexture");
-	this->uniformNormalMap = glGetUniformLocation(this->programID, "useNormalMap");
+	this->uniformUseNormalMap = glGetUniformLocation(this->programID, "useNormalMap");
 
-	this->uniformTextureSampler = glGetUniformLocation(this->programID, "textureUnit");
+	this->uniformDiffuseSampler = glGetUniformLocation(this->programID, "diffuseMap");
 	this->uniformNormalSampler = glGetUniformLocation(this->programID, "normalMap");
+	this->uniformDepthSampler = glGetUniformLocation(this->programID, "depthMap");
+	this->uniformHeightScale = glGetUniformLocation(this->programID, "height_scale");
 
 	this->uniformPointLightCount = glGetUniformLocation(this->programID, "pointLightCount");
 	this->uniformSpotLightCount = glGetUniformLocation(this->programID, "spotLightCount");

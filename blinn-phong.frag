@@ -5,7 +5,7 @@ layout (location = 1) out vec4 brightColor;
 
 in DATA {
 	vec4 vColor;
-    vec2 texCoord;
+    vec2 texel;
     vec3 normal;
 	vec3 tangent;
     vec4 fragPos;
@@ -47,8 +47,9 @@ struct Material {
 uniform bool useTexture = false;
 uniform bool useNormalMap = false;
 
-uniform sampler2D textureUnit;
+uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
+uniform sampler2D depthMap;
 
 uniform int pointLightCount;
 uniform int spotLightCount;
@@ -59,8 +60,31 @@ uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 uniform Material material;
 
 uniform vec3 eyePosition;
+uniform float height_scale;
 
-mat3 TBN;
+const float minLayers = 8.f;
+const float maxLayers = 32.f;
+
+vec2 parallaxMapping(vec2 texel, vec3 viewDir) {
+	float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.f, 0.f, 1.f), viewDir), 0.f));
+	float layerDepth = 1.f / numLayers;
+
+	float currentLayerDepth = 0.f;
+
+	vec2 P = viewDir.xy * height_scale;
+	vec2 deltaTexel = P / numLayers;
+
+	vec2 currTexel = data_in.texel;
+	float currDepth = texture(depthMap, currTexel).r;
+
+	while(currentLayerDepth < currDepth) {
+		currTexel -= deltaTexel;
+		currDepth = texture(depthMap, currTexel).r;
+		currentLayerDepth += layerDepth;
+	}
+
+	return currTexel;
+}
 
 vec4 calcLightByDirection(Light light, vec3 direction, vec3 normal) {
 	vec4 ambientColor = vec4(light.color, 1.f) * light.ambientIntensity;
@@ -76,16 +100,10 @@ vec4 calcLightByDirection(Light light, vec3 direction, vec3 normal) {
 		vec3 halfwayDir = vec3(0.f);
 
 		fragToEye = normalize(eyePosition - vec3(data_in.fragPos));
-
-		if(useNormalMap) {
-			fragToEye = normalize(TBN * fragToEye);
-			direction = normalize(TBN * direction);
-		}
-
 		halfwayDir = normalize(normalize(direction) + fragToEye);
 		float specularFactor = dot(normalize(normal), halfwayDir);
 
-		//vec3 reflection = reflect(-normalize(direction), normalize(data_in.normal));
+		//vec3 reflection = reflect(-normalize(direction), normalize(normal));
 		//float specularFactor = dot(normalize(fragToEye), normalize(reflection));
 		
 		if(specularFactor > 0.f) {
@@ -152,7 +170,7 @@ void main() {
 	vec3 normal;
 
 	if(useNormalMap) {
-		normal = texture(normalMap, data_in.texCoord).rgb;
+		normal = texture(normalMap, data_in.texel).rgb;
 		normal = normalize(normal * 2.f - 1.f);
 		
 		vec3 T = normalize(data_in.tangent);
@@ -161,10 +179,7 @@ void main() {
 		T = normalize(T - dot(T, N) * N);
 		vec3 B = cross(N, T);
 
-		TBN = mat3(T, B, N);
-		normal = normalize(TBN * normal);
-
-		TBN = transpose(TBN);
+		normal = normalize(mat3(T, B, N) * normal);
 	}
 	else
 		normal = data_in.normal;
@@ -175,12 +190,12 @@ void main() {
 		finalColor *= data_in.vColor;
 	}
 	else {
-		vec4 texColor = texture(textureUnit, data_in.texCoord);
+		vec4 texColor = texture(diffuseMap, data_in.texel);
 
 		if(texColor.a < 0.1)
 			discard;
 
-		finalColor *= texture(textureUnit, data_in.texCoord);
+		finalColor *= texture(diffuseMap, data_in.texel);
 	}
 
 	fragColor = finalColor;

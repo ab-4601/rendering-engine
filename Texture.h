@@ -20,8 +20,9 @@ public:
 	Texture& operator=(Texture&& rhs) noexcept;
 
 	bool loadTexture();
-	void useTexture();
-	void useNormalMap();
+	void useTexture() const;
+	void useNormalMap() const;
+	void useDepthMap() const;
 	void clearTexture();
 
 	inline GLuint getTextureID() const { return this->textureID; }

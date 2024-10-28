@@ -22,7 +22,7 @@ public:
 	void _newFrame();
 	void _updateTransformOperation(const Window& window);
 	void renderGUIWindow(ImGuiIO& io, bool& drawSkybox, bool& enableBloom, bool& enableWireframe);
-	void renderTransformWidget(int bufferWidth, int bufferHeight, glm::mat4& projection, glm::mat4& view, glm::mat4& model);
+	void renderTransformWidget(int bufferWidth, int bufferHeight, glm::mat4& projection, glm::mat4& view, Mesh* mesh);
 
 	~Overlay();
 };

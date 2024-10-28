@@ -37,6 +37,7 @@ public:
 
 	inline void enableHDRWriting() const { glBindFramebuffer(GL_FRAMEBUFFER, this->FBO); }
 	inline void disableHDRWriting() const { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+	inline void setDrawBuffers() const { glDrawBuffers(2, this->attachments); }
 
 	void renderToDefaultBuffer(float exposure = 1.f, const GLuint* bloomBuffer = nullptr, bool id = false,
 		bool enableBloom = false);

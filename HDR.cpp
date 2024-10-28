@@ -52,7 +52,7 @@ void HDR::_initMSAA(int width, int height) {
 		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA16F, width, height, GL_TRUE);
 
 		glFramebufferTexture2D(
-			GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, this->colorBuffers[i], 0
+			GL_FRAMEBUFFER, this->attachments[i], GL_TEXTURE_2D_MULTISAMPLE, this->colorBuffers[i], 0
 		);
 	}
 
@@ -134,6 +134,12 @@ void HDR::renderToDefaultBufferMSAA(float exposure, const GLuint* bloomBuffer, b
 {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, this->FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->intermediateFBO);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
+	glDrawBuffer(GL_COLOR_ATTACHMENT1);
 	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -161,6 +167,8 @@ void HDR::renderToDefaultBufferMSAA(float exposure, const GLuint* bloomBuffer, b
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glDrawBuffers(2, this->attachments);
 }
 
 HDR::~HDR() {

@@ -13,12 +13,12 @@ void ParticleSystem::generateParticles(glm::vec3& systemCenter, float rotationAn
 	//systemCenter.y = 50 * sinf(50 * rotationAngle);
 
 	for (int i = 0; i < this->pps; i++) {
-		float x = (rand() % 25 - 12);
+		float x = (rand() % 100 - 50);
 		//x = 50 * cosf(glm::radians(rotationAngle));
 
-		float y = (rand() % 25 - 12);
+		float y = (rand() % 100 - 50);
 
-		float z = (rand() % 25 - 12);
+		float z = (rand() % 100 - 50);
 		//z = 50 * sinf(glm::radians(rotationAngle));
 
 		glm::vec3 velocity{ x, y, z };

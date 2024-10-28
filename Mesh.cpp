@@ -266,11 +266,13 @@ void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>
 void Mesh::renderMesh(GLenum renderMode)  {
 	glUniform1f(this->meshShader.getSpecularIntensity(), this->specularIntensity);
 	glUniform1f(this->meshShader.getSpecularPower(), this->specularPower);
+	glUniform1f(this->meshShader.getUniformHeightScale(), 0.1f);
 	glUniform1i(this->meshShader.getUniformTextureBool(), this->useTexture);
-	glUniform1i(this->meshShader.getUniformNormalMap(), this->useNormalMap);
+	glUniform1i(this->meshShader.getUniformNormalMapBool(), this->useNormalMap);
 
-	glUniform1i(this->meshShader.getUniformTextureSampler(), 0);
+	glUniform1i(this->meshShader.getUniformDiffuseSampler(), 0);
 	glUniform1i(this->meshShader.getUniformNormalSampler(), 1);
+	glUniform1i(this->meshShader.getUniformDepthSampler(), 2);
 
 	glUniform3fv(this->meshShader.getUniformColor(), 1, glm::value_ptr(this->color));
 	glUniformMatrix4fv(this->meshShader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->model));

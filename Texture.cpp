@@ -60,13 +60,18 @@ bool Texture::loadTexture() {
 	return true;
 }
 
-void Texture::useTexture() {
+void Texture::useTexture() const {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->textureID);
 }
 
-void Texture::useNormalMap() {
+void Texture::useNormalMap() const {
 	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, this->textureID);
+}
+
+void Texture::useDepthMap() const {
+	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, this->textureID);
 }
 

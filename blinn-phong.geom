@@ -5,7 +5,7 @@ layout ( triangle_strip, max_vertices = 3 ) out;
 
 in DATA {
 	vec4 vColor;
-    vec2 texCoord;
+    vec2 texel;
     vec3 normal;
 	vec3 tangent;
     vec4 fragPos;
@@ -13,7 +13,7 @@ in DATA {
 
 out DATA {
 	vec4 vColor;
-    vec2 texCoord;
+    vec2 texel;
     vec3 normal;
 	vec3 tangent;
     vec4 fragPos;
@@ -25,7 +25,7 @@ uniform mat4 view;
 
 void main() {
 	data_out.vColor = data_in[0].vColor;
-	data_out.texCoord = data_in[0].texCoord;
+	data_out.texel = data_in[0].texel;
 	data_out.fragPos = model * data_in[0].fragPos;
 	data_out.normal = mat3(transpose(inverse(model))) * data_in[0].normal;
 	data_out.tangent = mat3(transpose(inverse(model))) * data_in[0].tangent;
@@ -33,7 +33,7 @@ void main() {
 	EmitVertex();
 
 	data_out.vColor = data_in[1].vColor;
-	data_out.texCoord = data_in[1].texCoord;
+	data_out.texel = data_in[1].texel;
 	data_out.fragPos = model * data_in[1].fragPos;
 	data_out.normal = mat3(transpose(inverse(model))) * data_in[1].normal;
 	data_out.tangent = mat3(transpose(inverse(model))) * data_in[1].tangent;
@@ -41,7 +41,7 @@ void main() {
 	EmitVertex();
 
 	data_out.vColor = data_in[2].vColor;
-	data_out.texCoord = data_in[2].texCoord;
+	data_out.texel = data_in[2].texel;
 	data_out.fragPos = model * data_in[2].fragPos;
 	data_out.normal = mat3(transpose(inverse(model))) * data_in[2].normal;
 	data_out.tangent = mat3(transpose(inverse(model))) * data_in[2].tangent;

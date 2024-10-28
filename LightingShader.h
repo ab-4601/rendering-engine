@@ -10,7 +10,8 @@ class LightingShader : public IShaderLoader {
 private:
 	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformColor{ 0 }, uniformView{ 0 };
 	GLuint uniformSpecularIntensity{ 0 }, uniformSpecularPower{ 0 }, uniformEyePosition{ 0 };
-	GLuint uniformTextureBool{ 0 }, uniformNormalMap{ 0 }, uniformTextureSampler{ 0 }, uniformNormalSampler{ 0 };
+	GLuint uniformTextureBool{ 0 }, uniformUseNormalMap{ 0 }, uniformDiffuseSampler{ 0 }, uniformNormalSampler{ 0 };
+	GLuint uniformHeightScale{ 0 }, uniformDepthSampler{ 0 };
 
 	GLuint uniformPointLightCount = 0;
 
@@ -69,9 +70,11 @@ public:
 	inline GLuint getSpecularPower() const { return this->uniformSpecularPower; }
 	inline GLuint getEyePosition() const { return this->uniformEyePosition; }
 	inline GLuint getUniformTextureBool() const { return this->uniformTextureBool; }
-	inline GLuint getUniformNormalMap() const { return this->uniformNormalMap; }
-	inline GLuint getUniformTextureSampler() const { return this->uniformTextureSampler; }
+	inline GLuint getUniformNormalMapBool() const { return this->uniformUseNormalMap; }
+	inline GLuint getUniformDiffuseSampler() const { return this->uniformDiffuseSampler; }
 	inline GLuint getUniformNormalSampler() const { return this->uniformNormalSampler; }
+	inline GLuint getUniformDepthSampler() const { return this->uniformDepthSampler; }
+	inline GLuint getUniformHeightScale() const { return this->uniformHeightScale; }
 
 	virtual inline void getUniformLocations() override;
 

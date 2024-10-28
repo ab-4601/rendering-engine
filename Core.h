@@ -18,7 +18,6 @@ const float GRAVITY = -10.f;
 #include <fstream>
 #include <unordered_map>
 #include <algorithm>
-#include <thread>
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>

@@ -6,9 +6,12 @@
 
 class Model {
 private:
+	std::string texFolderPath;
+
 	std::vector<Mesh*> meshList;
-	std::vector<Texture*> textureList;
+	std::vector<Texture*> diffuseMaps;
 	std::vector<Texture*> normalMaps;
+	std::vector<Texture*> heightMaps;
 	std::vector<unsigned int> meshToTex;
 
 	std::vector<GLfloat> vertices;
@@ -18,9 +21,10 @@ private:
 	void _loadMesh(aiMesh* mesh, const aiScene* const scene);
 	void _loadMaterialTextures(const aiScene* const scene);
 	void _loadMaterialNormalMaps(const aiScene* const scene);
+	void _loadMaterialHeightMaps(const aiScene* const scene);
 
 public:
-	Model(std::string fileName = "");
+	Model(std::string fileName = "", std::string texFolderPath = "");
 
 	void loadModel(std::string fileName = "");
 	void renderModel();
