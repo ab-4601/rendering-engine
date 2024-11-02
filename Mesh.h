@@ -51,6 +51,7 @@ public:
 	virtual inline void setColor(glm::vec3 color) { this->color = color; }
 	virtual inline glm::vec3 getColor() const { return this->color; }
 	virtual inline uint getObjectID() const { return this->objectID; }
+	virtual inline void setObjectID(int objectID) { this->objectID = objectID; }
 
 	virtual void createUnindexedMesh();
 	virtual void createUnindexedTexturedMesh();
@@ -64,11 +65,17 @@ public:
 		std::vector<PointLight>& pointLights, int pointLightCount, std::vector<SpotLight>& spotLights, int spotLightCount,
 		const glm::mat4& projection, const glm::mat4& view, glm::vec3 cameraPos);
 
-	virtual void renderMesh(GLenum renderMode);
+	virtual void renderMesh(
+		GLenum renderMode = GL_TRIANGLES, glm::mat4 lightSpaceTransform = glm::mat4(1.f),
+		GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0
+	);
 
-	virtual void renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection, const glm::mat4& view,
+	virtual void renderMeshWithOutline(
+		GLenum renderMode, const glm::mat4& projection, const glm::mat4& view,
 		DirectionalLight& dirLight, std::vector<PointLight>& pointLights, int pointLightCount,
-		std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition);
+		std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition,
+		glm::mat4 lightSpaceTransform, GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0
+	);
 
 	virtual void setMeshMaterial(GLfloat sIntensity = 1.f, GLfloat sPower = 32.f);
 

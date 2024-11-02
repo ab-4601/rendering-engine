@@ -130,7 +130,7 @@ void HDR::renderToDefaultBuffer(float exposure, const GLuint* bloomBuffer, bool 
 }
 
 void HDR::renderToDefaultBufferMSAA(float exposure, const GLuint* bloomBuffer, bool id,
-	int width, int height, bool enableBloom) 
+	int width, int height, bool enableBloom)
 {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, this->FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->intermediateFBO);

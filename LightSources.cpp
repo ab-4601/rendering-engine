@@ -20,8 +20,7 @@ void LightSources::renderLightSources(const glm::mat4& projection, const glm::ma
 	glm::vec3 dirLightDirection = directionalLight.getLightDirection();
 
 	model = glm::translate(model, dirLightDirection);
-	model = glm::scale(model, glm::vec3(abs(dirLightDirection.x) / 20.f, 
-		abs(dirLightDirection.y) / 20.f, abs(dirLightDirection.z) / 20.f));
+	model = glm::scale(model, glm::vec3(100, 100, 100));
 	glUniformMatrix4fv(this->shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(model));
 
 	this->sourceMesh.renderMesh();

@@ -12,6 +12,9 @@ const uint samples = 8;
 const double PI = 3.14159265;
 const float GRAVITY = -10.f;
 
+const float near_plane = 5.f;
+const float far_plane = 9000.f;
+
 #include <iostream>
 #include <vector>
 #include <string>

@@ -24,7 +24,7 @@ void Skybox::loadCubemap() {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
 	for (size_t i = 0; i < this->faces.size(); i++) {
-		unsigned char* data = stbi_load(this->faces[i].c_str(), &this->width, &this->height, &this->bitDepth, 0);
+		unsigned char* data = stbi_load(this->faces[i].c_str(), &this->width, &this->height, &this->bitDepth, 3);
 
 		if (data) {
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, this->width, this->height, 0, GL_RGB,

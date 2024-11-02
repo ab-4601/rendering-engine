@@ -18,6 +18,7 @@
 #include "Terrain.h"
 #include "LightSources.h"
 #include "LightMeshShader.h"
+#include "DirectionalShadow.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
@@ -43,7 +44,7 @@ GLfloat elapsedTime = 0.f;
 int main() {
     srand((uint)time(0));
 
-    glm::vec3 lightDirection(5000, 5000, 5000);
+    glm::vec3 lightDirection(3000, 3000, 3000);
     glm::vec3 pointLightPosition1(20.0, 20.f, 20.f);
     glm::vec3 pointLightPosition2(100.f, 30.f, 100.f);
     glm::vec3 spotLightPosition(300.0, 80.f, 300.f);
@@ -52,23 +53,22 @@ int main() {
     Window window;
     Overlay overlay;
     HDR hdrBuffer;
-    Bloom bloom(true);
+    Bloom bloom{ true };
     Crosshair crosshair;
     Grid grid;
-    MouseSelector selection(window.getBufferWidth(), window.getBufferHeight());
+    MouseSelector selection{ (uint)window.getBufferWidth(), (uint)window.getBufferHeight() };
     CoordinateSystem coordSystem;
     Skybox skybox;
-    DirectionalLight mainLight{ 0.05f, 0.3f, lightDirection };
+    DirectionalLight mainLight{ 0.05f, 0.5f, lightDirection };
     LightSources lightSources;
+    DirectionalShadow dirShadowMap{ ::near_plane, ::far_plane};
 
     std::vector<Mesh*> meshes{};
-
-    GLenum attachments[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
     GLfloat aspect = (float)window.getBufferWidth() / window.getBufferHeight();
 
     glm::mat4 model(1.f);
-    glm::mat4 projection = glm::perspective<GLfloat>(45.f, aspect, 0.1f, (float)10000);
+    glm::mat4 projection = glm::perspective<GLfloat>(45.f, aspect, near_plane, far_plane);
     glm::mat4 view = camera.generateViewMatrix();
 
     glm::vec3 color(0.f, 0.f, 0.f);
@@ -79,12 +79,12 @@ int main() {
     uint pointLightCount = 0;
     uint spotLightCount = 0;
 
-    int index{-1}, prevIndex{-1};
+    int index{ -1 }, prevIndex{ -1 };
 
     /*pointLights.at(0) = PointLight(0.01f, 0.4f, pointLightPosition1, 1.f, 0.001f, 0.001f);
-    pointLightCount++;
+    pointLightCount++;*/
 
-    pointLights.at(1) = PointLight(0.01f, 0.4f, pointLightPosition2, 1.f, 0.0001f, 0.0001f);
+    /*pointLights.at(1) = PointLight(0.01f, 0.4f, pointLightPosition2, 1.f, 0.0001f, 0.0001f);
     pointLightCount++;
 
     spotLights.at(0) = SpotLight(0.01f, 0.4f, spotLightPosition, 1.f, 0.0001f, 0.0001f, { 0.f, 0.f, 1.f }, { 0.f, -1.f, 0.f }, 45);
@@ -97,53 +97,49 @@ int main() {
     bool drawSkybox = true;
     bool enableBloom = true;
     bool drawWireframe = false;
+    float exposure = 1.f;
 
-    GLuint gridSize = 250;
-
-    Model sponza("Models/sponza/sponza.obj", "Models/sponza/");
+    GLuint gridSize = 200;
 
     Icosphere sphere;
     sphere.smoothSphere(5);
-    sphere.setColor({ 1.f, 0.02f, 0.02f });
-    sphere.scale(100.f);
+    sphere.setColor({ 0.07f, 1.f, 1.f });
+    sphere.setMeshMaterial(10.f, 4.f);
     sphere.createMeshWithNormals();
 
     model = glm::mat4(1.f);
-    model = glm::translate(model, glm::vec3(250.f, 100.f, 0.f));
+    model = glm::translate(model, glm::vec3(250.f, 150.f, 0.f));
+    model = glm::scale(model, glm::vec3(100.f, 100.f, 100.f));
 
     sphere.setModelMatrix(model);
 
     model = glm::mat4(1.f);
     model = glm::translate(model, glm::vec3(0.f, 100.f, 0.f));
+    model = glm::scale(model, glm::vec3(100.f, 100.f, 100.f));
 
     Cube cube;
-    cube.setColor({ 0.01f, 1.f, 1.f });
-    cube.scale(100.f);
+    cube.setColor({ 2.f, 0.07f, 0.07f });
     cube.setModelMatrix(model);
+    cube.setMeshMaterial(10.f, 32.f);
     cube.createUnindexedMesh();
 
     model = glm::mat4(1.f);
+    model = glm::translate(model, glm::vec3(0.f, 1.f, 0.f));
+    //model = glm::scale(model, glm::vec3(100.f, 100.f, 100.f));
 
-    /*Texture gridTex("Textures/prototype.png");
-    gridTex.loadTexture();
-
-    Terrain terrain{ gridSize, gridSize, 80 };
-    terrain.setColor({ 0.1f, 1.f, 1.f });
-    terrain.generateHeightMaps(3);
+    /*Terrain terrain(gridSize, gridSize);
+    terrain.setModelMatrix(model);
+    terrain.generateHeightMaps(0);
     terrain.generateTerrain();
-    terrain.createMesh();*/
+    terrain.setMeshMaterial(4.f, 32.f);
+    terrain.setColor({ 0.5f, 0.5f, 0.5f });
+    terrain.createMeshWithNormals();*/
+
+    Model sponza("Models/Sponza/sponza.obj", "Models/Sponza/");
 
     meshes = Mesh::meshList;
 
     coordSystem.createCoordinateSystem();
-
-    /*UVSphere sphere(50, 50, 5);
-    sphere.generateSphere();
-    sphere.createMeshWithNormals();*/
-
-    for (size_t i = 0; i < meshes.size(); i++)
-        meshes[i]->setMeshMaterial(4.f, 8.f);
-
 
     ParticleTexture partTex("Textures/particleAtlas.png", 4.f);
     glm::vec3 particlePosition{ 20.f, 20.f, 20.f }, velocity{ 10.f, 50.f, 10.f }, particleColor{ 1.f, 0.5f, 0.05f };
@@ -166,15 +162,25 @@ int main() {
         elapsedTime += deltaTime;
         lastTime = currTime;
 
+        if (rotationAngle >= 360.f)
+            rotationAngle = 0.f;
+        else
+            rotationAngle += 0.000001;
+
         glfwPollEvents();
+
+        lightDirection.x = 2000 * cosf(rotationAngle);
+        lightDirection.z = 2000 * sinf(rotationAngle);
+
+        mainLight.updateLightLocation(lightDirection);
 
         camera.keyFunctionality(window.getCurrWindow(), deltaTime);
         camera.mouseFunctionality(window.getXChange(), window.getYChange(), window.getScrollChange());
 
-        pSystem.updateParticles(deltaTime, camera.getCameraPosition());
-        fireSystem.updateParticles(deltaTime, camera.getCameraPosition());
+        /*pSystem.updateParticles(deltaTime, camera.getCameraPosition());
+        fireSystem.updateParticles(deltaTime, camera.getCameraPosition());*/
 
-        if (elapsedTime >= 0.013f)
+        if (elapsedTime >= 0.012f)
         {
             elapsedTime = 0.f;
 
@@ -193,12 +199,12 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-            grid.renderGrid(model, projection, view, camera.getCameraPosition());
+            coordSystem.drawCoordinateSystem(window.getWindowHeight(), window.getWindowWidth(),
+                window.getBufferWidth(), window.getBufferHeight(), &camera, model, projection);
 
 // ----------------------------------------------------------------------------------------------------------------
 
-            coordSystem.drawCoordinateSystem(window.getWindowHeight(), window.getWindowWidth(),
-                window.getBufferWidth(), window.getBufferHeight(), &camera, model, projection);
+            grid.renderGrid(model, projection, view, camera.getCameraPosition());
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -206,6 +212,10 @@ int main() {
                 pointLightCount, spotLightCount);
 
 // ----------------------------------------------------------------------------------------------------------------
+
+            dirShadowMap.calculateShadows(
+                window.getWindowWidth(), window.getWindowHeight(), meshes, lightDirection, hdrBuffer.getFramebufferID()
+            );
 
             selection.pickingPhase(meshes, projection, view, hdrBuffer.getFramebufferID());
 
@@ -215,7 +225,7 @@ int main() {
             if (drawWireframe)
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-            sponza.renderModel();
+            sponza.renderModel(dirShadowMap.getLightSpaceMatrix(), dirShadowMap.getDirectionalShadowMap());
 
             glm::vec2 mouseClickCoords = window.getViewportCoord();
 
@@ -236,8 +246,9 @@ int main() {
             }
 
             for (size_t i = 0; i < meshes.size(); i++) {
-                if ((int)i != index)
-                    meshes[i]->renderMesh(GL_TRIANGLES);
+                if ((int)i != index && meshes[i]->getObjectID() != -1)
+                    meshes[i]->renderMesh(GL_TRIANGLES, dirShadowMap.getLightSpaceMatrix(),
+                        dirShadowMap.getDirectionalShadowMap());
             }
 
             if (index < meshes.size() && index != -1) {
@@ -246,8 +257,11 @@ int main() {
                 overlay.renderTransformWidget(window.getWindowWidth(), window.getWindowHeight(), projection, view,
                     meshes[index]);
 
-                meshes[index]->renderMeshWithOutline(GL_TRIANGLES, projection, view, mainLight, pointLights,
-                    pointLightCount, spotLights, spotLightCount, camera.getCameraPosition());
+                meshes[index]->renderMeshWithOutline(
+                    GL_TRIANGLES, projection, view, mainLight, pointLights,
+                    pointLightCount, spotLights, spotLightCount, camera.getCameraPosition(), 
+                    dirShadowMap.getLightSpaceMatrix(), dirShadowMap.getDirectionalShadowMap()
+                );
             }
 
             //glBindTexture(GL_TEXTURE_2D, 0);
@@ -256,7 +270,7 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-            particlePosition = camera.getCameraPosition() + camera.getCameraLookDirection() * 200.f;
+            /*particlePosition = camera.getCameraPosition() + camera.getCameraLookDirection() * 200.f;
             fireSystem.generateParticles(fireParticlePosition, 0.f);
 
             if (window.getKeyPress(GLFW_KEY_R)) {
@@ -264,7 +278,7 @@ int main() {
             }
 
             pSystem.renderParticles(&window, &camera, model, projection);
-            fireSystem.renderParticles(&window, &camera, model, projection);
+            fireSystem.renderParticles(&window, &camera, model, projection);*/
 
             //bloom.processFramebuffer(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID());
 
@@ -281,12 +295,12 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-            overlay.renderGUIWindow(io, drawSkybox, enableBloom, drawWireframe);
+            overlay.renderGUIWindow(io, exposure, drawSkybox, enableBloom, drawWireframe);
 
             hdrBuffer.disableHDRWriting();
             //hdrBuffer.renderToDefaultBuffer(1.f, bloom.getColorBuffers(), bloom.getBlurFlag(), enableBloom);
             hdrBuffer.renderToDefaultBufferMSAA(
-                1.f, bloom.getColorBuffers(), bloom.getBlurFlag(), window.getWindowWidth(), window.getWindowHeight(),
+                exposure, bloom.getColorBuffers(), bloom.getBlurFlag(), window.getWindowWidth(), window.getWindowHeight(),
                 enableBloom);
 
             glfwSwapBuffers(window.getMainWindow());

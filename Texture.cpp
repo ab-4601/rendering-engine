@@ -36,8 +36,8 @@ Texture& Texture::operator=(Texture&& rhs) noexcept {
 	return *this;
 }
 
-bool Texture::loadTexture() {
-	unsigned char* texData = stbi_load(this->fileLocation.data(), &this->width, &this->height, &this->bitDepth, 4);
+bool Texture::loadTexture(int numChannels) {
+	unsigned char* texData = stbi_load(this->fileLocation.data(), &this->width, &this->height, &this->bitDepth, numChannels);
 
 	if (!texData) {
 		std::cerr << "Invalid file location. Error loading file" << std::endl;

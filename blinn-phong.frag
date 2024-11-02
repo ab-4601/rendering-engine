@@ -3,12 +3,13 @@
 layout (location = 0) out vec4 fragColor;
 layout (location = 1) out vec4 brightColor;
 
-in DATA {
+in GEOM_DATA {
 	vec4 vColor;
     vec2 texel;
     vec3 normal;
 	vec3 tangent;
     vec4 fragPos;
+	vec4 lightSpaceFragPos;
 } data_in;
 
 const int MAX_POINT_LIGHTS = 3;
@@ -50,6 +51,10 @@ uniform bool useNormalMap = false;
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
 uniform sampler2D depthMap;
+uniform sampler2D directionalShadowMap;
+uniform samplerCube pointShadowMap;
+
+uniform float farPlane;
 
 uniform int pointLightCount;
 uniform int spotLightCount;
@@ -62,62 +67,93 @@ uniform Material material;
 uniform vec3 eyePosition;
 uniform float height_scale;
 
-const float minLayers = 8.f;
-const float maxLayers = 32.f;
+float pointShadowBias = 2.f;
+float directionalShadowBias = 0.005f;
 
-vec2 parallaxMapping(vec2 texel, vec3 viewDir) {
-	float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.f, 0.f, 1.f), viewDir), 0.f));
-	float layerDepth = 1.f / numLayers;
+//const float minLayers = 8.f;
+//const float maxLayers = 32.f;
 
-	float currentLayerDepth = 0.f;
+//vec2 parallaxMapping(vec2 texel, vec3 viewDir) {
+	//float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.f, 0.f, 1.f), viewDir), 0.f));
+	//float layerDepth = 1.f / numLayers;
 
-	vec2 P = viewDir.xy * height_scale;
-	vec2 deltaTexel = P / numLayers;
+	//float currentLayerDepth = 0.f;
 
-	vec2 currTexel = data_in.texel;
-	float currDepth = texture(depthMap, currTexel).r;
+	//vec2 P = viewDir.xy * height_scale;
+	//vec2 deltaTexel = P / numLayers;
 
-	while(currentLayerDepth < currDepth) {
-		currTexel -= deltaTexel;
-		currDepth = texture(depthMap, currTexel).r;
-		currentLayerDepth += layerDepth;
-	}
+	//vec2 currTexel = data_in.texel;
+	//float currDepth = texture(depthMap, currTexel).r;
 
-	return currTexel;
+	//while(currentLayerDepth < currDepth) {
+		//currTexel -= deltaTexel;
+		//currDepth = texture(depthMap, currTexel).r;
+		//currentLayerDepth += layerDepth;
+	//}
+
+	//return currTexel;
+//}
+
+float calculateDirectionalShadow(vec3 normal, vec3 lightDirection) {
+	directionalShadowBias = max(0.05f * (1.f - dot(normal, lightDirection)), 0.005f);
+	vec3 projectionCoords = data_in.lightSpaceFragPos.xyz / data_in.lightSpaceFragPos.w;
+	projectionCoords = projectionCoords * 0.5f + 0.5f;
+
+	if(projectionCoords.z > 1.f)
+		return 0.f;
+
+	float closestDepth = texture2D(directionalShadowMap, projectionCoords.xy).r;
+	float currentDepth = projectionCoords.z;
+
+	return currentDepth - directionalShadowBias > closestDepth ? 1.f : 0.f;
+}
+
+float calculateShadow(vec3 lightPosition) {
+	vec3 fragToLight = vec3(data_in.fragPos) - lightPosition;
+	float closestDepth = texture(pointShadowMap, fragToLight).r;
+
+	closestDepth *= farPlane;
+
+	float currentDepth = length(fragToLight);
+
+	return currentDepth - pointShadowBias > closestDepth ? 1.f : 0.f;
 }
 
 vec4 calcLightByDirection(Light light, vec3 direction, vec3 normal) {
-	vec4 ambientColor = vec4(light.color, 1.f) * light.ambientIntensity;
+	pointShadowBias = length(normalize(normal) * 33);
+	vec3 ambientColor = light.color * light.ambientIntensity;
 
 	float diffuseFactor = max(dot(normalize(normal), normalize(direction)), 0.f);
-	vec4 diffuseColor = vec4(light.color, 1.f) * light.diffuseIntensity * diffuseFactor;
+	vec3 diffuseColor = light.color * light.diffuseIntensity * diffuseFactor;
 
-	vec4 specularColor = vec4(0.f, 0.f, 0.f, 1.f);
+	vec3 specularColor = vec3(0.f, 0.f, 0.f);
 
-	// Calculate specular color (blinn-phong)
 	if(diffuseFactor > 0.f) {
 		vec3 fragToEye = vec3(0.f);
 		vec3 halfwayDir = vec3(0.f);
 
 		fragToEye = normalize(eyePosition - vec3(data_in.fragPos));
-		halfwayDir = normalize(normalize(direction) + fragToEye);
-		float specularFactor = dot(normalize(normal), halfwayDir);
+		//halfwayDir = normalize(normalize(direction) + fragToEye);
+		//float specularFactor = dot(normalize(normal), halfwayDir);
 
-		//vec3 reflection = reflect(-normalize(direction), normalize(normal));
-		//float specularFactor = dot(normalize(fragToEye), normalize(reflection));
+		vec3 reflection = reflect(-normalize(direction), normalize(normal));
+		float specularFactor = dot(normalize(fragToEye), normalize(reflection));
 		
 		if(specularFactor > 0.f) {
 			specularFactor = pow(specularFactor, material.specularPower);
-			specularColor = vec4(light.color * material.specularIntensity * specularFactor, 1.f);
+			specularColor = light.color * material.specularIntensity * specularFactor;
 		}
 	}
 
-	return (ambientColor + diffuseColor + specularColor);
+	//vec3 lighting = ambientColor + diffuseColor + specularColor;
+	float shadow = calculateDirectionalShadow(normal, direction);
+	vec3 lighting = ambientColor + ((1.f - shadow) * (diffuseColor + specularColor));
+
+	return vec4(lighting, 1.f);
 }
 
 vec4 calcDirectionalLight(vec3 normal) {
-	vec3 direction = normalize(directionalLight.direction);
-	return calcLightByDirection(directionalLight.base, direction, normal);
+	return calcLightByDirection(directionalLight.base, directionalLight.direction, normal);
 }
 
 vec4 calcPointLight(PointLight pointLight, vec3 normal) {
@@ -167,9 +203,11 @@ vec4 calcSpotLights(vec3 normal) {
 }
 
 void main() {
-	vec3 normal;
+	vec3 normal = data_in.normal;
+	//vec2 texel = data_in.texel;
 
 	if(useNormalMap) {
+		//texel = parallaxMapping(data_in.texel, eyePosition - vec3(data_in.fragPos));
 		normal = texture(normalMap, data_in.texel).rgb;
 		normal = normalize(normal * 2.f - 1.f);
 		
@@ -181,8 +219,6 @@ void main() {
 
 		normal = normalize(mat3(T, B, N) * normal);
 	}
-	else
-		normal = data_in.normal;
 
 	vec4 finalColor = calcDirectionalLight(normal) + calcPointLights(normal) + calcSpotLights(normal);
 

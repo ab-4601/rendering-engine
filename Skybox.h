@@ -58,11 +58,11 @@ private:
     SkyboxShader shader;
 
 public:
-	Skybox(std::vector<std::string> faces = { {"Textures/skybox/right.jpg", "Textures/skybox/left.jpg", 
-	"Textures/skybox/top.jpg", "Textures/skybox/bottom.jpg", "Textures/skybox/front.jpg", "Textures/skybox/back.jpg"}});
+	/*Skybox(std::vector<std::string> faces = { {"Textures/skybox/right.jpg", "Textures/skybox/left.jpg", 
+	"Textures/skybox/top.jpg", "Textures/skybox/bottom.jpg", "Textures/skybox/front.jpg", "Textures/skybox/back.jpg"}});*/
 
-    /*Skybox(std::vector<std::string> faces = { {"Textures/skybox/right.png", "Textures/skybox/left.png",
-    "Textures/skybox/top.png", "Textures/skybox/bottom.png", "Textures/skybox/back.png", "Textures/skybox/front.png"} });*/
+    Skybox(std::vector<std::string> faces = { {"Textures/skybox/right.png", "Textures/skybox/left.png",
+    "Textures/skybox/top.png", "Textures/skybox/bottom.png", "Textures/skybox/back.png", "Textures/skybox/front.png"} });
 
 	void loadCubemap();
     void loadHDRCubemap(const char* file_name);

@@ -49,6 +49,12 @@ void LightingShader::getUniformLocations() {
 	this->uniformDiffuseSampler = glGetUniformLocation(this->programID, "diffuseMap");
 	this->uniformNormalSampler = glGetUniformLocation(this->programID, "normalMap");
 	this->uniformDepthSampler = glGetUniformLocation(this->programID, "depthMap");
+
+	this->uniformPointShadowSampler = glGetUniformLocation(this->programID, "pointShadowMap");
+	this->uniformDirectionalShadowSampler = glGetUniformLocation(this->programID, "directionalShadowMap");
+	this->uniformLightSpaceTransform = glGetUniformLocation(this->programID, "lightSpaceTransform");
+	this->uniformFarPlane = glGetUniformLocation(this->programID, "farPlane");
+
 	this->uniformHeightScale = glGetUniformLocation(this->programID, "height_scale");
 
 	this->uniformPointLightCount = glGetUniformLocation(this->programID, "pointLightCount");

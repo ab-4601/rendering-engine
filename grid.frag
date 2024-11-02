@@ -86,5 +86,5 @@ void main() {
 	if(brightness > 1.f)
 		brightColor = vec4(color.rgb, 1.f);
 	else
-		brightColor = vec4(0.f, 0.f, 0.f, 1.f);
+		brightColor = vec4(0.f, 0.f, 0.f, 0.f);
 }

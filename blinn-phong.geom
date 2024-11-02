@@ -11,42 +11,32 @@ in DATA {
     vec4 fragPos;
 } data_in[];
 
-out DATA {
+out GEOM_DATA {
 	vec4 vColor;
     vec2 texel;
     vec3 normal;
 	vec3 tangent;
     vec4 fragPos;
+	vec4 lightSpaceFragPos;
 } data_out;
 
 uniform mat4 model;
 uniform mat4 projection;
 uniform mat4 view;
+uniform mat4 lightSpaceTransform;
 
 void main() {
-	data_out.vColor = data_in[0].vColor;
-	data_out.texel = data_in[0].texel;
-	data_out.fragPos = model * data_in[0].fragPos;
-	data_out.normal = mat3(transpose(inverse(model))) * data_in[0].normal;
-	data_out.tangent = mat3(transpose(inverse(model))) * data_in[0].tangent;
-	gl_Position = projection * view * model * gl_in[0].gl_Position;
-	EmitVertex();
 
-	data_out.vColor = data_in[1].vColor;
-	data_out.texel = data_in[1].texel;
-	data_out.fragPos = model * data_in[1].fragPos;
-	data_out.normal = mat3(transpose(inverse(model))) * data_in[1].normal;
-	data_out.tangent = mat3(transpose(inverse(model))) * data_in[1].tangent;
-	gl_Position = projection * view * model * gl_in[1].gl_Position;
-	EmitVertex();
-
-	data_out.vColor = data_in[2].vColor;
-	data_out.texel = data_in[2].texel;
-	data_out.fragPos = model * data_in[2].fragPos;
-	data_out.normal = mat3(transpose(inverse(model))) * data_in[2].normal;
-	data_out.tangent = mat3(transpose(inverse(model))) * data_in[2].tangent;
-	gl_Position = projection * view * model * gl_in[2].gl_Position;
-	EmitVertex();
+	for(int i = 0; i < 3; i++) {
+		data_out.vColor = data_in[i].vColor;
+		data_out.texel = data_in[i].texel;
+		data_out.fragPos = model * data_in[i].fragPos;
+		data_out.normal = mat3(transpose(inverse(model))) * data_in[i].normal;
+		data_out.tangent = mat3(transpose(inverse(model))) * data_in[i].tangent;
+		data_out.lightSpaceFragPos = lightSpaceTransform * data_out.fragPos;
+		gl_Position = projection * view * model * gl_in[i].gl_Position;
+		EmitVertex();
+	}
 
 	EndPrimitive();
 }

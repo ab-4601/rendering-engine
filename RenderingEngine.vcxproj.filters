@@ -130,6 +130,9 @@
     <Filter Include="Shaders\Bloom\Downsampling">
       <UniqueIdentifier>{bf996524-a793-49a4-8e8a-fed38abc7100}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Shadow">
+      <UniqueIdentifier>{3b03d419-8bb1-4c0c-a27f-c87ed3bf42c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -306,6 +309,18 @@
     <ClCompile Include="SelectionTexture.cpp">
       <Filter>Source Files\CoreDependencies\PostProcessing</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalShadow.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalShadowShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Particle.h">
@@ -389,25 +404,13 @@
     <ClInclude Include="MouseSelector.h">
       <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
     </ClInclude>
-    <ClInclude Include="CrosshairShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="GridShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
     <ClInclude Include="LightingShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
     <ClInclude Include="ShaderLoader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
-    <ClInclude Include="SkyboxShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
     <ClInclude Include="HighlightShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="LightMeshShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
@@ -415,12 +418,6 @@
     </ClInclude>
     <ClInclude Include="CoordinateSystem.h">
       <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="CoordinateShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectionShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
     <ClInclude Include="imGUI\imgui_impl_opengl3_loader.h">
       <Filter>Header Files\imGUI</Filter>
@@ -473,12 +470,6 @@
     <ClInclude Include="Overlay.h">
       <Filter>Header Files\CoreDependencies\UI</Filter>
     </ClInclude>
-    <ClInclude Include="HDRShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="BloomShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
     <ClInclude Include="Quad.h">
       <Filter>Header Files\CoreDependencies\UI</Filter>
     </ClInclude>
@@ -490,6 +481,42 @@
     </ClInclude>
     <ClInclude Include="SelectionTexture.h">
       <Filter>Header Files\CoreDependencies\PostProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyboxShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="LightMeshShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CoordinateShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CrosshairShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="GridShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="BloomShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="HDRShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectionShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalShadow.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalShadowShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -588,6 +615,21 @@
     </None>
     <None Include="HDRskybox.frag">
       <Filter>Shaders\Skybox</Filter>
+    </None>
+    <None Include="shadow.vert">
+      <Filter>Shaders\Shadow</Filter>
+    </None>
+    <None Include="shadow.frag">
+      <Filter>Shaders\Shadow</Filter>
+    </None>
+    <None Include="shadow.geom">
+      <Filter>Shaders\Shadow</Filter>
+    </None>
+    <None Include="directionalShadow.vert">
+      <Filter>Shaders\Shadow</Filter>
+    </None>
+    <None Include="directionalShadow.frag">
+      <Filter>Shaders\Shadow</Filter>
     </None>
   </ItemGroup>
 </Project>

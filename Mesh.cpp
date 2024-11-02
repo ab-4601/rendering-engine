@@ -2,7 +2,8 @@
 
 Mesh::Mesh(GLfloat specularIntensity, GLfloat specularPower)
 	: VAO{ 0 }, VBO{ 0 }, IBO{ 0 }, color{ 1.f, 1.f, 1.f }, model{ glm::mat4(1.f) }, objectID{ 0 },
-	specularIntensity{ specularIntensity }, specularPower{ specularPower }, useTexture{ false }, drawIndexed{ false }
+	specularIntensity{ specularIntensity }, specularPower{ specularPower },
+	useTexture{ false }, drawIndexed{ false }, useNormalMap{false}
 {
 	meshList.push_back(this);
 	this->objectID = this->meshCount++;
@@ -261,22 +262,32 @@ void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>
 	glUniformMatrix4fv(this->meshShader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(this->meshShader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
 	glUniform3fv(this->meshShader.getEyePosition(), 1, glm::value_ptr(cameraPos));
-}
-
-void Mesh::renderMesh(GLenum renderMode)  {
-	glUniform1f(this->meshShader.getSpecularIntensity(), this->specularIntensity);
-	glUniform1f(this->meshShader.getSpecularPower(), this->specularPower);
-	glUniform1f(this->meshShader.getUniformHeightScale(), 0.1f);
-	glUniform1i(this->meshShader.getUniformTextureBool(), this->useTexture);
-	glUniform1i(this->meshShader.getUniformNormalMapBool(), this->useNormalMap);
+	glUniform1f(this->meshShader.getUniformFarPlane(), ::far_plane);
 
 	glUniform1i(this->meshShader.getUniformDiffuseSampler(), 0);
 	glUniform1i(this->meshShader.getUniformNormalSampler(), 1);
 	glUniform1i(this->meshShader.getUniformDepthSampler(), 2);
+	glUniform1i(this->meshShader.getUniformDirectionalShadowSampler(), 3);
+	glUniform1i(this->meshShader.getUniformPointShadowSampler(), 4);
+}
 
-	glUniform3fv(this->meshShader.getUniformColor(), 1, glm::value_ptr(this->color));
+void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform, GLuint directionalShadowMap, GLuint pointShadowMap)  {
+	glUniform1f(this->meshShader.getSpecularIntensity(), this->specularIntensity);
+	glUniform1f(this->meshShader.getSpecularPower(), this->specularPower);
+	//glUniform1f(this->meshShader.getUniformHeightScale(), 0.1f);
+	glUniform1i(this->meshShader.getUniformTextureBool(), this->useTexture);
+	glUniform1i(this->meshShader.getUniformNormalMapBool(), this->useNormalMap);
+
 	glUniformMatrix4fv(this->meshShader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->model));
+	glUniformMatrix4fv(this->meshShader.getUniformLightSpaceTransform(), 1, GL_FALSE, glm::value_ptr(lightSpaceTransform));
+	glUniform3fv(this->meshShader.getUniformColor(), 1, glm::value_ptr(this->color));
 	glBindVertexArray(this->VAO);
+
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, directionalShadowMap);
+
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, pointShadowMap);
 
 	if (this->drawIndexed) {
 		glDrawElements(renderMode, static_cast<GLsizei>(this->indices.size()), GL_UNSIGNED_INT, this->indices.data());
@@ -289,12 +300,17 @@ void Mesh::renderMesh(GLenum renderMode)  {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	glBindVertexArray(0);
 }
 
 void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection, const glm::mat4& view,
 	DirectionalLight& dirLight, std::vector<PointLight>& pointLights, int pointLightCount,
-	std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition)
+	std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition, 
+	glm::mat4 lightSpaceTransform, GLuint directionalShadowMap, GLuint pointShadowMap)
 {
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -302,9 +318,7 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0xFF);
 
-	glUniformMatrix4fv(this->meshShader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->model));
-
-	this->renderMesh(renderMode);
+	this->renderMesh(renderMode, lightSpaceTransform, directionalShadowMap, pointShadowMap);
 
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilMask(0x00);
@@ -315,7 +329,7 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	glUniformMatrix4fv(this->outlineShader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(this->outlineShader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
 
-	this->outlineModel = glm::scale(this->model, glm::vec3(1.03f, 1.03f, 1.03f));
+	this->outlineModel = glm::scale(this->model, glm::vec3(1.05f, 1.05f, 1.05f));
 	glUniformMatrix4fv(this->outlineShader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->outlineModel));
 
 	this->renderMesh(GL_TRIANGLES);

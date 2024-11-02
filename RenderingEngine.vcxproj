@@ -144,6 +144,8 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CoordinateShader.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="DirectionalShadow.cpp" />
+    <ClCompile Include="DirectionalShadowShader.cpp" />
     <ClCompile Include="HDR.cpp" />
     <ClCompile Include="HDRShader.cpp" />
     <ClCompile Include="HighlightShader.cpp" />
@@ -187,6 +189,8 @@
     <ClCompile Include="SelectionShader.cpp" />
     <ClCompile Include="SelectionTexture.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
+    <ClCompile Include="ShadowShader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="SkyboxShader.cpp" />
     <ClCompile Include="SpotLight.cpp" />
@@ -204,6 +208,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CoordinateShader.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="DirectionalShadow.h" />
+    <ClInclude Include="DirectionalShadowShader.h" />
     <ClInclude Include="HDR.h" />
     <ClInclude Include="HDRShader.h" />
     <ClInclude Include="HighlightShader.h" />
@@ -250,6 +256,8 @@
     <ClInclude Include="SelectionShader.h" />
     <ClInclude Include="SelectionTexture.h" />
     <ClInclude Include="ShaderLoader.h" />
+    <ClInclude Include="ShadowMap.h" />
+    <ClInclude Include="ShadowShader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="SkyboxShader.h" />
     <ClInclude Include="SpotLight.h" />
@@ -264,8 +272,13 @@
   <ItemGroup>
     <None Include="bloom.frag" />
     <None Include="bloom.vert" />
+    <None Include="directionalShadow.frag" />
+    <None Include="directionalShadow.vert" />
     <None Include="downsample.frag" />
     <None Include="HDRskybox.frag" />
+    <None Include="shadow.frag" />
+    <None Include="shadow.geom" />
+    <None Include="shadow.vert" />
     <None Include="upsample.frag" />
     <None Include="coord.frag" />
     <None Include="coord.vert" />

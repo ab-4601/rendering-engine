@@ -11,7 +11,8 @@ private:
 	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformColor{ 0 }, uniformView{ 0 };
 	GLuint uniformSpecularIntensity{ 0 }, uniformSpecularPower{ 0 }, uniformEyePosition{ 0 };
 	GLuint uniformTextureBool{ 0 }, uniformUseNormalMap{ 0 }, uniformDiffuseSampler{ 0 }, uniformNormalSampler{ 0 };
-	GLuint uniformHeightScale{ 0 }, uniformDepthSampler{ 0 };
+	GLuint uniformHeightScale{ 0 }, uniformDepthSampler{ 0 }, uniformLightSpaceTransform{ 0 };
+	GLuint uniformPointShadowSampler{ 0 }, uniformDirectionalShadowSampler{ 0 }, uniformFarPlane{ 0 };
 
 	GLuint uniformPointLightCount = 0;
 
@@ -75,6 +76,10 @@ public:
 	inline GLuint getUniformNormalSampler() const { return this->uniformNormalSampler; }
 	inline GLuint getUniformDepthSampler() const { return this->uniformDepthSampler; }
 	inline GLuint getUniformHeightScale() const { return this->uniformHeightScale; }
+	inline GLuint getUniformPointShadowSampler() const { return this->uniformPointShadowSampler; }
+	inline GLuint getUniformFarPlane() const { return this->uniformFarPlane; }
+	inline GLuint getUniformDirectionalShadowSampler() const { return this->uniformDirectionalShadowSampler; }
+	inline GLuint getUniformLightSpaceTransform() const { return this->uniformLightSpaceTransform; }
 
 	virtual inline void getUniformLocations() override;
 

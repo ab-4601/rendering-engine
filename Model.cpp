@@ -42,12 +42,13 @@ void Model::_loadMesh(aiMesh* mesh, const aiScene* const scene) {
 	}
 
 	Mesh* currMesh = new Mesh();
+	currMesh->setObjectID(-1);
 	currMesh->setVertices(this->vertices);
 	currMesh->setIndices(this->indices);
-	currMesh->setMeshMaterial(0.5f, 8.f);
+	currMesh->setMeshMaterial(1.f, 8.f);
 	currMesh->createNormalMappedMesh();
 
-	Mesh::meshList.pop_back();
+	//Mesh::meshList.pop_back();
 
 	this->meshList.push_back(currMesh);
 	this->meshToTex.push_back(mesh->mMaterialIndex);
@@ -128,17 +129,17 @@ void Model::_loadMaterialHeightMaps(const aiScene* const scene) {
 
 	for (size_t i = 0; i < scene->mNumMaterials; i++) {
 		aiMaterial* material = scene->mMaterials[i];
-
 		this->heightMaps[i] = nullptr;
 
-		if (material->GetTextureCount(aiTextureType_AMBIENT)) {
+		if (material->GetTextureCount(aiTextureType_CLEARCOAT)) {
 			aiString path;
 
-			if (material->GetTexture(aiTextureType_AMBIENT, 0, &path) == AI_SUCCESS) {
+			if (material->GetTexture(aiTextureType_CLEARCOAT, 0, &path) == AI_SUCCESS) {
 				int idx = std::string(path.data).rfind("\\");
 				std::string filename = std::string(path.data).substr(idx + 1);
 
 				std::string texPath = this->texFolderPath + filename;
+				std::cout << texPath << std::endl;
 
 				this->heightMaps[i] = new Texture(texPath);
 
@@ -181,7 +182,7 @@ void Model::loadModel(std::string fileName) {
 	this->_loadMaterialHeightMaps(scene);
 }
 
-void Model::renderModel() {
+void Model::renderModel(glm::mat4 lightSpaceTransform, GLuint directionalShadowMap, GLuint pointShadowMap) {
 	for (size_t i = 0; i < this->meshList.size(); i++) {
 		uint materialIndex = this->meshToTex[i];
 
@@ -197,7 +198,7 @@ void Model::renderModel() {
 			this->heightMaps[materialIndex]->useDepthMap();
 		}
 
-		meshList[i]->renderMesh(GL_TRIANGLES);
+		meshList[i]->renderMesh(GL_TRIANGLES, lightSpaceTransform, directionalShadowMap, pointShadowMap);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 

@@ -19,7 +19,7 @@ public:
 	Texture& operator=(const Texture& rhs);
 	Texture& operator=(Texture&& rhs) noexcept;
 
-	bool loadTexture();
+	bool loadTexture(int numChannels = 4);
 	void useTexture() const;
 	void useNormalMap() const;
 	void useDepthMap() const;

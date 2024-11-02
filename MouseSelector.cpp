@@ -8,7 +8,7 @@ void MouseSelector::pickingPhase(std::vector<Mesh*>& meshes, const glm::mat4& pr
 	const glm::mat4& view, GLuint framebuffer) 
 {
 	this->pixelInfo.enableWriting();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(this->shader.getProgramID());
 
@@ -16,7 +16,7 @@ void MouseSelector::pickingPhase(std::vector<Mesh*>& meshes, const glm::mat4& pr
 	glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
 
 	for (size_t i = 0; i < meshes.size(); i++) {
-		glUniform1ui(this->shader.getUniformObjectIndex(), static_cast<unsigned int>(i + 1));
+		glUniform1ui(this->shader.getUniformObjectIndex(), meshes[i]->getObjectID() + 1);
 		glUniform1ui(this->shader.getUniformDrawIndex(), static_cast<unsigned int>(i));
 		glUniformMatrix4fv(this->shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(meshes[i]->getModelMatrix()));
 

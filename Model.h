@@ -27,7 +27,9 @@ public:
 	Model(std::string fileName = "", std::string texFolderPath = "");
 
 	void loadModel(std::string fileName = "");
-	void renderModel();
+	void renderModel(
+		glm::mat4 lightSpaceTransform = glm::mat4(1.f), GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0
+	);
 	void clearModel();
 
 	~Model() {
