@@ -1,9 +1,18 @@
 #include "DirectionalShadow.h"
 
-DirectionalShadow::DirectionalShadow(float nearPlane, float farPlane) {
-	this->projection = glm::ortho(-5000.f, 5000.f, -5000.f, 5000.f, nearPlane, farPlane);
+DirectionalShadow::DirectionalShadow(float viewFrustumSize, float nearPlane, float farPlane) {
+	this->projection = glm::ortho(
+		-viewFrustumSize, viewFrustumSize, -viewFrustumSize, viewFrustumSize, nearPlane, farPlane
+	);
+}
 
-	this->_init();
+void DirectionalShadow::checkFramebufferStatus(const char* errorMessage) {
+	GLuint status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+	if (status != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << errorMessage << std::endl;
+		exit(-1);
+	}
 }
 
 void DirectionalShadow::_init() {
@@ -14,8 +23,8 @@ void DirectionalShadow::_init() {
 	glBindTexture(GL_TEXTURE_2D, this->depthMap);
 
 	glTexImage2D(
-		GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, this->SHADOW_WIDTH,
-		this->SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL
+		GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, this->SHADOW_WIDTH, this->SHADOW_HEIGHT,
+		0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL
 	);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -23,9 +32,14 @@ void DirectionalShadow::_init() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
+	float borderColor[] = { 1.f, 1.f, 1.f, 1.f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthMap, 0);
 	glReadBuffer(GL_NONE);
 	glDrawBuffer(GL_NONE);
+
+	this->checkFramebufferStatus("Shadow framebuffer initialization failed");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -48,7 +62,8 @@ void DirectionalShadow::calculateShadows(int windowWidth, int windowHeight,
 	glUniformMatrix4fv(this->shader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(this->projection));
 	glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(this->view));
 
-	glCullFace(GL_FRONT);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(3.f, 3.f);
 
 	for (size_t i = 0; i < meshes.size(); i++) {
 		glUniformMatrix4fv(
@@ -58,7 +73,7 @@ void DirectionalShadow::calculateShadows(int windowWidth, int windowHeight,
 		meshes[i]->renderMesh(GL_TRIANGLES);
 	}
 
-	glCullFace(GL_BACK);
+	glDisable(GL_POLYGON_OFFSET_FILL);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, currentFramebuffer);
 	glViewport(0, 0, windowWidth, windowHeight);

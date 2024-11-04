@@ -44,7 +44,7 @@ GLfloat elapsedTime = 0.f;
 int main() {
     srand((uint)time(0));
 
-    glm::vec3 lightDirection(3000, 3000, 3000);
+    glm::vec3 lightDirection(1000, 5000, 0);
     glm::vec3 pointLightPosition1(20.0, 20.f, 20.f);
     glm::vec3 pointLightPosition2(100.f, 30.f, 100.f);
     glm::vec3 spotLightPosition(300.0, 80.f, 300.f);
@@ -61,7 +61,7 @@ int main() {
     Skybox skybox;
     DirectionalLight mainLight{ 0.05f, 0.5f, lightDirection };
     LightSources lightSources;
-    DirectionalShadow dirShadowMap{ ::near_plane, ::far_plane};
+    DirectionalShadow dirShadowMap{ 1700.f, 2000, ::far_plane};
 
     std::vector<Mesh*> meshes{};
 
@@ -153,6 +153,7 @@ int main() {
 
     hdrBuffer._initMSAA(window.getBufferWidth(), window.getBufferHeight());
     bloom._init(window.getBufferWidth(), window.getBufferHeight());
+    dirShadowMap._init();
 
     // main render loop
     while (!glfwWindowShouldClose(window.getMainWindow())) {
@@ -165,12 +166,12 @@ int main() {
         if (rotationAngle >= 360.f)
             rotationAngle = 0.f;
         else
-            rotationAngle += 0.000001;
+            rotationAngle += 0.0001;
 
         glfwPollEvents();
 
-        lightDirection.x = 2000 * cosf(rotationAngle);
-        lightDirection.z = 2000 * sinf(rotationAngle);
+        lightDirection.x = 2000.f * cosf(glm::radians(rotationAngle));
+        lightDirection.z = 2000.f * sinf(glm::radians(rotationAngle));
 
         mainLight.updateLightLocation(lightDirection);
 
@@ -280,8 +281,6 @@ int main() {
             pSystem.renderParticles(&window, &camera, model, projection);
             fireSystem.renderParticles(&window, &camera, model, projection);*/
 
-            //bloom.processFramebuffer(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID());
-
             bloom.processFramebufferMSAA(10, hdrBuffer.getColorbufferID(1), hdrBuffer.getFramebufferID(),
                 window.getWindowWidth(), window.getWindowHeight());
 
@@ -298,7 +297,6 @@ int main() {
             overlay.renderGUIWindow(io, exposure, drawSkybox, enableBloom, drawWireframe);
 
             hdrBuffer.disableHDRWriting();
-            //hdrBuffer.renderToDefaultBuffer(1.f, bloom.getColorBuffers(), bloom.getBlurFlag(), enableBloom);
             hdrBuffer.renderToDefaultBufferMSAA(
                 exposure, bloom.getColorBuffers(), bloom.getBlurFlag(), window.getWindowWidth(), window.getWindowHeight(),
                 enableBloom);

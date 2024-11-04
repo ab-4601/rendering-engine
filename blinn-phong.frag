@@ -68,7 +68,6 @@ uniform vec3 eyePosition;
 uniform float height_scale;
 
 float pointShadowBias = 2.f;
-float directionalShadowBias = 0.005f;
 
 //const float minLayers = 8.f;
 //const float maxLayers = 32.f;
@@ -94,18 +93,34 @@ float directionalShadowBias = 0.005f;
 	//return currTexel;
 //}
 
+float random(vec2 seed) {
+	return fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 float calculateDirectionalShadow(vec3 normal, vec3 lightDirection) {
-	directionalShadowBias = max(0.05f * (1.f - dot(normal, lightDirection)), 0.005f);
 	vec3 projectionCoords = data_in.lightSpaceFragPos.xyz / data_in.lightSpaceFragPos.w;
 	projectionCoords = projectionCoords * 0.5f + 0.5f;
-
-	if(projectionCoords.z > 1.f)
-		return 0.f;
 
 	float closestDepth = texture2D(directionalShadowMap, projectionCoords.xy).r;
 	float currentDepth = projectionCoords.z;
 
-	return currentDepth - directionalShadowBias > closestDepth ? 1.f : 0.f;
+	float shadow = 0.f;
+	float shadowSamples = 8.f;
+
+	for(float i = 0.f; i < shadowSamples; i++) {
+		vec2 randomOffset = vec2(
+			random(projectionCoords.xy + i) - 0.5f,
+			random(projectionCoords.xy + i * 0.5f) - 0.5f
+		) * 0.005f;
+
+		float sampleDepth = texture(directionalShadowMap, projectionCoords.xy + randomOffset).r;
+
+		shadow += currentDepth > sampleDepth ? 1.f : 0.f;
+	}
+
+	shadow /= shadowSamples;
+
+	return shadow;
 }
 
 float calculateShadow(vec3 lightPosition) {

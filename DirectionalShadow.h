@@ -6,7 +6,7 @@
 
 class DirectionalShadow {
 private:
-	static const int SHADOW_WIDTH = 3840, SHADOW_HEIGHT = 2160;
+	static const int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 
 	GLuint FBO = 0;
 	GLuint depthMap = 0;
@@ -19,14 +19,17 @@ private:
 
 	DirectionalShadowShader shader{};
 
+	void checkFramebufferStatus(const char* errorMessage = nullptr);
+
 public:
-	DirectionalShadow(float nearPlane = 1.f, float farPlane = 25.f);
+	DirectionalShadow(float viewFrustumSize = 10.f, float nearPlane = 1.f, float farPlane = 25.f);
 
 	void _init();
+
 	void calculateShadows(int windowWidth, int windowHeight, std::vector<Mesh*>& meshes, 
 		glm::vec3 lightPosition, GLuint currentFramebuffer = 0);
 
-	inline glm::mat4 getLightSpaceMatrix() const { return this->projection * this->view; };
+	inline glm::mat4 getLightSpaceMatrix() const { return this->projection * this->view; }
 	inline GLuint getDirectionalShadowMap() const { return this->depthMap; }
 
 	~DirectionalShadow();
