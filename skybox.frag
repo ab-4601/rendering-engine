@@ -8,12 +8,12 @@ in vec3 texel;
 uniform samplerCube skybox;
 
 void main() {
-	vec4 finalColor = pow(texture(skybox, texel), vec4(2.2f));
+	vec4 finalColor = texture(skybox, texel);
 	fragColor = finalColor;
 
 	float brightness = dot(finalColor.rgb, vec3(0.2125f, 0.7152f, 0.0722f));
 
-	if(brightness > 1.f)
+	if(brightness > 10.f)
 		brightColor = vec4(finalColor.rgb, 1.f);
 	else
 		brightColor = vec4(0.f, 0.f, 0.f, 1.f);

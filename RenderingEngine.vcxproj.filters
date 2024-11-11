@@ -321,6 +321,15 @@
     <ClCompile Include="DirectionalShadowShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
+    <ClCompile Include="CascadedShadows.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
+    </ClCompile>
+    <ClCompile Include="PBRShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="HDRSkyboxShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Particle.h">
@@ -518,6 +527,15 @@
     <ClInclude Include="DirectionalShadowShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
+    <ClInclude Include="CascadedShadows.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="PBRShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="HDRSkyboxShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="particle.frag">
@@ -630,6 +648,9 @@
     </None>
     <None Include="directionalShadow.frag">
       <Filter>Shaders\Shadow</Filter>
+    </None>
+    <None Include="HDRskybox.vert">
+      <Filter>Shaders\Skybox</Filter>
     </None>
   </ItemGroup>
 </Project>

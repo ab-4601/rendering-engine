@@ -1,9 +1,8 @@
 #include "Mesh.h"
 
-Mesh::Mesh(GLfloat specularIntensity, GLfloat specularPower)
+Mesh::Mesh()
 	: VAO{ 0 }, VBO{ 0 }, IBO{ 0 }, color{ 1.f, 1.f, 1.f }, model{ glm::mat4(1.f) }, objectID{ 0 },
-	specularIntensity{ specularIntensity }, specularPower{ specularPower },
-	useTexture{ false }, drawIndexed{ false }, useNormalMap{false}
+	useTexture{ false }, drawIndexed{ false }, useNormalMap{ false }, calcShadows{ false }
 {
 	meshList.push_back(this);
 	this->objectID = this->meshCount++;
@@ -243,44 +242,44 @@ void Mesh::createNormalMappedMesh() {
 	glBindVertexArray(0);
 }
 
-void Mesh::setMeshMaterial(GLfloat sIntensity, GLfloat sPower) {
-
-	this->specularIntensity = sIntensity;
-	this->specularPower = sPower;
+void Mesh::setMeshMaterial(float specularIntensity, float specularPower) {
+	this->specularIntensity = specularIntensity;
+	this->specularPower = specularPower;
 }
 
 void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>& pointLights, int pointLightCount, 
-	std::vector<SpotLight>& spotLights, int spotLightCount, const glm::mat4& projection, const glm::mat4& view,
-	glm::vec3 cameraPos) 
+	std::vector<SpotLight>& spotLights, int spotLightCount, const glm::mat4& projection, 
+	const glm::mat4& view, glm::vec3 cameraPos)
 {
-	glUseProgram(this->meshShader.getProgramID());
+	glUseProgram(this->shader.getProgramID());
 
-	this->meshShader.setDirectionalLight(&directionalLight);
-	this->meshShader.setPointLights(pointLights.data(), pointLightCount);
-	this->meshShader.setSpotLights(spotLights.data(), spotLightCount);
+	this->shader.setDirectionalLight(&directionalLight);
+	this->shader.setPointLights(pointLights.data(), pointLightCount);
+	this->shader.setSpotLights(spotLights.data(), spotLightCount);
 
-	glUniformMatrix4fv(this->meshShader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(this->meshShader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
-	glUniform3fv(this->meshShader.getEyePosition(), 1, glm::value_ptr(cameraPos));
-	glUniform1f(this->meshShader.getUniformFarPlane(), ::far_plane);
+	glUniformMatrix4fv(this->shader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
+	glUniform3fv(this->shader.getEyePosition(), 1, glm::value_ptr(cameraPos));
+	glUniform1f(this->shader.getUniformFarPlane(), ::far_plane);
+	glUniform1i(this->shader.getUniformCalcShadows(), this->calcShadows);
 
-	glUniform1i(this->meshShader.getUniformDiffuseSampler(), 0);
-	glUniform1i(this->meshShader.getUniformNormalSampler(), 1);
-	glUniform1i(this->meshShader.getUniformDepthSampler(), 2);
-	glUniform1i(this->meshShader.getUniformDirectionalShadowSampler(), 3);
-	glUniform1i(this->meshShader.getUniformPointShadowSampler(), 4);
+	glUniform1i(this->shader.getUniformDiffuseSampler(), 0);
+	glUniform1i(this->shader.getUniformNormalSampler(), 1);
+	glUniform1i(this->shader.getUniformDepthSampler(), 2);
+	glUniform1i(this->shader.getUniformDirectionalShadowSampler(), 3);
+	glUniform1i(this->shader.getUniformPointShadowSampler(), 4);
 }
 
-void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform, GLuint directionalShadowMap, GLuint pointShadowMap)  {
-	glUniform1f(this->meshShader.getSpecularIntensity(), this->specularIntensity);
-	glUniform1f(this->meshShader.getSpecularPower(), this->specularPower);
-	//glUniform1f(this->meshShader.getUniformHeightScale(), 0.1f);
-	glUniform1i(this->meshShader.getUniformTextureBool(), this->useTexture);
-	glUniform1i(this->meshShader.getUniformNormalMapBool(), this->useNormalMap);
+void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform, int directionalShadowMap, int pointShadowMap) {
+	//glUniform1f(this->shader.getUniformHeightScale(), 0.1f);
+	glUniform1f(this->shader.getSpecularIntensity(), this->specularIntensity);
+	glUniform1f(this->shader.getSpecularPower(), this->specularPower);
+	glUniform1i(this->shader.getUniformTextureBool(), this->useTexture);
+	glUniform1i(this->shader.getUniformNormalMapBool(), this->useNormalMap);
 
-	glUniformMatrix4fv(this->meshShader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->model));
-	glUniformMatrix4fv(this->meshShader.getUniformLightSpaceTransform(), 1, GL_FALSE, glm::value_ptr(lightSpaceTransform));
-	glUniform3fv(this->meshShader.getUniformColor(), 1, glm::value_ptr(this->color));
+	glUniformMatrix4fv(this->shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->model));
+	glUniformMatrix4fv(this->shader.getUniformLightSpaceTransform(), 1, GL_FALSE, glm::value_ptr(lightSpaceTransform));
+	glUniform3fv(this->shader.getUniformColor(), 1, glm::value_ptr(this->color));
 	glBindVertexArray(this->VAO);
 
 	glActiveTexture(GL_TEXTURE3);
@@ -301,6 +300,7 @@ void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform, GLuint d
 	}
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -332,7 +332,7 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	this->outlineModel = glm::scale(this->model, glm::vec3(1.05f, 1.05f, 1.05f));
 	glUniformMatrix4fv(this->outlineShader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->outlineModel));
 
-	this->renderMesh(GL_TRIANGLES);
+	this->renderMesh(renderMode);
 
 	glStencilMask(0xFF);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);

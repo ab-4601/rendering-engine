@@ -7,11 +7,11 @@
 #include "SpotLight.h"
 
 class LightingShader : public IShaderLoader {
-private:
+protected:
 	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformColor{ 0 }, uniformView{ 0 };
 	GLuint uniformSpecularIntensity{ 0 }, uniformSpecularPower{ 0 }, uniformEyePosition{ 0 };
 	GLuint uniformTextureBool{ 0 }, uniformUseNormalMap{ 0 }, uniformDiffuseSampler{ 0 }, uniformNormalSampler{ 0 };
-	GLuint uniformHeightScale{ 0 }, uniformDepthSampler{ 0 }, uniformLightSpaceTransform{ 0 };
+	GLuint uniformHeightScale{ 0 }, uniformDepthSampler{ 0 }, uniformLightSpaceTransform{ 0 }, uniformCalcShadows{ 0 };
 	GLuint uniformPointShadowSampler{ 0 }, uniformDirectionalShadowSampler{ 0 }, uniformFarPlane{ 0 };
 
 	GLuint uniformPointLightCount = 0;
@@ -80,6 +80,7 @@ public:
 	inline GLuint getUniformFarPlane() const { return this->uniformFarPlane; }
 	inline GLuint getUniformDirectionalShadowSampler() const { return this->uniformDirectionalShadowSampler; }
 	inline GLuint getUniformLightSpaceTransform() const { return this->uniformLightSpaceTransform; }
+	inline GLuint getUniformCalcShadows() const { return this->uniformCalcShadows; }
 
 	virtual inline void getUniformLocations() override;
 

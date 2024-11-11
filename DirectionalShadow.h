@@ -6,7 +6,7 @@
 
 class DirectionalShadow {
 private:
-	static const int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+	static const int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
 	GLuint FBO = 0;
 	GLuint depthMap = 0;

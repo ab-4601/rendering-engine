@@ -9,8 +9,8 @@ layout (location = 1) out vec4 brightColor;
 
 uniform float gridCellSize = 0.025f;
 uniform float minPixelBetweenCells = 2.f;
-uniform vec4 gridColorThin = vec4(0.4f, 0.4f, 0.4f, 1.f);
-uniform vec4 gridColorThick = vec4(1.f, 1.f, 1.f, 1.f);
+uniform vec4 gridColorThin = vec4(0.1f, 0.1f, 0.1f, 1.f);
+uniform vec4 gridColorThick = vec4(0.f, 0.f, 0.f, 1.f);
 
 float log10(float val) {
 	return log(val) / log(10);

@@ -1,44 +1,42 @@
 #version 450 core
 
+layout ( triangles ) in;
+layout ( triangle_strip, max_vertices = 3 ) out;
+
 in DATA {
-	vec3 color;
+	vec4 color;
     vec2 texel;
     vec3 normal;
-    vec3 fragPos;
+	vec3 tangent;
+    vec4 fragPos;
 } data_in[];
 
-out DATA {
-    vec3 color;
+out GEOM_DATA {
+	vec4 color;
     vec2 texel;
     vec3 normal;
-    vec3 fragPos;
+	vec3 tangent;
+    vec4 fragPos;
+	vec4 lightSpaceFragPos;
 } data_out;
 
 uniform mat4 model;
-uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 lightSpaceTransform;
 
 void main() {
-    data_out.color = data_in[0].color;
-	data_out.texel = data_in[0].texel;
-	data_out.normal = mat3(transpose(inverse(model))) * data_in[0].normal;
-	data_out.fragPos = mat3(model) * data_in[0].fragPos;
-	gl_Position = projection * view * model * gl_in[0].gl_Position;
-	EmitVertex();
 
-	data_out.color = data_in[1].color;
-	data_out.texel = data_in[1].texel;
-	data_out.normal = mat3(transpose(inverse(model))) * data_in[1].normal;
-	data_out.fragPos = mat3(model) * data_in[1].fragPos;
-	gl_Position = projection * view * model * gl_in[1].gl_Position;
-	EmitVertex();
-
-	data_out.color = data_in[2].color;
-	data_out.texel = data_in[2].texel;
-	data_out.normal = mat3(transpose(inverse(model))) * data_in[2].normal;
-	data_out.fragPos = mat3(model) * data_in[2].fragPos;
-	gl_Position = projection * view * model * gl_in[2].gl_Position;
-	EmitVertex();
+	for(int i = 0; i < 3; i++) {
+		data_out.color = data_in[i].color;
+		data_out.texel = data_in[i].texel;
+		data_out.fragPos = model * data_in[i].fragPos;
+		data_out.normal = mat3(transpose(inverse(model))) * data_in[i].normal;
+		data_out.tangent = mat3(transpose(inverse(model))) * data_in[i].tangent;
+		data_out.lightSpaceFragPos = lightSpaceTransform * data_out.fragPos;
+		gl_Position = projection * view * model * gl_in[i].gl_Position;
+		EmitVertex();
+	}
 
 	EndPrimitive();
 }

@@ -4,12 +4,13 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "SkyboxShader.h"
+#include "HDRSkyboxShader.h"
 
 class Skybox : public Texture {
 private:
-	std::vector<std::string> faces;
+    static const int CUBEMAP_WIDTH = 2048, CUBEMAP_HEIGHT = 2048;
 
-    GLuint VAO, VBO;
+    GLuint VAO{ 0 }, VBO{ 0 };
 
     GLfloat vertices[108] = {
         -1.0f,  1.0f, -1.0f,
@@ -56,16 +57,17 @@ private:
     };
 
     SkyboxShader shader;
+    HDRSkyboxShader hdrShader;
+
+    GLuint FBO{ 0 }, RBO{ 0 }, cubemap{ 0 };
 
 public:
-	/*Skybox(std::vector<std::string> faces = { {"Textures/skybox/right.jpg", "Textures/skybox/left.jpg", 
-	"Textures/skybox/top.jpg", "Textures/skybox/bottom.jpg", "Textures/skybox/front.jpg", "Textures/skybox/back.jpg"}});*/
+    Skybox(int windowWidth, int windowHeight, const char* fileName = "Textures/skybox/starry_night_sky_dome_8k.hdr");
 
-    Skybox(std::vector<std::string> faces = { {"Textures/skybox/right.png", "Textures/skybox/left.png",
-    "Textures/skybox/top.png", "Textures/skybox/bottom.png", "Textures/skybox/back.png", "Textures/skybox/front.png"} });
+    void _initFBO();
+    void _generateCubemap(int windowWidth, int windowHeight);
 
-	void loadCubemap();
-    void loadHDRCubemap(const char* file_name);
+	void loadCubemap(const char* file_name);
     void renderSkybox(const glm::mat4& projection, const Camera& camera);
 
 	~Skybox() = default;

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Core.h"
-#include "LightingShader.h"
 #include "HighlightShader.h"
+#include "LightingShader.h"
+#include "PBRShader.h"
 
 class Mesh {
 protected:
@@ -18,8 +19,7 @@ protected:
 	std::vector<GLfloat> normals;
 
 	// Material values for specular lighting
-	GLfloat specularIntensity;
-	GLfloat specularPower;
+	GLfloat specularIntensity{ 0.f }, specularPower{ 0.f };
 
 	GLuint VAO;
 	GLuint VBO;
@@ -28,13 +28,14 @@ protected:
 	bool useTexture;
 	bool useNormalMap;
 	bool drawIndexed;
+	bool calcShadows;
 
 	HighlightShader outlineShader;
-	LightingShader meshShader;
+	LightingShader shader;
 
 public:
 	static std::vector<Mesh*> meshList;
-	Mesh(GLfloat specularIntensity = 0.f, GLfloat specularPower = 0.f);
+	Mesh();
 
 	virtual inline void setVertices(const std::vector<GLfloat>& vertices) { this->vertices = vertices; }
 	virtual inline void setIndices(const std::vector<uint>& indices) { this->indices = indices; }
@@ -52,6 +53,9 @@ public:
 	virtual inline glm::vec3 getColor() const { return this->color; }
 	virtual inline uint getObjectID() const { return this->objectID; }
 	virtual inline void setObjectID(int objectID) { this->objectID = objectID; }
+	virtual void inline setShadowBoolUniform(const bool& calcShadows) {
+		this->calcShadows = calcShadows;
+	}
 
 	virtual void createUnindexedMesh();
 	virtual void createUnindexedTexturedMesh();
@@ -67,7 +71,7 @@ public:
 
 	virtual void renderMesh(
 		GLenum renderMode = GL_TRIANGLES, glm::mat4 lightSpaceTransform = glm::mat4(1.f),
-		GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0
+		int directionalShadowMap = -1, int pointShadowMap = -1
 	);
 
 	virtual void renderMeshWithOutline(
@@ -77,7 +81,7 @@ public:
 		glm::mat4 lightSpaceTransform, GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0
 	);
 
-	virtual void setMeshMaterial(GLfloat sIntensity = 1.f, GLfloat sPower = 32.f);
+	virtual void setMeshMaterial(float specularIntensity = 1.f, float specularPower = 32.f);
 
 	void clearMesh();
 

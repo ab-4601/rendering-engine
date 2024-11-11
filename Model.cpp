@@ -45,10 +45,8 @@ void Model::_loadMesh(aiMesh* mesh, const aiScene* const scene) {
 	currMesh->setObjectID(-1);
 	currMesh->setVertices(this->vertices);
 	currMesh->setIndices(this->indices);
-	currMesh->setMeshMaterial(1.f, 8.f);
+	currMesh->setMeshMaterial(0.1f, 16.f);
 	currMesh->createNormalMappedMesh();
-
-	//Mesh::meshList.pop_back();
 
 	this->meshList.push_back(currMesh);
 	this->meshToTex.push_back(mesh->mMaterialIndex);

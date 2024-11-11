@@ -11,7 +11,7 @@ out vec3 cameraPos;
 out float gridSizeVar;
 
 uniform vec3 cameraPosition;
-uniform float gridSize = 500.f;
+uniform float gridSize = 5000.f;
 
 void main() {
 	vec4 vPos = vec4(aPos, 1.f);

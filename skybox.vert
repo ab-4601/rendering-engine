@@ -10,6 +10,8 @@ uniform mat4 view;
 void main() {
 	texel = aPos;
 
-	vec4 pos = projection * view * vec4(aPos, 1.f);
+	mat4 modifiedView = mat4(mat3(view));
+
+	vec4 pos = projection * modifiedView * vec4(aPos, 1.f);
 	gl_Position = pos.xyww;
 }

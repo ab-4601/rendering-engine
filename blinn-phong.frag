@@ -47,6 +47,7 @@ struct Material {
 
 uniform bool useTexture = false;
 uniform bool useNormalMap = false;
+uniform bool calcShadows = false;
 
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
@@ -66,8 +67,6 @@ uniform Material material;
 
 uniform vec3 eyePosition;
 uniform float height_scale;
-
-float pointShadowBias = 2.f;
 
 //const float minLayers = 8.f;
 //const float maxLayers = 32.f;
@@ -93,11 +92,21 @@ float pointShadowBias = 2.f;
 	//return currTexel;
 //}
 
-float random(vec2 seed) {
-	return fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453);
+float rand(vec2 v){
+    return fract(sin(dot(v, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-float calculateDirectionalShadow(vec3 normal, vec3 lightDirection) {
+const vec2 poissonSamples[] = vec2[](
+    vec2( 0.334,  0.334), vec2( 0.557,  0.334), vec2( 0.778,  0.334), vec2( 1.0,  0.334),
+    vec2( 0.334,  0.557), vec2( 0.557,  0.557), vec2( 0.778,  0.557), vec2( 1.0,  0.557),
+    vec2( 0.334,  0.778), vec2( 0.557,  0.778), vec2( 0.778,  0.778), vec2( 1.0,  0.778),
+    vec2( 0.334,  1.0),   vec2( 0.557,  1.0),   vec2( 0.778,  1.0),   vec2( 1.0,  1.0),
+    vec2( 0.25,   0.25),  vec2( 0.5,    0.25),  vec2( 0.75,   0.25),  vec2( 1.0,  0.25),
+    vec2( 0.25,   0.5),   vec2( 0.5,    0.5),   vec2( 0.75,   0.5),   vec2( 1.0,  0.5),
+    vec2( 0.25,   0.75),  vec2( 0.5,    0.75),  vec2( 0.75,   0.75),  vec2( 1.0,  0.75)
+);
+
+float calculateDirectionalShadow() {
 	vec3 projectionCoords = data_in.lightSpaceFragPos.xyz / data_in.lightSpaceFragPos.w;
 	projectionCoords = projectionCoords * 0.5f + 0.5f;
 
@@ -105,17 +114,26 @@ float calculateDirectionalShadow(vec3 normal, vec3 lightDirection) {
 	float currentDepth = projectionCoords.z;
 
 	float shadow = 0.f;
-	float shadowSamples = 8.f;
+	float shadowSamples = 16.f;
+	float shadowThreshold = 0.6f;
 
-	for(float i = 0.f; i < shadowSamples; i++) {
-		vec2 randomOffset = vec2(
-			random(projectionCoords.xy + i) - 0.5f,
-			random(projectionCoords.xy + i * 0.5f) - 0.5f
-		) * 0.005f;
+	float shadowMapVal = texture(directionalShadowMap, projectionCoords.xy).r;
+	float lightSpaceFragDepth = data_in.lightSpaceFragPos.z;
 
-		float sampleDepth = texture(directionalShadowMap, projectionCoords.xy + randomOffset).r;
+	// PCF with random sampling
+	if(abs(lightSpaceFragDepth - shadowMapVal) < shadowThreshold) {
+		for(float i = 0.f; i < shadowSamples; i++) {
+			vec2 randomOffset = vec2(
+				rand(projectionCoords.xy + i) - 0.5f,
+				rand(projectionCoords.xy + i * 0.5f) - 0.5f
+			);
 
-		shadow += currentDepth > sampleDepth ? 1.f : 0.f;
+			randomOffset *= 0.005f;
+
+			float sampleDepth = texture(directionalShadowMap, projectionCoords.xy + randomOffset).r;
+
+			shadow += currentDepth > sampleDepth ? 1.f : 0.f;
+		}
 	}
 
 	shadow /= shadowSamples;
@@ -123,19 +141,7 @@ float calculateDirectionalShadow(vec3 normal, vec3 lightDirection) {
 	return shadow;
 }
 
-float calculateShadow(vec3 lightPosition) {
-	vec3 fragToLight = vec3(data_in.fragPos) - lightPosition;
-	float closestDepth = texture(pointShadowMap, fragToLight).r;
-
-	closestDepth *= farPlane;
-
-	float currentDepth = length(fragToLight);
-
-	return currentDepth - pointShadowBias > closestDepth ? 1.f : 0.f;
-}
-
 vec4 calcLightByDirection(Light light, vec3 direction, vec3 normal) {
-	pointShadowBias = length(normalize(normal) * 33);
 	vec3 ambientColor = light.color * light.ambientIntensity;
 
 	float diffuseFactor = max(dot(normalize(normal), normalize(direction)), 0.f);
@@ -144,10 +150,7 @@ vec4 calcLightByDirection(Light light, vec3 direction, vec3 normal) {
 	vec3 specularColor = vec3(0.f, 0.f, 0.f);
 
 	if(diffuseFactor > 0.f) {
-		vec3 fragToEye = vec3(0.f);
-		vec3 halfwayDir = vec3(0.f);
-
-		fragToEye = normalize(eyePosition - vec3(data_in.fragPos));
+		vec3 fragToEye = normalize(eyePosition - vec3(data_in.fragPos));
 		//halfwayDir = normalize(normalize(direction) + fragToEye);
 		//float specularFactor = dot(normalize(normal), halfwayDir);
 
@@ -160,9 +163,14 @@ vec4 calcLightByDirection(Light light, vec3 direction, vec3 normal) {
 		}
 	}
 
-	//vec3 lighting = ambientColor + diffuseColor + specularColor;
-	float shadow = calculateDirectionalShadow(normal, direction);
-	vec3 lighting = ambientColor + ((1.f - shadow) * (diffuseColor + specularColor));
+	vec3 lighting = vec3(0.f);
+
+	if(calcShadows) {
+		float shadow = calculateDirectionalShadow();
+		lighting = ambientColor + (1.f - shadow) * (diffuseColor + specularColor);
+	}
+	else
+		lighting = ambientColor + diffuseColor + specularColor;
 
 	return vec4(lighting, 1.f);
 }
