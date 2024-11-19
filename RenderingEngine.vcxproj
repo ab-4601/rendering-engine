@@ -139,7 +139,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bloom.cpp" />
+    <ClCompile Include="BloomFBO.cpp" />
+    <ClCompile Include="BloomRenderer.cpp" />
     <ClCompile Include="BloomShader.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CascadedShadows.cpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="ParticleTexture.cpp" />
     <ClCompile Include="PBRShader.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />
+    <ClCompile Include="PhysBloomShader.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParticleRenderer.cpp" />
@@ -206,7 +208,8 @@
     <ClCompile Include="Grid.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bloom.h" />
+    <ClInclude Include="BloomFBO.h" />
+    <ClInclude Include="BloomRenderer.h" />
     <ClInclude Include="BloomShader.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CascadedShadows.h" />
@@ -256,6 +259,7 @@
     <ClInclude Include="ParticleTexture.h" />
     <ClInclude Include="PBRShader.h" />
     <ClInclude Include="PerlinNoise.h" />
+    <ClInclude Include="PhysBloomShader.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="ParticleRenderer.h" />
     <ClInclude Include="Quad.h" />
@@ -283,6 +287,8 @@
     <None Include="downsample.frag" />
     <None Include="HDRskybox.frag" />
     <None Include="HDRskybox.vert" />
+    <None Include="raytracer.frag" />
+    <None Include="raytracer.vert" />
     <None Include="shadow.frag" />
     <None Include="shadow.geom" />
     <None Include="shadow.vert" />

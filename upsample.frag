@@ -1,15 +1,16 @@
 #version 450 core
 
+layout (location = 0) out vec3 upsample;
+
 uniform sampler2D srcTexture;
 uniform float filterRadius;
+uniform float aspect = 1920.f / 1080.f;
 
 in vec2 texel;
 
-layout (location = 0) out vec3 upsample;
-
 void main() {
 	float x = filterRadius;
-	float y = filterRadius;
+	float y = filterRadius * aspect;
 
 	vec3 a = texture(srcTexture, vec2(texel.x - x, texel.y + y)).rgb;
     vec3 b = texture(srcTexture, vec2(texel.x,     texel.y + y)).rgb;

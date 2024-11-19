@@ -23,6 +23,8 @@ public:
 	void useTexture() const;
 	void useNormalMap() const;
 	void useDepthMap() const;
+	void useMetalnessMap() const;
+	void useRoughnessMap() const;
 	void clearTexture();
 
 	inline GLuint getTextureID() const { return this->textureID; }

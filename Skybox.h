@@ -62,7 +62,7 @@ private:
     GLuint FBO{ 0 }, RBO{ 0 }, cubemap{ 0 };
 
 public:
-    Skybox(int windowWidth, int windowHeight, const char* fileName = "Textures/skybox/starry_night_sky_dome_8k.hdr");
+    Skybox(int windowWidth, int windowHeight, const char* fileName = "Textures/skybox/village_cloudy_sky_dome_4k.hdr");
 
     void _initFBO();
     void _generateCubemap(int windowWidth, int windowHeight);

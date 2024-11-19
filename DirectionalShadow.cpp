@@ -65,8 +65,6 @@ void DirectionalShadow::calculateShadows(int windowWidth, int windowHeight,
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(3.f, 3.f);
 
-	//glCullFace(GL_FRONT);
-
 	for (size_t i = 0; i < meshes.size(); i++) {
 		glUniformMatrix4fv(
 			this->shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(meshes[i]->getModelMatrix())
@@ -74,8 +72,6 @@ void DirectionalShadow::calculateShadows(int windowWidth, int windowHeight,
 
 		meshes[i]->renderMesh(GL_TRIANGLES);
 	}
-
-	//glCullFace(GL_BACK);
 
 	glDisable(GL_POLYGON_OFFSET_FILL);
 

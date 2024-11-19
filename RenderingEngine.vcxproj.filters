@@ -124,14 +124,41 @@
     <Filter Include="Shaders\Bloom">
       <UniqueIdentifier>{763b0354-b674-4ca4-84b4-8f0661dd89aa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\Bloom\Gaussian Blur">
-      <UniqueIdentifier>{ab556f33-2551-4c63-b34f-e68548fbd859}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\Bloom\Downsampling">
       <UniqueIdentifier>{bf996524-a793-49a4-8e8a-fed38abc7100}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shaders\Shadow">
       <UniqueIdentifier>{3b03d419-8bb1-4c0c-a27f-c87ed3bf42c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreDependencies\PostProcessing\Bloom">
+      <UniqueIdentifier>{42053ba8-b70d-485a-bcfe-2ee4a7e198b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreDependencies\PostProcessing\Bloom">
+      <UniqueIdentifier>{99100ee0-9736-42f8-9b6e-c41babf3dc3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Bloom\Gaussian Blur">
+      <UniqueIdentifier>{9662a466-c587-4df0-b9c4-a5769f1654ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Raytracer">
+      <UniqueIdentifier>{fe2d42eb-b119-41cc-a74c-5aa431df3da0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreDependencies\CoreHeaders\Model">
+      <UniqueIdentifier>{a5caea7e-91f0-411a-957e-0d492146a701}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreDependencies\CoreHeaders\Shadows">
+      <UniqueIdentifier>{32040ab3-4f23-4160-a55c-4ef7eab382fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreDependencies\CoreHeaders\Scene Core">
+      <UniqueIdentifier>{fc2e15a8-f105-41bb-ad5f-58ae177a8877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreDependencies\CoreHeaders\Model">
+      <UniqueIdentifier>{fbf717d9-ec93-478a-b4a7-54074527a549}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreDependencies\CoreHeaders\Scene Core">
+      <UniqueIdentifier>{65a24b98-9886-4198-be71-c4f9bf403615}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreDependencies\CoreHeaders\Shadows">
+      <UniqueIdentifier>{8549eae8-f5f4-409f-bf1a-63c61175e38d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -192,12 +219,6 @@
     <ClCompile Include="WaterShader.cpp">
       <Filter>Source Files\Water</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Crosshair.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
     <ClCompile Include="CrosshairShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
@@ -207,26 +228,8 @@
     <ClCompile Include="LightingShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
-    <ClCompile Include="MouseSelector.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Skybox.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
     <ClCompile Include="SkyboxShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Grid.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
     </ClCompile>
     <ClCompile Include="ShaderLoader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
@@ -236,12 +239,6 @@
     </ClCompile>
     <ClCompile Include="LightMeshShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
-    <ClCompile Include="CoordinateSystem.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
     </ClCompile>
     <ClCompile Include="CoordinateShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
@@ -300,35 +297,71 @@
     <ClCompile Include="Quad.cpp">
       <Filter>Source Files\CoreDependencies\UI</Filter>
     </ClCompile>
-    <ClCompile Include="Bloom.cpp">
-      <Filter>Source Files\CoreDependencies\PostProcessing</Filter>
-    </ClCompile>
-    <ClCompile Include="HDR.cpp">
-      <Filter>Source Files\CoreDependencies\PostProcessing</Filter>
-    </ClCompile>
-    <ClCompile Include="SelectionTexture.cpp">
-      <Filter>Source Files\CoreDependencies\PostProcessing</Filter>
-    </ClCompile>
-    <ClCompile Include="ShadowMap.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
     <ClCompile Include="ShadowShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="DirectionalShadow.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
     <ClCompile Include="DirectionalShadowShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="CascadedShadows.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
     </ClCompile>
     <ClCompile Include="PBRShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
     <ClCompile Include="HDRSkyboxShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="BloomFBO.cpp">
+      <Filter>Source Files\CoreDependencies\PostProcessing\Bloom</Filter>
+    </ClCompile>
+    <ClCompile Include="BloomRenderer.cpp">
+      <Filter>Source Files\CoreDependencies\PostProcessing\Bloom</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysBloomShader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Crosshair.cpp">
+      <Filter>Source Files\CoreDependencies\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="CascadedShadows.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalShadow.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="CoordinateSystem.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="HDR.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseSelector.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectionTexture.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -386,31 +419,7 @@
     <ClInclude Include="WaterShader.h">
       <Filter>Header Files\Water</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
     <ClInclude Include="Core.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Skybox.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Grid.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Crosshair.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="MouseSelector.h">
       <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
     </ClInclude>
     <ClInclude Include="LightingShader.h">
@@ -421,12 +430,6 @@
     </ClInclude>
     <ClInclude Include="HighlightShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
-    <ClInclude Include="CoordinateSystem.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
     </ClInclude>
     <ClInclude Include="imGUI\imgui_impl_opengl3_loader.h">
       <Filter>Header Files\imGUI</Filter>
@@ -482,15 +485,6 @@
     <ClInclude Include="Quad.h">
       <Filter>Header Files\CoreDependencies\UI</Filter>
     </ClInclude>
-    <ClInclude Include="HDR.h">
-      <Filter>Header Files\CoreDependencies\PostProcessing</Filter>
-    </ClInclude>
-    <ClInclude Include="Bloom.h">
-      <Filter>Header Files\CoreDependencies\PostProcessing</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectionTexture.h">
-      <Filter>Header Files\CoreDependencies\PostProcessing</Filter>
-    </ClInclude>
     <ClInclude Include="SkyboxShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
@@ -515,26 +509,71 @@
     <ClInclude Include="SelectionShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowMap.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
     <ClInclude Include="ShadowShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
-    <ClInclude Include="DirectionalShadow.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
     <ClInclude Include="DirectionalShadowShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="CascadedShadows.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
     </ClInclude>
     <ClInclude Include="PBRShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
     <ClInclude Include="HDRSkyboxShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="BloomFBO.h">
+      <Filter>Header Files\CoreDependencies\PostProcessing\Bloom</Filter>
+    </ClInclude>
+    <ClInclude Include="BloomRenderer.h">
+      <Filter>Header Files\CoreDependencies\PostProcessing\Bloom</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysBloomShader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="CoordinateSystem.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="CascadedShadows.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="Crosshair.h">
+      <Filter>Header Files\CoreDependencies\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="HDR.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalShadow.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseSelector.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectionTexture.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -619,12 +658,6 @@
     <None Include="hdr.frag">
       <Filter>Shaders\HDR</Filter>
     </None>
-    <None Include="bloom.vert">
-      <Filter>Shaders\Bloom\Gaussian Blur</Filter>
-    </None>
-    <None Include="bloom.frag">
-      <Filter>Shaders\Bloom\Gaussian Blur</Filter>
-    </None>
     <None Include="downsample.frag">
       <Filter>Shaders\Bloom\Downsampling</Filter>
     </None>
@@ -651,6 +684,18 @@
     </None>
     <None Include="HDRskybox.vert">
       <Filter>Shaders\Skybox</Filter>
+    </None>
+    <None Include="bloom.vert">
+      <Filter>Shaders\Bloom\Gaussian Blur</Filter>
+    </None>
+    <None Include="bloom.frag">
+      <Filter>Shaders\Bloom\Gaussian Blur</Filter>
+    </None>
+    <None Include="raytracer.vert">
+      <Filter>Shaders\Raytracer</Filter>
+    </None>
+    <None Include="raytracer.frag">
+      <Filter>Shaders\Raytracer</Filter>
     </None>
   </ItemGroup>
 </Project>

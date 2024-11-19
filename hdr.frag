@@ -47,10 +47,9 @@ void main() {
 	vec3 hdrColor = texture(hdrBuffer, texel).rgb;
 	vec3 bloomColor = texture(bloomBuffer, texel).rgb;
 
-	hdrColor += bloomColor;
+	hdrColor = mix(hdrColor, bloomColor, 0.04f);
 
 	vec3 mapped = aces(hdrColor);
-	//vec3 mapped = vec3(1.f) - exp(-hdrColor * exposure);
 
 	mapped = pow(mapped, vec3(1 / gamma)) * exposure;
 

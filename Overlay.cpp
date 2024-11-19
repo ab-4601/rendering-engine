@@ -21,6 +21,9 @@ ImGuiIO& Overlay::_init(GLFWwindow* window) {
     style.Colors[ImGuiCol_TitleBgActive] = ImVec4(253.f / 255.f, 106.f / 255.f, 0.f / 255.f, 1.f);
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.f, 0.f, 0.f, 0.9f);
     style.Colors[ImGuiCol_FrameBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.f);
+    style.Colors[ImGuiCol_Header] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.4f, 0.4f, 0.4f, 1.f);
+    style.Colors[ImGuiCol_HeaderHovered] = style.Colors[ImGuiCol_FrameBgHovered];
 
     return io;
 }
@@ -53,7 +56,7 @@ void Overlay::DrawVec3Control(const std::string& label, float* values, float res
     ImGui::NextColumn();
 
     ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4.f, 4.f));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2.f, 2.f));
 
     float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.f;
     ImVec2 buttonSize = { lineHeight + 3.f, lineHeight };
@@ -63,7 +66,6 @@ void Overlay::DrawVec3Control(const std::string& label, float* values, float res
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8f, 0.1f, 0.15f, 1.f));
     if (ImGui::Button("X", buttonSize))
         values[0] = resetValue;
-
     ImGui::PopStyleColor(3);
 
     ImGui::SameLine();
@@ -71,7 +73,7 @@ void Overlay::DrawVec3Control(const std::string& label, float* values, float res
     ImGui::PopItemWidth();
     ImGui::SameLine();
 
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.05f, 1.f, 0.05f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.02f, 1.f, 0.05f, 1.f));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.9f, 0.2f, 1.f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.8f, 0.1f, 1.f));
     if(ImGui::Button("Y", buttonSize))
@@ -100,40 +102,67 @@ void Overlay::DrawVec3Control(const std::string& label, float* values, float res
     ImGui::PopID();
 }
 
-void Overlay::renderGUIWindow(ImGuiIO& io, float& exposure, bool& drawSkybox,bool& enableBloom, 
-    bool& enableWireframe, bool& enableShadows, glm::vec3& dirLightLocation, Mesh* currMesh) 
+void Overlay::DrawDragFloat(const std::string& label, float* values, float speed, float columnWidth) {
+    ImGui::PushID(label.c_str());
+
+    ImGui::Columns(2);
+    ImGui::SetColumnWidth(0, columnWidth);
+    ImGui::Text(label.c_str());
+    ImGui::NextColumn();
+
+    std::string labelID = "##" + label;
+    ImGui::DragFloat(labelID.c_str(), values, speed, 0.f, 0.f, "%.4f");
+    ImGui::Columns(1);
+    ImGui::PopID();
+}
+
+void Overlay::renderGUIWindow(ImGuiIO& io, float& exposure, float& filterRadius, bool& drawSkybox,bool& enableBloom, 
+    bool& enableWireframe, bool& enableShadows, bool& enableHDR, glm::vec3& dirLightLocation, Mesh* currMesh) 
 {
     ImGui::PushFont(this->mainfont);
     ImGui::Begin("ImGui window");
+
     ImGui::Text("Scene Information and modifiers");
     ImGui::Checkbox("Render Skybox", &drawSkybox);
     ImGui::Checkbox("Bloom", &enableBloom);
+    ImGui::Checkbox("HDR", &enableHDR);
     ImGui::Checkbox("Wireframe", &enableWireframe);
     ImGui::Checkbox("Shadows", &enableShadows);
-    ImGui::Columns(2);
-    ImGui::SetColumnWidth(0, 120.f);
-    ImGui::Text("Mesh Color");
-    ImGui::NextColumn();
-    ImGui::ColorEdit4("##color", this->colorBuffer);
-    ImGui::Columns(1);
 
-    ImGui::Columns(2);
-    ImGui::SetColumnWidth(0, 120.f);
-    ImGui::Text("Exposure");
-    ImGui::NextColumn();
-    ImGui::DragFloat("##exposure", &exposure, 0.01f, 0.f, 0.f, "%.2f");
-    ImGui::Columns(1);
-
-    ImGui::NewLine();
-    ImGui::Text("Transforms");
+    this->DrawDragFloat("Exposure", &exposure, 0.01f, 150.f);
+    this->DrawDragFloat("Filter Radius", &filterRadius, 0.0001f, 150.f);
     ImGui::NewLine();
 
-    this->DrawVec3Control("Translation", this->translation);
-    this->DrawVec3Control("Rotation", this->rotation);
-    this->DrawVec3Control("Scale", this->scale, 1.f);
+    if (ImGui::TreeNode("Material Properties")) {
+        ImGui::Columns(2);
+        ImGui::SetColumnWidth(0, 120.f);
+        ImGui::Text("Albedo");
+        ImGui::NextColumn();
+        ImGui::ColorEdit4("##color", this->colorBuffer);
+        ImGui::Columns(1);
+
+        this->DrawDragFloat("Metallic", &this->metallic, 0.01f);
+        this->DrawDragFloat("Roughness", &this->roughness, 0.01f);
+        this->DrawDragFloat("AO", &this->ao, 0.01f);
+
+        ImGui::TreePop();
+    }
 
     ImGui::NewLine();
-    this->DrawVec3Control("SkyLight", glm::value_ptr(dirLightLocation));
+
+    if (ImGui::TreeNode("Transforms"))
+    {
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 3.f);
+            this->DrawVec3Control("Translation", this->translation);
+            this->DrawVec3Control("Rotation", this->rotation);
+            this->DrawVec3Control("Scale", this->scale, 1.f);
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 3.f);
+
+        ImGui::TreePop();
+    }
+
+    ImGui::NewLine();
+    this->DrawVec3Control("Directional Light", glm::value_ptr(dirLightLocation), 0.f, 150.f);
     ImGui::NewLine();
     
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
@@ -155,6 +184,7 @@ void Overlay::renderGUIWindow(ImGuiIO& io, float& exposure, bool& drawSkybox,boo
         glm::vec3 color{ this->colorBuffer[0], this->colorBuffer[1], this->colorBuffer[2] };
 
         currMesh->setColor(color);
+        currMesh->setMeshMaterial(this->roughness, this->metallic, this->ao);
     }
 
     ImGui::Render();
@@ -179,6 +209,10 @@ void Overlay::renderTransformWidget(int windowWidth, int windowHeight, glm::mat4
     this->colorBuffer[0] = mesh->getColor().x;
     this->colorBuffer[1] = mesh->getColor().y;
     this->colorBuffer[2] = mesh->getColor().z;
+
+    this->metallic = mesh->getMetallic();
+    this->roughness = mesh->getRoughness();
+    this->ao = mesh->getAO();
 }
 
 Overlay::~Overlay() {

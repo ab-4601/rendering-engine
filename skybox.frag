@@ -13,7 +13,7 @@ void main() {
 
 	float brightness = dot(finalColor.rgb, vec3(0.2125f, 0.7152f, 0.0722f));
 
-	if(brightness > 10.f)
+	if(brightness > 5.f)
 		brightColor = vec4(finalColor.rgb, 1.f);
 	else
 		brightColor = vec4(0.f, 0.f, 0.f, 1.f);

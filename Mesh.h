@@ -19,7 +19,7 @@ protected:
 	std::vector<GLfloat> normals;
 
 	// Material values for specular lighting
-	GLfloat specularIntensity{ 0.f }, specularPower{ 0.f };
+	GLfloat metallic{ 0.f }, roughness{ 0.f }, ao{ 0.f };
 
 	GLuint VAO;
 	GLuint VBO;
@@ -27,11 +27,12 @@ protected:
 
 	bool useTexture;
 	bool useNormalMap;
+	bool useMaterialMap;
 	bool drawIndexed;
 	bool calcShadows;
 
 	HighlightShader outlineShader;
-	LightingShader shader;
+	PBRShader shader;
 
 public:
 	static std::vector<Mesh*> meshList;
@@ -41,19 +42,20 @@ public:
 	virtual inline void setIndices(const std::vector<uint>& indices) { this->indices = indices; }
 	virtual inline void setTexCoords(const std::vector<GLfloat>& texCoords) { this->texCoords = texCoords; }
 	virtual inline void setNormals(const std::vector<GLfloat>& normals) { this->normals = normals; }
-	virtual inline void scale(float scaleFactor) {
-		for (auto& elem : this->vertices)
-			elem *= scaleFactor;
-	}
 
-	virtual inline void setModelMatrix(const glm::mat4& matrix) { this->model = matrix; }
 	virtual inline glm::mat4& getModelMatrix() { return this->model; }
-	virtual inline bool isDrawIndexed() const { return this->drawIndexed; }
-	virtual inline void setColor(glm::vec3 color) { this->color = color; }
 	virtual inline glm::vec3 getColor() const { return this->color; }
 	virtual inline uint getObjectID() const { return this->objectID; }
+	virtual inline float getMetallic() const { return this->metallic; }
+	virtual inline float getRoughness() const { return this->roughness; }
+	virtual inline float getAO() const { return this->ao; }
+	virtual inline bool isDrawIndexed() const { return this->drawIndexed; }
+
+
+	virtual inline void setModelMatrix(const glm::mat4& matrix) { this->model = matrix; }
+	virtual inline void setColor(glm::vec3 color) { this->color = color; }
 	virtual inline void setObjectID(int objectID) { this->objectID = objectID; }
-	virtual void inline setShadowBoolUniform(const bool& calcShadows) {
+	virtual void inline setShadowBoolUniform(bool calcShadows) {
 		this->calcShadows = calcShadows;
 	}
 
@@ -78,10 +80,10 @@ public:
 		GLenum renderMode, const glm::mat4& projection, const glm::mat4& view,
 		DirectionalLight& dirLight, std::vector<PointLight>& pointLights, int pointLightCount,
 		std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition,
-		glm::mat4 lightSpaceTransform, GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0
+		glm::mat4 lightSpaceTransform, bool calcShadows, GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0
 	);
 
-	virtual void setMeshMaterial(float specularIntensity = 1.f, float specularPower = 32.f);
+	virtual void setMeshMaterial(float roughness, float metallic, float ao);
 
 	void clearMesh();
 
