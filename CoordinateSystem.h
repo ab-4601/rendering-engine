@@ -1,15 +1,14 @@
 #pragma once
 
 #include "Line.h"
-#include "CoordinateShader.h"
-#include "CoordinateSystem.h"
+#include "Shader.h"
 #include "Camera.h"
 
 class CoordinateSystem {
 private:
 	std::vector<Line*> axes;
 
-	CoordinateShader shader;
+	Shader shader{ "coord.vert", "coord.frag" };
 
 public:
 	CoordinateSystem();

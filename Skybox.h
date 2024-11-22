@@ -3,12 +3,14 @@
 #include "Core.h"
 #include "Camera.h"
 #include "Texture.h"
-#include "SkyboxShader.h"
-#include "HDRSkyboxShader.h"
+#include "Quad.h"
+#include "Shader.h"
 
 class Skybox : public Texture {
 private:
-    static const int CUBEMAP_WIDTH = 2048, CUBEMAP_HEIGHT = 2048;
+    static const int CUBEMAP_WIDTH = 1024, CUBEMAP_HEIGHT = 1024;
+    static const int CONVOLUTION_WIDTH = 64, CONVOLUTION_HEIGHT = 64;
+    static const int PREFILTER_WIDTH = 256, PREFILTER_HEIGHT = 256;
 
     GLuint VAO{ 0 }, VBO{ 0 };
 
@@ -56,20 +58,71 @@ private:
          1.0f, -1.0f,  1.0f
     };
 
-    SkyboxShader shader;
-    HDRSkyboxShader hdrShader;
+    glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+    glm::mat4 viewMatrices[6] = {
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+    };
 
-    GLuint FBO{ 0 }, RBO{ 0 }, cubemap{ 0 };
+    Shader skyboxShader{ "skybox.vert", "skybox.frag" };
+    Shader hdrToCubeShader{ "HDRskybox.vert", "HDRskybox.frag" };
+    Shader irradianceShader{ "HDRskybox.vert", "irradiance.frag" };
+    Shader prefilterShader{ "HDRskybox.vert", "prefilter.frag" };
+    Shader brdfShader{ "brdf.vert", "brdf.frag" };
+
+    GLuint FBO{ 0 }, RBO{ 0 }, environmentMap{ 0 };
+    GLuint irradianceMap{ 0 }, prefilterMap{ 0 }, brdfTexture{ 0 };
+
+    Quad quad;
+
+    void renderCube() const {
+        glBindVertexArray(this->VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+
+    void _initFBO();
+    void _generateCubemap(int windowWidth, int windowHeight);
+    void _generateIrradianceMap(int windowWidth, int windowHeight);
+    void _capturePrefilterMipmap(int windowWidth, int windowHeight);
+    void _calculateBRDF(int windowWidth, int windowHeight);
 
 public:
     Skybox(int windowWidth, int windowHeight, const char* fileName = "Textures/skybox/village_cloudy_sky_dome_4k.hdr");
 
-    void _initFBO();
-    void _generateCubemap(int windowWidth, int windowHeight);
-
-	void loadCubemap(const char* file_name);
+	void loadEquirectangularMap(const char* file_name);
     void renderSkybox(const glm::mat4& projection, const Camera& camera);
 
-	~Skybox() = default;
+    inline GLuint getIrradianceMap() const { return this->irradianceMap; }
+    inline GLuint getBRDFTexture() const { return this->brdfTexture; };
+    inline GLuint getPrefilterTexture() const { return this->prefilterMap; }
+
+    ~Skybox() {
+        if (this->FBO != 0)
+            glDeleteFramebuffers(1, &this->FBO);
+
+        if (this->RBO != 0)
+            glDeleteRenderbuffers(1, &this->RBO);
+
+        if (this->environmentMap != 0)
+            glDeleteTextures(1, &this->environmentMap);
+
+        if (this->irradianceMap != 0)
+            glDeleteTextures(1, &this->irradianceMap);
+
+        if (this->prefilterMap != 0)
+            glDeleteTextures(1, &this->prefilterMap);
+
+        if (this->brdfTexture != 0)
+            glDeleteTextures(1, &this->brdfTexture);
+    }
 };
 

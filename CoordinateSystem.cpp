@@ -37,21 +37,21 @@ void CoordinateSystem::createCoordinateSystem() {
 void CoordinateSystem::drawCoordinateSystem(GLint windowHeight, GLint windowWidth, GLint bufferWidth,
     GLint bufferHeight, const Camera* const camera, glm::mat4& model, const glm::mat4& projection) 
 {
-    glUseProgram(this->shader.getProgramID());
+    this->shader.useProgram();
 
     model = glm::mat4(1.f);
 
-    glUniformMatrix4fv(shader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(shader.getUniformView(), 1, GL_FALSE, glm::value_ptr((camera->generateViewMatrix())));
+    this->shader.setMat4("projection", projection);
+    this->shader.setMat4("view", camera->generateViewMatrix());
 
     model = glm::scale(model, glm::vec3(INT_MAX));
-    glUniformMatrix4fv(shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(model));
+    this->shader.setMat4("model", model);
 
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(5.f);
 
     for (const auto& elem : this->axes) {
-        glUniform3fv(shader.getUniformColor(), 1, glm::value_ptr(elem->getColor()));
+        this->shader.setVec3("vColor", elem->getColor());
         elem->renderMesh();
     }
 
@@ -61,14 +61,14 @@ void CoordinateSystem::drawCoordinateSystem(GLint windowHeight, GLint windowWidt
     model = glm::translate(model, axisPosition);
     model = glm::scale(model, glm::vec3(200.f));
 
-    glUniformMatrix4fv(shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(model));
+    this->shader.setMat4("model", model);
 
     glViewport(windowWidth / 50, windowHeight / 50, bufferWidth / 12, bufferHeight / 12);
 
     glDisable(GL_DEPTH_TEST);
     glLineWidth(3.f);
     for (const auto& elem : this->axes) {
-        glUniform3fv(shader.getUniformColor(), 1, glm::value_ptr(elem->getColor()));
+        this->shader.setVec3("vColor", elem->getColor());
         elem->renderMesh();
     }
     glEnable(GL_DEPTH_TEST);
@@ -77,6 +77,8 @@ void CoordinateSystem::drawCoordinateSystem(GLint windowHeight, GLint windowWidt
 
     glLineWidth((GLfloat)1.f);
     glDisable(GL_LINE_SMOOTH);
+
+    this->shader.endProgram();
 }
 
 CoordinateSystem::~CoordinateSystem() {

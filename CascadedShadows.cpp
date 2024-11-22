@@ -141,21 +141,22 @@ void CascadedShadows::calculateShadows(int windowWidth, int windowHeight, std::v
 {
 	glViewport(0, 0, this->shadowWidth, this->shadowHeight);
 
-	glUseProgram(this->shader.getProgramID());
+	this->shader.useProgram();
 
 	for (int i = 0; i < this->numCascades; i++) {
 		glBindFramebuffer(GL_FRAMEBUFFER, this->FBO[i]);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		glUniformMatrix4fv(this->shader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.f)));
-		glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(this->lightSpaceMatrices[i]));
+		this->shader.setMat4("projection", glm::mat4(1.f));
+		this->shader.setMat4("view", this->lightSpaceMatrices[i]);
 
 		for (size_t i = 0; i < meshes.size(); i++) {
-			glUniformMatrix4fv(this->shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(meshes[i]->getModelMatrix()));
-
+			this->shader.setMat4("model", meshes[i]->getModelMatrix());
 			meshes[i]->renderMesh(GL_TRIANGLES);
 		}
 	}
+
+	this->shader.endProgram();
 }
 
 CascadedShadows::~CascadedShadows() {

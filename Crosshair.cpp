@@ -21,12 +21,13 @@ Crosshair::Crosshair()
 
 void Crosshair::drawCrosshair() {
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glUseProgram(crosshairShader.getProgramID());
+	this->shader.useProgram();
 
 	glm::mat4 transformation(1.f);
 	transformation = glm::scale(transformation, glm::vec3(0.009f, 0.015f, 0.009f));
 
-	glUniformMatrix4fv(this->crosshairShader.getUniformTransformation(), 1, GL_FALSE, glm::value_ptr(transformation));
+	this->shader.setMat4("transformation", transformation);
+	this->shader.setInt("textureSampler", 0);
 
 	this->crosshairTexture.useTexture();
 
@@ -35,6 +36,8 @@ void Crosshair::drawCrosshair() {
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, sizeof(this->vertices) / sizeof(float));
 
 	glBindVertexArray(0);
+
+	this->shader.endProgram();
 }
 
 void Crosshair::clearMesh() {

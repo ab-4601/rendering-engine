@@ -18,15 +18,14 @@ Grid::Grid()
 }
 
 void Grid::renderGrid(glm::mat4& model, const glm::mat4& projection, const glm::mat4& view, glm::vec3 camPos) {
-	glUseProgram(this->shader.getProgramID());
+	this->shader.useProgram();
 
 	model = glm::mat4(1.f);
 
-	glUniformMatrix4fv(this->shader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(this->shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(model));
-	glUniform3fv(this->shader.getUniformCameraPosition(), 1, glm::value_ptr(camPos));
-	glUniform1f(this->shader.getUniformGridSize(), (float)INT_MAX);
+	this->shader.setMat4("projection", projection);
+	this->shader.setMat4("view", view);
+	this->shader.setMat4("model", model);
+	this->shader.setVec3("cameraPosition", camPos);
 
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
@@ -38,6 +37,8 @@ void Grid::renderGrid(glm::mat4& model, const glm::mat4& projection, const glm::
 	glBindVertexArray(0);
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
+
+	this->shader.endProgram();
 }
 
 Grid::~Grid() {

@@ -2,13 +2,12 @@
 
 #include "Window.h"
 #include "Mesh.h"
-#include "Overlay.h"
-#include "SelectionShader.h"
+#include "Shader.h"
 #include "SelectionTexture.h"
 
 class MouseSelector {
 private:
-	SelectionShader shader;
+	Shader shader{ "selection.vert", "selection.frag" };
 	SelectionTexture pixelInfo;
 
 public:

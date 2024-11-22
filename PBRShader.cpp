@@ -49,6 +49,9 @@ void PBRShader::getUniformLocations() {
 	this->uniformDepthSampler = glGetUniformLocation(this->programID, "depthMap");
 	this->uniformMetallicSampler = glGetUniformLocation(this->programID, "metallicMap");
 	this->uniformRoughnessSampler = glGetUniformLocation(this->programID, "roughnessMap");
+	this->uniformIrradianceSampler = glGetUniformLocation(this->programID, "irradianceMap");
+	this->uniformBRDFSampler = glGetUniformLocation(this->programID, "brdfLUT");
+	this->uniformPrefilterSampler = glGetUniformLocation(this->programID, "prefilterMap");
 
 	this->uniformPointShadowSampler = glGetUniformLocation(this->programID, "pointShadowMap");
 	this->uniformDirectionalShadowSampler = glGetUniformLocation(this->programID, "directionalShadowMap");

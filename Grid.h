@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core.h"
-#include "GridShader.h"
+#include "Shader.h"
 
 class Grid {
 private:
@@ -18,7 +18,7 @@ private:
 	};
 
 	GLuint VAO, VBO, IBO;
-	GridShader shader;
+	Shader shader{ "grid.vert", "grid.frag" };
 
 public:
 	Grid();

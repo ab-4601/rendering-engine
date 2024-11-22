@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core.h"
-#include "ParticleShader.h"
+#include "Shader.h"
 #include "Particle.h"
 #include "Window.h"
 #include "Camera.h"
@@ -30,7 +30,7 @@ private:
 	GLuint VAO, VBO, IBO;
 	GLuint iVBO;
 
-	ParticleShader particleShader{ "particle.vert", "particle.frag", "particle.geom" };
+	Shader shader{ "particle.vert", "particle.frag", "particle.geom" };
 	ParticleTexture texture;
 
 	glm::vec2 texOffset1;

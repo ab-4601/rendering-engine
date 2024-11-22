@@ -20,6 +20,7 @@
 #include "Terrain.h"
 #include "LightSources.h"
 #include "DirectionalShadow.h"
+#include "ShadowMap.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
@@ -56,13 +57,12 @@ int main() {
     Window window;
     Overlay overlay;
     HDR hdrBuffer;
-    BloomRenderer physBloom{ (int)window.getWindowWidth(), (int)window.getWindowHeight() };
-    Crosshair crosshair;
+    BloomRenderer bloom{ (int)window.getWindowWidth(), (int)window.getWindowHeight() };
     Grid grid;
     MouseSelector selection{ (uint)window.getBufferWidth(), (uint)window.getBufferHeight() };
     CoordinateSystem coordSystem;
-    Skybox skybox{ window.getBufferWidth(), window.getBufferHeight()};
-    DirectionalLight mainLight{ 0.1f, 0.5f, lightDirection, {2.f, 2.f, 2.f} };
+    Skybox skybox{ window.getBufferWidth(), window.getBufferHeight() };
+    DirectionalLight mainLight{ 0.1f, 0.5f, lightDirection, {1.f, 1.f, 1.f} };
     LightSources lightSources;
     DirectionalShadow dirShadowMap{ 1800.f, ::near_plane, ::far_plane};
 
@@ -84,7 +84,7 @@ int main() {
 
     int index{ -1 }, prevIndex{ -1 };
 
-   /* pointLights.at(0) = PointLight(0.01f, 0.4f, pointLightPosition1, 1.f, 0.001f, 0.001f, { 500.f, 500.f, 500.f });
+    /*pointLights.at(0) = PointLight(0.01f, 0.4f, pointLightPosition1, 1.f, 0.001f, 0.001f, { 500.f, 500.f, 500.f });
     pointLightCount++;*/
 
     /*pointLights.at(1) = PointLight(0.01f, 0.4f, pointLightPosition2, 1.f, 0.0001f, 0.0001f, {500.f, 500.f, 500.f});
@@ -104,9 +104,9 @@ int main() {
     GLuint gridSize = 10;
 
     Icosphere sphere;
-    sphere.smoothSphere(4);
+    sphere.smoothSphere(5);
     sphere.setColor({ 0.07f, 1.f, 1.f });
-    sphere.setMeshMaterial(0.f, 0.f, 0.f);
+    sphere.setMeshMaterial(0.f, 0.f, 1.f);
     sphere.createMeshWithNormals();
 
     model = glm::mat4(1.f);
@@ -122,7 +122,7 @@ int main() {
     Cube cube;
     cube.setColor({ 1.f, 0.07f, 0.07f });
     cube.setModelMatrix(model);
-    cube.setMeshMaterial(0.f, 0.f, 0.f);;
+    cube.setMeshMaterial(0.f, 0.f, 1.f);;
     cube.createUnindexedMesh();
 
     /*Terrain terrain(gridSize, gridSize);
@@ -135,7 +135,7 @@ int main() {
 
     coordSystem.createCoordinateSystem();
 
-    ParticleTexture partTex("Textures/cosmic.png", 4.f);
+    ParticleTexture partTex("Textures/particleAtlas.png", 4.f);
     glm::vec3 particlePosition{ 20.f, 20.f, 20.f }, velocity{ 10.f, 50.f, 10.f }, particleColor{ 1.f, 0.5f, 0.05f };
     ParticleSystem pSystem(particleColor, 10, 5.f, 1.f, 6.f, partTex);
 
@@ -199,8 +199,8 @@ int main() {
 
 // ----------------------------------------------------------------------------------------------------------------
 
-            /*lightSources.renderLightSources(projection, view, mainLight, pointLights, spotLights,
-                pointLightCount, spotLightCount);*/
+            lightSources.renderLightSources(projection, view, mainLight, pointLights, spotLights,
+                pointLightCount, spotLightCount);
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -223,7 +223,10 @@ int main() {
             if (drawWireframe)
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-            sponza.renderModel(dirShadowMap.getLightSpaceMatrix(), shadowMapID);
+            sponza.renderModel(
+                dirShadowMap.getLightSpaceMatrix(), shadowMapID, 0,
+                skybox.getIrradianceMap(), skybox.getBRDFTexture(), skybox.getPrefilterTexture()
+            );
 
             glm::vec2 mouseClickCoords = window.getViewportCoord();
 
@@ -252,13 +255,15 @@ int main() {
                 meshes[index]->renderMeshWithOutline(
                     GL_TRIANGLES, projection, view, mainLight, pointLights,
                     pointLightCount, spotLights, spotLightCount, camera.getCameraPosition(),
-                    dirShadowMap.getLightSpaceMatrix(), enableShadows, shadowMapID
+                    dirShadowMap.getLightSpaceMatrix(), enableShadows, shadowMapID,
+                    0, skybox.getIrradianceMap(), skybox.getBRDFTexture(), skybox.getPrefilterTexture()
                 );
             }
 
             for (size_t i = 0; i < meshes.size(); i++) {
                 if ((int)i != index && meshes[i]->getObjectID() != -1)
-                    meshes[i]->renderMesh(GL_TRIANGLES, dirShadowMap.getLightSpaceMatrix(), shadowMapID);
+                    meshes[i]->renderMesh(GL_TRIANGLES, dirShadowMap.getLightSpaceMatrix(),
+                        shadowMapID, 0, skybox.getIrradianceMap(), skybox.getBRDFTexture(), skybox.getPrefilterTexture());
             }
 
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -285,7 +290,7 @@ int main() {
             //fireSystem.renderParticles(&window, &camera, model, projection);
 
             if(enableHDR)
-                physBloom.renderBloomTexture(hdrBuffer.getColorbufferID(), filterRadius, currFramebuffer);
+                bloom.renderBloomTexture(hdrBuffer.getColorbufferID(), filterRadius, currFramebuffer);
 
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -299,7 +304,7 @@ int main() {
             if(enableHDR)
             {
                 hdrBuffer.renderToDefaultBufferMSAA(
-                    exposure, physBloom.bloomTexture(),
+                    exposure, bloom.bloomTexture(),
                     window.getWindowWidth(), window.getWindowHeight(),
                     enableBloom
                 );

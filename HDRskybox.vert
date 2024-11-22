@@ -10,7 +10,5 @@ uniform mat4 view;
 void main() {
 	texel = aPos;
 
-	mat4 modifiedView = mat4(mat3(view));
-
-	gl_Position = projection * modifiedView * vec4(aPos, 1.f);
+	gl_Position = projection * view * vec4(aPos, 1.f);
 }

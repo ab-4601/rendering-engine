@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core.h"
-#include "HighlightShader.h"
+#include "Shader.h"
 #include "LightingShader.h"
 #include "PBRShader.h"
 
@@ -31,7 +31,9 @@ protected:
 	bool drawIndexed;
 	bool calcShadows;
 
-	HighlightShader outlineShader;
+	Shader outlineShader{ "highlight.vert", "highlight.frag" };
+	Shader lightingShader{ "PBR.vert", "PBR.frag", "PBR.geom" };
+
 	PBRShader shader;
 
 public:
@@ -65,7 +67,7 @@ public:
 	virtual void createTexturedMesh();
 	virtual void createMeshWithNormals();
 	virtual void createMesh();
-	virtual void createNormalMappedMesh();
+	virtual void createModel();
 
 	virtual void setShader(DirectionalLight& directionalLight,
 		std::vector<PointLight>& pointLights, int pointLightCount, std::vector<SpotLight>& spotLights, int spotLightCount,
@@ -73,14 +75,16 @@ public:
 
 	virtual void renderMesh(
 		GLenum renderMode = GL_TRIANGLES, glm::mat4 lightSpaceTransform = glm::mat4(1.f),
-		int directionalShadowMap = -1, int pointShadowMap = -1
+		GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0, GLuint irradianceMap = 0, GLuint brdfSampler = 0,
+		GLuint prefilterSampler = 0
 	);
 
 	virtual void renderMeshWithOutline(
 		GLenum renderMode, const glm::mat4& projection, const glm::mat4& view,
 		DirectionalLight& dirLight, std::vector<PointLight>& pointLights, int pointLightCount,
 		std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition,
-		glm::mat4 lightSpaceTransform, bool calcShadows, GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0
+		glm::mat4 lightSpaceTransform, bool calcShadows, GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0,
+		GLuint irradianceMap = 0, GLuint brdfSampler = 0, GLuint prefilterSampler = 0
 	);
 
 	virtual void setMeshMaterial(float roughness, float metallic, float ao);

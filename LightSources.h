@@ -3,7 +3,7 @@
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
-#include "LightMeshShader.h"
+#include "Shader.h"
 
 struct LightMesh {
     GLuint VAO{}, VBO{};
@@ -80,7 +80,7 @@ struct LightMesh {
 
 class LightSources {
 private:
-	LightMeshShader shader;
+    Shader shader{ "light.vert", "light.frag" };
 	LightMesh sourceMesh;
 
 public:

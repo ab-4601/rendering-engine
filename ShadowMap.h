@@ -2,7 +2,7 @@
 
 #include "Core.h"
 #include "Mesh.h"
-#include "ShadowShader.h"
+#include "Shader.h"
 
 class ShadowMap {
 private:
@@ -16,7 +16,7 @@ private:
 	glm::mat4 projection{ 1.f };
 	std::vector<glm::mat4> shadowTransforms{};
 
-	ShadowShader shader;
+	Shader shader{ "shadow.vert", "shadow.frag", "shadow.geom" };
 
 public:
 	ShadowMap(float nearPlane = 1.f, float farPlane = 25.f);

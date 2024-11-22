@@ -10,20 +10,22 @@ void MouseSelector::pickingPhase(std::vector<Mesh*>& meshes, const glm::mat4& pr
 	this->pixelInfo.enableWriting();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(this->shader.getProgramID());
+	this->shader.useProgram();
 
-	glUniformMatrix4fv(this->shader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
+	this->shader.setMat4("projection", projection);
+	this->shader.setMat4("view", view);
 
 	for (size_t i = 0; i < meshes.size(); i++) {
-		glUniform1ui(this->shader.getUniformObjectIndex(), meshes[i]->getObjectID() + 1);
-		glUniform1ui(this->shader.getUniformDrawIndex(), static_cast<unsigned int>(i));
-		glUniformMatrix4fv(this->shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(meshes[i]->getModelMatrix()));
+		this->shader.setUint("objectIndex", meshes[i]->getObjectID() + 1);
+		this->shader.setUint("drawIndex", static_cast<uint>(i));
+		this->shader.setMat4("model", meshes[i]->getModelMatrix());
 
 		meshes[i]->renderMesh(GL_TRIANGLES);
 	}
 
 	this->pixelInfo.disableWriting(framebuffer);
+
+	this->shader.endProgram();
 }
 
 int MouseSelector::mouseSelectionResult(int windowHeight, int x, int y) {

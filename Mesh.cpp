@@ -209,7 +209,7 @@ void Mesh::createMesh() {
 	glBindVertexArray(0);
 }
 
-void Mesh::createNormalMappedMesh() {
+void Mesh::createModel() {
 	this->useTexture = true;
 	this->drawIndexed = true;
 	this->useNormalMap = true;
@@ -266,6 +266,9 @@ void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>
 	glUniform1i(this->shader.getUniformRoughnessSampler(), 4);
 	glUniform1i(this->shader.getUniformDirectionalShadowSampler(), 5);
 	glUniform1i(this->shader.getUniformPointShadowSampler(), 6);
+	glUniform1i(this->shader.getUniformIrradianceSampler(), 7);
+	glUniform1i(this->shader.getUniformPrefilterSampler(), 8);
+	glUniform1i(this->shader.getUniformBRDFSampler(), 9);
 }
 
 void Mesh::setMeshMaterial(float roughness, float metallic, float ao) {
@@ -283,15 +286,17 @@ void Mesh::setMeshMaterial(float roughness, float metallic, float ao) {
 	else
 		this->metallic = metallic;
 
-	if (ao > 10.f)
-		this->ao = 10.f;
+	if (ao > 1.f)
+		this->ao = 1.f;
 	else if (ao < 0.f)
 		this->ao = 0.f;
 	else
 		this->ao = ao;
 }
 
-void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform, int directionalShadowMap, int pointShadowMap) {
+void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform,
+	GLuint directionalShadowMap, GLuint pointShadowMap, GLuint irradianceMap, GLuint brdfSampler, GLuint prefilterSampler)
+{
 	glUniform3fv(this->shader.getUniformAlbedo(), 1, glm::value_ptr(this->color));
 	glUniform1f(this->shader.getUniformAo(), this->ao);
 	glUniform1f(this->shader.getUniformRoughness(), this->roughness);
@@ -312,6 +317,15 @@ void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform, int dire
 	glActiveTexture(GL_TEXTURE6);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, pointShadowMap);
 
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+
+	glActiveTexture(GL_TEXTURE8);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterSampler);
+
+	glActiveTexture(GL_TEXTURE9);
+	glBindTexture(GL_TEXTURE_2D, brdfSampler);
+
 	if (this->drawIndexed) {
 		glDrawElements(renderMode, static_cast<GLsizei>(this->indices.size()), GL_UNSIGNED_INT, this->indices.data());
 	}
@@ -323,6 +337,15 @@ void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform, int dire
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glActiveTexture(GL_TEXTURE8);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	glActiveTexture(GL_TEXTURE6);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	glActiveTexture(GL_TEXTURE5);
@@ -334,7 +357,8 @@ void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform, int dire
 void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection, const glm::mat4& view,
 	DirectionalLight& dirLight, std::vector<PointLight>& pointLights, int pointLightCount,
 	std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition, 
-	glm::mat4 lightSpaceTransform, bool calcShadows, GLuint directionalShadowMap, GLuint pointShadowMap)
+	glm::mat4 lightSpaceTransform, bool calcShadows, GLuint directionalShadowMap, GLuint pointShadowMap,
+	GLuint irradianceMap, GLuint brdfSampler, GLuint prefilterSampler)
 {
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -342,19 +366,20 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0xFF);
 
-	this->renderMesh(renderMode, lightSpaceTransform, directionalShadowMap, pointShadowMap);
+	this->renderMesh(renderMode, lightSpaceTransform, directionalShadowMap,
+		pointShadowMap, irradianceMap, brdfSampler, prefilterSampler);
 
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilMask(0x00);
 	//glDisable(GL_DEPTH_TEST);
 
-	glUseProgram(this->outlineShader.getProgramID());
+	this->outlineShader.useProgram();
 
-	glUniformMatrix4fv(this->outlineShader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(this->outlineShader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
+	this->outlineShader.setMat4("projection", projection);
+	this->outlineShader.setMat4("view", view);
 
 	this->outlineModel = glm::scale(this->model, glm::vec3(1.05f, 1.05f, 1.05f));
-	glUniformMatrix4fv(this->outlineShader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->outlineModel));
+	this->outlineShader.setMat4("model", this->outlineModel);
 
 	this->renderMesh(renderMode);
 
@@ -364,6 +389,8 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	//glEnable(GL_DEPTH_TEST);
 
 	this->setShadowBoolUniform(calcShadows);
+	this->outlineShader.endProgram();
+
 	this->setShader(dirLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view, cameraPosition);
 }
 

@@ -1,5 +1,4 @@
 #include "Model.h"
-#include <ddstream.h>
 
 Model::Model(std::string fileName, std::string texFolderPath) : texFolderPath{ texFolderPath } {
 	this->meshList.clear();
@@ -47,7 +46,7 @@ void Model::_loadMesh(aiMesh* mesh, const aiScene* const scene) {
 	currMesh->setVertices(this->vertices);
 	currMesh->setIndices(this->indices);
 	currMesh->setMeshMaterial(1.f, 0.f, 0.f);
-	currMesh->createNormalMappedMesh();
+	currMesh->createModel();
 
 	this->meshList.push_back(currMesh);
 	this->meshToTex.push_back(mesh->mMaterialIndex);
@@ -116,7 +115,9 @@ void Model::loadModel(std::string fileName) {
 	this->_loadMaterialMap(scene, this->heightMaps, aiTextureType_DIFFUSE_ROUGHNESS);
 }
 
-void Model::renderModel(glm::mat4 lightSpaceTransform, GLuint directionalShadowMap, GLuint pointShadowMap) {
+void Model::renderModel(glm::mat4 lightSpaceTransform, GLuint directionalShadowMap,
+	GLuint pointShadowMap, GLuint irradianceMap, GLuint brdfMap, GLuint prefilterMap) 
+{
 	for (size_t i = 0; i < this->meshList.size(); i++) {
 		uint materialIndex = this->meshToTex[i];
 
@@ -136,7 +137,9 @@ void Model::renderModel(glm::mat4 lightSpaceTransform, GLuint directionalShadowM
 			this->metalnessMaps[materialIndex]->useMetalnessMap();
 		}
 
-		meshList[i]->renderMesh(GL_TRIANGLES, lightSpaceTransform, directionalShadowMap, pointShadowMap);
+		meshList[i]->renderMesh(
+			GL_TRIANGLES, lightSpaceTransform, directionalShadowMap, pointShadowMap, irradianceMap, brdfMap, prefilterMap
+		);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 

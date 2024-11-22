@@ -160,6 +160,9 @@
     <Filter Include="Source Files\CoreDependencies\CoreHeaders\Shadows">
       <UniqueIdentifier>{8549eae8-f5f4-409f-bf1a-63c61175e38d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Skybox\IBL">
+      <UniqueIdentifier>{5128bad9-6e93-445d-a80b-83be50aa1af2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -172,9 +175,6 @@
       <Filter>Source Files\ParticleSystem</Filter>
     </ClCompile>
     <ClCompile Include="ParticleRenderer.cpp">
-      <Filter>Source Files\ParticleSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleShader.cpp">
       <Filter>Source Files\ParticleSystem</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
@@ -219,31 +219,10 @@
     <ClCompile Include="WaterShader.cpp">
       <Filter>Source Files\Water</Filter>
     </ClCompile>
-    <ClCompile Include="CrosshairShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="GridShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
     <ClCompile Include="LightingShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="SkyboxShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderLoader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="HighlightShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="LightMeshShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="CoordinateShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="SelectionShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
     <ClCompile Include="imGUI\imgui_draw.cpp">
@@ -282,31 +261,13 @@
     <ClCompile Include="imGUI\imgui_demo.cpp">
       <Filter>Source Files\imGUI</Filter>
     </ClCompile>
-    <ClCompile Include="LightSources.cpp">
-      <Filter>Source Files\CoreDependencies\CoreHeaders</Filter>
-    </ClCompile>
     <ClCompile Include="Overlay.cpp">
       <Filter>Source Files\CoreDependencies\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="HDRShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="BloomShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
     <ClCompile Include="Quad.cpp">
       <Filter>Source Files\CoreDependencies\UI</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectionalShadowShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
     <ClCompile Include="PBRShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClCompile>
-    <ClCompile Include="HDRSkyboxShader.cpp">
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
     <ClCompile Include="BloomFBO.cpp">
@@ -314,9 +275,6 @@
     </ClCompile>
     <ClCompile Include="BloomRenderer.cpp">
       <Filter>Source Files\CoreDependencies\PostProcessing\Bloom</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysBloomShader.cpp">
-      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
     <ClCompile Include="Crosshair.cpp">
       <Filter>Source Files\CoreDependencies\UI</Filter>
@@ -363,6 +321,12 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="LightSources.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Particle.h">
@@ -372,9 +336,6 @@
       <Filter>Header Files\ParticleSystem</Filter>
     </ClInclude>
     <ClInclude Include="ParticleRenderer.h">
-      <Filter>Header Files\ParticleSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleShader.h">
       <Filter>Header Files\ParticleSystem</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
@@ -428,9 +389,6 @@
     <ClInclude Include="ShaderLoader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
-    <ClInclude Include="HighlightShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
     <ClInclude Include="imGUI\imgui_impl_opengl3_loader.h">
       <Filter>Header Files\imGUI</Filter>
     </ClInclude>
@@ -476,49 +434,13 @@
     <ClInclude Include="imGUI\imgui_impl_opengl3.h">
       <Filter>Header Files\imGUI</Filter>
     </ClInclude>
-    <ClInclude Include="LightSources.h">
-      <Filter>Header Files\CoreDependencies\CoreHeaders</Filter>
-    </ClInclude>
     <ClInclude Include="Overlay.h">
       <Filter>Header Files\CoreDependencies\UI</Filter>
     </ClInclude>
     <ClInclude Include="Quad.h">
       <Filter>Header Files\CoreDependencies\UI</Filter>
     </ClInclude>
-    <ClInclude Include="SkyboxShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="LightMeshShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="CoordinateShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="CrosshairShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="GridShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="BloomShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="HDRShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectionShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectionalShadowShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
     <ClInclude Include="PBRShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
-    </ClInclude>
-    <ClInclude Include="HDRSkyboxShader.h">
       <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
     <ClInclude Include="BloomFBO.h">
@@ -526,9 +448,6 @@
     </ClInclude>
     <ClInclude Include="BloomRenderer.h">
       <Filter>Header Files\CoreDependencies\PostProcessing\Bloom</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysBloomShader.h">
-      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
@@ -573,6 +492,12 @@
       <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
     </ClInclude>
     <ClInclude Include="SelectionTexture.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\CoreDependencies\ShaderLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="LightSources.h">
       <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
     </ClInclude>
   </ItemGroup>
@@ -696,6 +621,18 @@
     </None>
     <None Include="raytracer.frag">
       <Filter>Shaders\Raytracer</Filter>
+    </None>
+    <None Include="irradiance.frag">
+      <Filter>Shaders\Skybox\IBL</Filter>
+    </None>
+    <None Include="prefilter.frag">
+      <Filter>Shaders\Skybox\IBL</Filter>
+    </None>
+    <None Include="brdf.vert">
+      <Filter>Shaders\Skybox\IBL</Filter>
+    </None>
+    <None Include="brdf.frag">
+      <Filter>Shaders\Skybox\IBL</Filter>
     </None>
   </ItemGroup>
 </Project>

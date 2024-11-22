@@ -1,20 +1,12 @@
 #version 450 core
 
-layout (location = 0) out vec4 fragColor;
-layout (location = 1) out vec4 brightColor;
+out vec4 fragColor;
 
 in vec3 texel;
 
-uniform samplerCube skybox;
+uniform samplerCube environmentMap;
 
 void main() {
-	vec4 finalColor = texture(skybox, texel);
-	fragColor = finalColor;
-
-	float brightness = dot(finalColor.rgb, vec3(0.2125f, 0.7152f, 0.0722f));
-
-	if(brightness > 5.f)
-		brightColor = vec4(finalColor.rgb, 1.f);
-	else
-		brightColor = vec4(0.f, 0.f, 0.f, 1.f);
+	vec3 finalColor = texture(environmentMap, texel).rgb;
+	fragColor = vec4(finalColor, 1.f);
 }

@@ -51,7 +51,8 @@ void DirectionalShadow::calculateShadows(int windowWidth, int windowHeight,
 	glViewport(0, 0, this->SHADOW_WIDTH, this->SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, this->FBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glUseProgram(this->shader.getProgramID());
+
+	this->shader.useProgram();
 
 	this->view = glm::lookAt(
 		lightPosition,
@@ -59,17 +60,14 @@ void DirectionalShadow::calculateShadows(int windowWidth, int windowHeight,
 		glm::vec3(0.f, 1.f, 0.f)
 	);
 
-	glUniformMatrix4fv(this->shader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(this->projection));
-	glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(this->view));
+	this->shader.setMat4("projection", this->projection);
+	this->shader.setMat4("view", this->view);
 
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(3.f, 3.f);
 
 	for (size_t i = 0; i < meshes.size(); i++) {
-		glUniformMatrix4fv(
-			this->shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(meshes[i]->getModelMatrix())
-		);
-
+		this->shader.setMat4("model", meshes[i]->getModelMatrix());
 		meshes[i]->renderMesh(GL_TRIANGLES);
 	}
 
@@ -77,6 +75,8 @@ void DirectionalShadow::calculateShadows(int windowWidth, int windowHeight,
 
 	glBindFramebuffer(GL_FRAMEBUFFER, currentFramebuffer);
 	glViewport(0, 0, windowWidth, windowHeight);
+
+	this->shader.endProgram();
 }
 
 DirectionalShadow::~DirectionalShadow() {

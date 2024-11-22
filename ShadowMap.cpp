@@ -75,21 +75,20 @@ void ShadowMap::calculateShadowMap(std::vector<Mesh*>& meshes, int windowWidth, 
 
 	glCullFace(GL_FRONT);
 
-	glUseProgram(this->shader.getProgramID());
+	this->shader.useProgram();
 
-	glUniform1f(this->shader.getUniformFarPlane(), this->farPlane);
-	glUniform3fv(this->shader.getUniformLightPos(), 1, glm::value_ptr(lightPosition));
+	this->shader.setFloat("farPlane", this->farPlane);
+	this->shader.setVec3("lightPosition", lightPosition);
+
+	std::string buffer{};
 
 	for (int i = 0; i < 6; i++) {
-		glUniformMatrix4fv(
-			this->shader.getUniformShadowMatrix(i), 1, GL_FALSE, glm::value_ptr(this->shadowTransforms[i])
-		);
+		buffer = "shadowMatrices[" + std::to_string(i) + "]";
+		this->shader.setMat4(buffer.data(), this->shadowTransforms[i]);
 	}
 
 	for (int i = 0; i < meshes.size(); i++) {
-		glUniformMatrix4fv(
-			this->shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(meshes[i]->getModelMatrix())
-		);
+		this->shader.setMat4("model", meshes[i]->getModelMatrix());
 
 		meshes[i]->renderMesh(GL_TRIANGLES);
 	}

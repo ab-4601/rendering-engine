@@ -2,7 +2,7 @@
 
 #include "Core.h"
 #include "Mesh.h"
-#include "DirectionalShadowShader.h"
+#include "Shader.h"
 
 class CascadedShadows {
 private:
@@ -15,7 +15,7 @@ private:
 	float cascadeSplits[numCascades];
 	glm::mat4 lightSpaceMatrices[numCascades];
 
-	DirectionalShadowShader shader;
+	Shader shader;
 
 	bool checkFramebufferStatus();
 	void calcSplitDepths(float lambda);

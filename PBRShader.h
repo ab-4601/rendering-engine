@@ -10,6 +10,7 @@ private:
 	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformColor{ 0 }, uniformView{ 0 };
 	GLuint uniformEyePosition{ 0 }, uniformAlbedo{ 0 }, uniformMetallic{ 0 }, uniformRoughness{ 0 }, uniformAo{ 0 };
 	GLuint uniformTextureBool{ 0 }, uniformUseNormalMap{ 0 }, uniformUseMaterialMap{ 0 };
+	GLuint uniformIrradianceSampler{ 0 }, uniformBRDFSampler{ 0 }, uniformPrefilterSampler{ 0 };
 	GLuint uniformDiffuseSampler{ 0 }, uniformNormalSampler{ 0 }, uniformMetallicSampler{ 0 }, uniformRoughnessSampler{ 0 };
 	GLuint uniformHeightScale{ 0 }, uniformDepthSampler{ 0 }, uniformLightSpaceTransform{ 0 }, uniformCalcShadows{ 0 };
 	GLuint uniformPointShadowSampler{ 0 }, uniformDirectionalShadowSampler{ 0 }, uniformFarPlane{ 0 };
@@ -81,6 +82,9 @@ public:
 	inline GLuint getUniformDepthSampler() const { return this->uniformDepthSampler; }
 	inline GLuint getUniformMetallicSampler() const { return this->uniformMetallicSampler; }
 	inline GLuint getUniformRoughnessSampler() const { return this->uniformRoughnessSampler; }
+	inline GLuint getUniformIrradianceSampler() const { return this->uniformIrradianceSampler; }
+	inline GLuint getUniformBRDFSampler() const { return this->uniformBRDFSampler; }
+	inline GLuint getUniformPrefilterSampler() const { return this->uniformPrefilterSampler; }
 	inline GLuint getUniformHeightScale() const { return this->uniformHeightScale; }
 	inline GLuint getUniformPointShadowSampler() const { return this->uniformPointShadowSampler; }
 	inline GLuint getUniformFarPlane() const { return this->uniformFarPlane; }

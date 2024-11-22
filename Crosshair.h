@@ -3,7 +3,7 @@
 #include "Core.h"
 #include "Camera.h"
 #include "Texture.h"
-#include "CrosshairShader.h"
+#include "Shader.h"
 
 class Crosshair {
 private:
@@ -16,7 +16,7 @@ private:
 		 1.f, -1.f,  0.f
 	};
 
-	CrosshairShader crosshairShader;
+	Shader shader{ "crosshair.vert", "crosshair.frag" };
 	Texture crosshairTexture{ "Textures/crosshair.png" };
 
 public:

@@ -18,8 +18,6 @@ in GEOM_DATA {
 
 struct Light {
 	vec3 color;
-	float ambientIntensity;
-	float diffuseIntensity;
 };
 
 struct DirectionalLight  {
@@ -63,6 +61,9 @@ uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D directionalShadowMap;
 uniform samplerCube pointShadowMap;
+uniform samplerCube irradianceMap;
+uniform samplerCube prefilterMap;
+uniform sampler2D brdfLUT;
 
 uniform bool useTexture;
 uniform bool useNormalMap;
@@ -133,6 +134,10 @@ vec3 fresnelSchlick(float theta, vec3 F0) {
 	return F0 + (1.f - F0) * pow(clamp(1.f - theta, 0.f, 1.f), 5.f);
 }
 
+vec3 fresnelSchlickRoughness(float theta, vec3 F0, float roughness) {
+	return F0 + (max(vec3(1.f - roughness), F0) - F0) * pow(clamp(1.f - theta, 0.f, 1.f), 5.f);
+}
+
 float rand(vec2 v){
     return fract(sin(dot(v, vec2(12.9898, 78.233))) * 43758.5453);
 }
@@ -178,11 +183,11 @@ float calculateDirectionalShadow() {
 	return shadow;
 }
 
-vec4 calcPBRLighting(Light light, vec3 direction, vec3 normal, float metallic, float roughness) {
+vec4 calcPBRLighting(Light light, vec3 direction, vec3 normal, float metallic, float roughness, float ao) {
 	vec3 N = normalize(normal);
 	vec3 V = normalize(cameraPos - data_in.fragPos.xyz);
 
-	vec3 F0 = vec3(0.0f);
+	vec3 F0 = vec3(0.04f);
 	F0 = mix(F0, material.albedo, metallic);
 
 	vec3 Lo = vec3(0.f);
@@ -195,7 +200,7 @@ vec4 calcPBRLighting(Light light, vec3 direction, vec3 normal, float metallic, f
 	vec3 F = fresnelSchlick(max(dot(H, V), 0.f), F0);
 
 	vec3 kS = F;
-	vec3 kD = vec3(1.f) - kS;
+	vec3 kD = 1.f - kS;
 	kD *= (1.f - metallic);
 
 	vec3 numerator = NDF * G * F;
@@ -213,30 +218,30 @@ vec4 calcPBRLighting(Light light, vec3 direction, vec3 normal, float metallic, f
 	return vec4(Lo, 1.f);
 }
 
-vec4 calcDirectionalLights(vec3 normal, float metallic, float roughness) {
+vec4 calcDirectionalLights(vec3 normal, float metallic, float roughness, float ao) {
 	vec3 direction = directionalLight.direction;
-	return calcPBRLighting(directionalLight.base, direction, normal, metallic, roughness);
+	return calcPBRLighting(directionalLight.base, direction, normal, metallic, roughness, ao);
 }
 
-vec4 calcPointLight(PointLight pointLight, vec3 normal, float metallic, float roughness) {
+vec4 calcPointLight(PointLight pointLight, vec3 normal, float metallic, float roughness, float ao) {
 	vec3 direction = pointLight.position - vec3(data_in.fragPos);
 	float dist = length(direction);
 
-	vec4 currColor = calcPBRLighting(pointLight.base, direction, normal, metallic, roughness);
+	vec4 currColor = calcPBRLighting(pointLight.base, direction, normal, metallic, roughness, ao);
 	float attenuation = (pointLight.exponent * pow(dist, 2)) + 
 						(pointLight.linear * dist) + pointLight.constant;;
 
 	return currColor / attenuation;
 }
 
-vec4 calcSpotLight(SpotLight spotLight, vec3 normal, float metallic, float roughness) {
+vec4 calcSpotLight(SpotLight spotLight, vec3 normal, float metallic, float roughness, float ao) {
 	vec3 direction = normalize(spotLight.base.position - vec3(data_in.fragPos));
 	float theta = dot(direction, normalize(-spotLight.direction));
 	
 	vec4 spotLightColor = vec4(0.f, 0.f, 0.f, 1.f);
 
 	if(theta > spotLight.edge) {
-		spotLightColor = calcPointLight(spotLight.base, normal, metallic, roughness);
+		spotLightColor = calcPointLight(spotLight.base, normal, metallic, roughness, ao);
 		float clampVal = 1.f - ((1.f - theta) * (1.f / (1.f - spotLight.edge)));
 		spotLightColor *= clampVal;
 	}
@@ -244,21 +249,21 @@ vec4 calcSpotLight(SpotLight spotLight, vec3 normal, float metallic, float rough
 	return spotLightColor;
 }
 
-vec4 calcPointLights(vec3 normal, float metallic, float roughness) {
+vec4 calcPointLights(vec3 normal, float metallic, float roughness, float ao) {
 	vec4 totalPointLightColor = vec4(0.f);
 
 	for(int i = 0; i < pointLightCount; i++) {
-		totalPointLightColor += calcPointLight(pointLights[i], normal, metallic, roughness);
+		totalPointLightColor += calcPointLight(pointLights[i], normal, metallic, roughness, ao);
 	}
 
 	return totalPointLightColor;
 }
 
-vec4 calcSpotLights(vec3 normal, float metallic, float roughness) {
+vec4 calcSpotLights(vec3 normal, float metallic, float roughness, float ao) {
 	vec4 totalSpotLightColor = vec4(0.f);
 
 	for(int i = 0; i < spotLightCount; i++) {
-		totalSpotLightColor += calcSpotLight(spotLights[i], normal, metallic, roughness);
+		totalSpotLightColor += calcSpotLight(spotLights[i], normal, metallic, roughness, ao);
 	}
 
 	return totalSpotLightColor;
@@ -286,14 +291,41 @@ void main() {
 	}
 
 	if(useMaterialMap) {
-		ao = texture(metallicMap, data_in.texel).r;
+		//ao = texture(metallicMap, data_in.texel).r;
+		ao = 1.f;
 		roughness = texture(metallicMap, data_in.texel).g;
 		metallic = texture(metallicMap, data_in.texel).b;
 	}
 
-	vec4 finalColor = calcDirectionalLights(normal, metallic, roughness) + 
-					  calcPointLights(normal, metallic, roughness) + 
-					  calcSpotLights(normal, metallic, roughness);
+	vec4 finalColor = calcDirectionalLights(normal, metallic, roughness, ao) + 
+					  calcPointLights(normal, metallic, roughness, ao) + 
+					  calcSpotLights(normal, metallic, roughness, ao);
+
+	vec3 F0 = vec3(0.04f);
+	F0 = mix(F0, material.albedo, metallic);
+
+	vec3 N = normalize(data_in.normal);
+	vec3 V = normalize(cameraPos - data_in.fragPos.xyz);
+
+	vec3 R = reflect(-V, N);
+	const float MAX_REFLECTION_LOD = 4.f;
+
+	vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.f), F0, roughness);	
+
+	vec3 kS = F;
+	vec3 kD = 1.f - kS;
+	kD *= 1.f - metallic;
+
+	vec3 irradiance = texture(irradianceMap, N).rgb;
+	vec3 diffuse = irradiance * material.albedo;
+
+	vec3 prefilteredColor = textureLod(prefilterMap, R, roughness * MAX_REFLECTION_LOD).rgb;
+	vec2 envBRDF = texture(brdfLUT, vec2(max(dot(N, V), 0.f), roughness)).rg;
+	vec3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
+
+	vec3 ambient = (kD * diffuse + specular) * ao;
+
+	finalColor += vec4(ambient, 0.f);
 
 	if (!useTexture) {
 		finalColor *= data_in.color;
@@ -304,10 +336,8 @@ void main() {
 		if(texColor.a < 0.1f)
 			discard;
 
-		finalColor *= texture(diffuseMap, data_in.texel);
+		finalColor *= texColor;
 	}
 
-	vec3 ambient = vec3(0.03f) * material.albedo * ao;
-
-	fragColor = finalColor + vec4(ambient, 0.f);
+	fragColor = finalColor;
 }

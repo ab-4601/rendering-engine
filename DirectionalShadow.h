@@ -2,7 +2,7 @@
 
 #include "Core.h"
 #include "Mesh.h"
-#include "DirectionalShadowShader.h"
+#include "Shader.h"
 
 class DirectionalShadow {
 private:
@@ -17,7 +17,7 @@ private:
 	glm::mat4 projection = glm::mat4(1.f);
 	glm::mat4 view = glm::mat4(1.f);
 
-	DirectionalShadowShader shader{};
+	Shader shader{ "directionalShadow.vert", "directionalShadow.frag" };
 
 	void checkFramebufferStatus(const char* errorMessage = nullptr);
 

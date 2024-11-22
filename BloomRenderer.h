@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BloomFBO.h"
-#include "PhysBloomShader.h"
+#include "Shader.h"
 #include "Quad.h"
 
 class BloomRenderer {
@@ -14,8 +14,8 @@ private:
 	glm::ivec2 srcViewportSize{ 0 };
 	glm::vec2 srcViewportSizeFLT{ 0.f };
 
-	PhysBloomShader upsampleShader{ "bloom.vert", "upsample.frag", true };
-	PhysBloomShader downsampleShader{ "bloom.vert", "downsample.frag" };
+	Shader upsampleShader{ "bloom.vert", "upsample.frag" };
+	Shader downsampleShader{ "bloom.vert", "downsample.frag" };
 
 	void renderDownsamples(GLuint srcTexture);
 	void renderUpsamples(float filterRadius);

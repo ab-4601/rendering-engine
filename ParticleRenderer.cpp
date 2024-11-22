@@ -128,10 +128,10 @@ void ParticleRenderer::render(const std::vector<CParticle*>& particles, const Wi
 
 	mat4 view = camera->generateViewMatrix();
 
-	glUseProgram(this->particleShader.getProgramID());
+	this->shader.useProgram();
 
-	glUniformMatrix4fv(this->particleShader.getUniformProjection(), 1, GL_FALSE, value_ptr(projection));
-	glUniform1f(this->particleShader.getUniformNumberOfRows(), this->texture.getNumberOfRows());
+	this->shader.setMat4("projectionMatrix", projection);
+	this->shader.setFloat("numberOfRows", this->texture.getNumberOfRows());
 	
 	for (auto& particle : particles) {
 		modelViewMatrix = mat4(1.f);

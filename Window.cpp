@@ -139,6 +139,7 @@ void Window::setupWindow() {
 
     // Enable depth buffer to avoid drawing over faces
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     // Create viewport
     glViewport(0, 0, this->bufferWidth, this->bufferHeight);

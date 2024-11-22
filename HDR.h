@@ -1,13 +1,7 @@
 #pragma once
 
 #include "Core.h"
-#include "HDRShader.h"
-#include "Quad.h"
-
-#pragma once
-
-#include "Core.h"
-#include "HDRShader.h"
+#include "Shader.h"
 #include "Quad.h"
 
 class HDR {
@@ -19,7 +13,7 @@ private:
 	GLuint intermediateFBO = 0;
 	GLuint screenBuffer = 0;
 
-	HDRShader shader;
+	Shader shader{ "hdr.vert", "hdr.frag" };
 	Quad quad;
 
 	void _initIntermediateFBO(int width, int height);

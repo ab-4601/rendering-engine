@@ -9,11 +9,11 @@ BloomRenderer::BloomRenderer(int windowWidth, int windowHeight) {
 void BloomRenderer::renderDownsamples(GLuint srcTexture) {
 	const std::vector<BloomMip>& mipChain = this->mFBO.mipChain();
 
-	glUseProgram(this->downsampleShader.getProgramID());
+	this->downsampleShader.useProgram();
 
-	glUniform1i(this->downsampleShader.getUniformSrcTexture(), 0);
-	glUniform2fv(this->downsampleShader.getUniformSrcResolution(), 1, glm::value_ptr(this->srcViewportSizeFLT));
-	glUniform1i(this->downsampleShader.getUniformMipLevel(), 0);
+	this->downsampleShader.setInt("srcTexture", 0);
+	this->downsampleShader.setVec2("srcResolution", this->srcViewportSizeFLT);
+	this->downsampleShader.setInt("mipLevel", 0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, srcTexture);
@@ -28,18 +28,21 @@ void BloomRenderer::renderDownsamples(GLuint srcTexture) {
 
 		quad.renderQuad();
 
-		glUniform2fv(this->downsampleShader.getUniformSrcResolution(), 1, glm::value_ptr(mip.size));
+		this->downsampleShader.setVec2("srcResolution", mip.size);
 
 		glBindTexture(GL_TEXTURE_2D, mip.texture);
 	}
+
+	this->downsampleShader.endProgram();
 }
 
 void BloomRenderer::renderUpsamples(float filterRadius) {
 	const std::vector<BloomMip>& mipChain = this->mFBO.mipChain();
 
-	glUseProgram(this->upsampleShader.getProgramID());
-	glUniform1i(this->upsampleShader.getUniformSrcTexture(), 0);
-	glUniform1f(this->upsampleShader.getUniformFilterRadius(), filterRadius);
+	this->upsampleShader.useProgram();
+
+	this->upsampleShader.setInt("srcTexture", 0);
+	this->upsampleShader.setFloat("filterRadius", filterRadius);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
@@ -60,6 +63,8 @@ void BloomRenderer::renderUpsamples(float filterRadius) {
 	}
 
 	glDisable(GL_BLEND);
+
+	this->upsampleShader.endProgram();
 }
 
 void BloomRenderer::_initIntermediateFBO(int width, int height) {

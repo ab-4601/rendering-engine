@@ -28,7 +28,8 @@ public:
 
 	void loadModel(std::string fileName = "");
 	void renderModel(
-		glm::mat4 lightSpaceTransform = glm::mat4(1.f), GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0
+		glm::mat4 lightSpaceTransform = glm::mat4(1.f), GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0,
+		GLuint irradianceMap = 0, GLuint brdfMap = 0, GLuint prefilterMap = 0
 	);
 	void clearModel();
 
