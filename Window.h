@@ -49,12 +49,16 @@ public:
 	inline unsigned int getWindowHeight() const { return this->windowHeight; }
 
 	inline bool getKeyPress(unsigned int keyVal) const { return this->keys[keyVal]; }
+
 	inline GLFWwindow* getGlfwWindow() const { return this->window; }
-	const Window* getCurrWindow() const { return this; }
-	void setLMBPressed(bool val) { this->LMBPressed = val; }
-	void setRMBPressed(bool val) { this->RMBPressed = val; }
+	inline const Window* getCurrWindow() const { return this; }
+
+	inline void setLMBPressed(bool val) { this->LMBPressed = val; }
+	inline void setRMBPressed(bool val) { this->RMBPressed = val; }
+
 	inline bool getLMBPressed() const { return this->LMBPressed; }
 	inline bool getRMBPressed() const { return this->RMBPressed; }
+
 	inline glm::vec2 getViewportCoord() const { return glm::vec2(this->viewportX, this->viewportY); }
 
 	GLfloat getXChange() {

@@ -44,8 +44,8 @@ vec3 aces(vec3 color) {
 }
 
 void main() {
-	vec3 hdrColor = texture(hdrBuffer, texel).rgb;
-	vec3 bloomColor = texture(bloomBuffer, texel).rgb;
+	vec3 hdrColor = texture2D(hdrBuffer, texel).rgb;
+	vec3 bloomColor = texture2D(bloomBuffer, texel).rgb;
 
 	hdrColor = mix(hdrColor, bloomColor, 0.04f);
 

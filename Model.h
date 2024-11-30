@@ -4,7 +4,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 
-#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_FlipWindingOrder | aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace)
+#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_FlipWindingOrder | aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_OptimizeMeshes)
 
 class Model {
 private:
@@ -19,17 +19,24 @@ private:
 	std::vector<GLfloat> vertices;
 	std::vector<uint> indices;
 
+	GLuint VAO{ 0 }, VBO{ 0 }, IBO{ 0 };
+
 	void _loadNode(aiNode* node, const aiScene* const scene);
 	void _loadMesh(aiMesh* mesh, const aiScene* const scene);
 	void _loadMaterialMap(const aiScene* const scene, std::vector<Texture*>& maps, aiTextureType textureType);
+	void createModel();
 
 public:
-	Model(std::string fileName = "", std::string texFolderPath = "");
+	Model(std::string fileName = "", std::string texFolderPath = "",
+		aiTextureType diffuseMap = aiTextureType_DIFFUSE,
+		aiTextureType normalMap = aiTextureType_NORMALS,
+		aiTextureType metallicMap = aiTextureType_METALNESS);
 
-	void loadModel(std::string fileName = "");
+	void loadModel(std::string fileName, aiTextureType diffuseMap, aiTextureType normalMap, aiTextureType metallicMap);
+
 	void renderModel(
-		glm::mat4 lightSpaceTransform = glm::mat4(1.f), GLuint directionalShadowMap = 0, GLuint pointShadowMap = 0,
-		GLuint irradianceMap = 0, GLuint brdfMap = 0, GLuint prefilterMap = 0
+		GLuint pointShadowMap = 0, GLuint cascadedShadowMap = 0, GLuint irradianceMap = 0,
+		GLuint brdfMap = 0, GLuint prefilterMap = 0
 	);
 	void clearModel();
 

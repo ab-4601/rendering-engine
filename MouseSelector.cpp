@@ -4,16 +4,15 @@ MouseSelector::MouseSelector(unsigned int windowWidth, unsigned int windowHeight
 	this->pixelInfo.init(windowWidth, windowHeight);
 }
 
-void MouseSelector::pickingPhase(std::vector<Mesh*>& meshes, const glm::mat4& projection,
-	const glm::mat4& view, GLuint framebuffer) 
+void MouseSelector::pickingPhase(std::vector<Mesh*>& meshes, const Camera& camera, GLuint framebuffer) 
 {
 	this->pixelInfo.enableWriting();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	this->shader.useProgram();
 
-	this->shader.setMat4("projection", projection);
-	this->shader.setMat4("view", view);
+	this->shader.setMat4("projection", camera.getProjectionMatrix());
+	this->shader.setMat4("view", camera.generateViewMatrix());
 
 	for (size_t i = 0; i < meshes.size(); i++) {
 		this->shader.setUint("objectIndex", meshes[i]->getObjectID() + 1);

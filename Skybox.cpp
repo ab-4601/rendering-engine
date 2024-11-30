@@ -257,13 +257,13 @@ void Skybox::_calculateBRDF(int windowWidth, int windowHeight) {
 	glViewport(0, 0, windowWidth, windowHeight);
 }
 
-void Skybox::renderSkybox(const glm::mat4& projection, const Camera& camera) {
+void Skybox::renderSkybox(const Camera& camera) {
 	glDepthFunc(GL_LEQUAL);
 
 	this->skyboxShader.useProgram();
 
 	this->skyboxShader.setInt("environmentMap", 0);
-	this->skyboxShader.setMat4("projection", projection);
+	this->skyboxShader.setMat4("projection", camera.getProjectionMatrix());
 	this->skyboxShader.setMat4("view", camera.generateViewMatrix());
 
 	glActiveTexture(GL_TEXTURE0);

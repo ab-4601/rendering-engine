@@ -17,7 +17,7 @@ out GEOM_DATA {
     vec3 normal;
 	vec3 tangent;
     vec4 fragPos;
-	vec4 lightSpaceFragPos;
+	mat4 view;
 } data_out;
 
 uniform mat4 model;
@@ -33,7 +33,7 @@ void main() {
 		data_out.fragPos = model * data_in[i].fragPos;
 		data_out.normal = mat3(transpose(inverse(model))) * data_in[i].normal;
 		data_out.tangent = mat3(transpose(inverse(model))) * data_in[i].tangent;
-		data_out.lightSpaceFragPos = lightSpaceTransform * data_out.fragPos;
+		data_out.view = view;
 		gl_Position = projection * view * model * gl_in[i].gl_Position;
 		EmitVertex();
 	}

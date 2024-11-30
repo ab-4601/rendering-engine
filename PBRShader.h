@@ -9,11 +9,12 @@ class PBRShader : public IShaderLoader {
 private:
 	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformColor{ 0 }, uniformView{ 0 };
 	GLuint uniformEyePosition{ 0 }, uniformAlbedo{ 0 }, uniformMetallic{ 0 }, uniformRoughness{ 0 }, uniformAo{ 0 };
-	GLuint uniformTextureBool{ 0 }, uniformUseNormalMap{ 0 }, uniformUseMaterialMap{ 0 };
-	GLuint uniformIrradianceSampler{ 0 }, uniformBRDFSampler{ 0 }, uniformPrefilterSampler{ 0 };
+	GLuint uniformTextureBool{ 0 }, uniformUseNormalMap{ 0 }, uniformUseMaterialMap{ 0 }, uniformSSAObool{ 0 };
+	GLuint uniformCSMSampler{ 0 }, uniformCascadePlaneDistances[::MAX_CASCADES], uniformCascadeCount{ 0 };
+	GLuint uniformIrradianceSampler{ 0 }, uniformBRDFSampler{ 0 }, uniformPrefilterSampler{ 0 }, uniformSSAOSampler{ 0 };
 	GLuint uniformDiffuseSampler{ 0 }, uniformNormalSampler{ 0 }, uniformMetallicSampler{ 0 }, uniformRoughnessSampler{ 0 };
 	GLuint uniformHeightScale{ 0 }, uniformDepthSampler{ 0 }, uniformLightSpaceTransform{ 0 }, uniformCalcShadows{ 0 };
-	GLuint uniformPointShadowSampler{ 0 }, uniformDirectionalShadowSampler{ 0 }, uniformFarPlane{ 0 };
+	GLuint uniformPointShadowSampler{ 0 }, uniformFarPlane{ 0 };
 
 	GLuint uniformPointLightCount = 0;
 
@@ -85,12 +86,16 @@ public:
 	inline GLuint getUniformIrradianceSampler() const { return this->uniformIrradianceSampler; }
 	inline GLuint getUniformBRDFSampler() const { return this->uniformBRDFSampler; }
 	inline GLuint getUniformPrefilterSampler() const { return this->uniformPrefilterSampler; }
+	inline GLuint getUniformSSAOSampler() const { return this->uniformSSAOSampler; }
 	inline GLuint getUniformHeightScale() const { return this->uniformHeightScale; }
 	inline GLuint getUniformPointShadowSampler() const { return this->uniformPointShadowSampler; }
 	inline GLuint getUniformFarPlane() const { return this->uniformFarPlane; }
-	inline GLuint getUniformDirectionalShadowSampler() const { return this->uniformDirectionalShadowSampler; }
+	inline GLuint getUniformCascadePlaneDistance(int index) const { return this->uniformCascadePlaneDistances[index]; }
+	inline GLuint getUniformCascadeCount() const { return this->uniformCascadeCount; }
+	inline GLuint getUniformCSMSampler() const { return this->uniformCSMSampler; }
 	inline GLuint getUniformLightSpaceTransform() const { return this->uniformLightSpaceTransform; }
 	inline GLuint getUniformCalcShadows() const { return this->uniformCalcShadows; }
+	inline GLuint getUniformSSAObool() const { return this->uniformSSAObool; }
 
 	inline GLuint getUniformAlbedo() const { return this->uniformAlbedo; }
 	inline GLuint getUniformMetallic() const { return this->uniformMetallic; }

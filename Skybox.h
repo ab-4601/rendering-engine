@@ -10,7 +10,7 @@ class Skybox : public Texture {
 private:
     static const int CUBEMAP_WIDTH = 1024, CUBEMAP_HEIGHT = 1024;
     static const int CONVOLUTION_WIDTH = 64, CONVOLUTION_HEIGHT = 64;
-    static const int PREFILTER_WIDTH = 256, PREFILTER_HEIGHT = 256;
+    static const int PREFILTER_WIDTH = 512, PREFILTER_HEIGHT = 512;
 
     GLuint VAO{ 0 }, VBO{ 0 };
 
@@ -99,7 +99,7 @@ public:
     Skybox(int windowWidth, int windowHeight, const char* fileName = "Textures/skybox/village_cloudy_sky_dome_4k.hdr");
 
 	void loadEquirectangularMap(const char* file_name);
-    void renderSkybox(const glm::mat4& projection, const Camera& camera);
+    void renderSkybox(const Camera& camera);
 
     inline GLuint getIrradianceMap() const { return this->irradianceMap; }
     inline GLuint getBRDFTexture() const { return this->brdfTexture; };

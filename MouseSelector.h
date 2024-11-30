@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Window.h"
+#include "Camera.h"
 #include "Mesh.h"
 #include "Shader.h"
 #include "SelectionTexture.h"
@@ -13,8 +14,7 @@ private:
 public:
 	MouseSelector(unsigned int windowWidth, unsigned int windowHeight);
 
-	void pickingPhase(std::vector<Mesh*>& meshes, const glm::mat4& projection,
-		const glm::mat4& view, GLuint framebuffer = 0);
+	void pickingPhase(std::vector<Mesh*>& meshes, const Camera& camera, GLuint framebuffer = 0);
 	int mouseSelectionResult(int windowHeight, int x, int y);
 
 	~MouseSelector() = default;

@@ -163,6 +163,21 @@
     <Filter Include="Shaders\Skybox\IBL">
       <UniqueIdentifier>{5128bad9-6e93-445d-a80b-83be50aa1af2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\SSAO">
+      <UniqueIdentifier>{3a700417-1e54-4298-92fe-3feba7e49a58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\GBuffer">
+      <UniqueIdentifier>{8b5f11e0-9fa4-42af-95f7-de08502d8991}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Shadow\Point Shadows">
+      <UniqueIdentifier>{479607ea-627b-4071-8fd1-7d8b62399e70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Shadow\Directional Shadows">
+      <UniqueIdentifier>{8d0e25e3-b66d-41ec-9b28-81ec3092a68a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Shadow\Cascaded Shadows">
+      <UniqueIdentifier>{94ad9684-6360-4ede-b382-28b40fce50a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -325,6 +340,12 @@
       <Filter>Source Files\CoreDependencies\ShaderLoaders</Filter>
     </ClCompile>
     <ClCompile Include="LightSources.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SSAO.cpp">
+      <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GBuffer.cpp">
       <Filter>Source Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -500,6 +521,12 @@
     <ClInclude Include="LightSources.h">
       <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
     </ClInclude>
+    <ClInclude Include="SSAO.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Header Files\CoreDependencies\CoreHeaders\Scene Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="particle.frag">
@@ -592,21 +619,6 @@
     <None Include="HDRskybox.frag">
       <Filter>Shaders\Skybox</Filter>
     </None>
-    <None Include="shadow.vert">
-      <Filter>Shaders\Shadow</Filter>
-    </None>
-    <None Include="shadow.frag">
-      <Filter>Shaders\Shadow</Filter>
-    </None>
-    <None Include="shadow.geom">
-      <Filter>Shaders\Shadow</Filter>
-    </None>
-    <None Include="directionalShadow.vert">
-      <Filter>Shaders\Shadow</Filter>
-    </None>
-    <None Include="directionalShadow.frag">
-      <Filter>Shaders\Shadow</Filter>
-    </None>
     <None Include="HDRskybox.vert">
       <Filter>Shaders\Skybox</Filter>
     </None>
@@ -633,6 +645,48 @@
     </None>
     <None Include="brdf.frag">
       <Filter>Shaders\Skybox\IBL</Filter>
+    </None>
+    <None Include="particle.comp">
+      <Filter>Shaders\Particle</Filter>
+    </None>
+    <None Include="ssao.vert">
+      <Filter>Shaders\SSAO</Filter>
+    </None>
+    <None Include="ssao.frag">
+      <Filter>Shaders\SSAO</Filter>
+    </None>
+    <None Include="gbuffer.vert">
+      <Filter>Shaders\GBuffer</Filter>
+    </None>
+    <None Include="gbuffer.frag">
+      <Filter>Shaders\GBuffer</Filter>
+    </None>
+    <None Include="ssaoBlur.frag">
+      <Filter>Shaders\SSAO</Filter>
+    </None>
+    <None Include="directionalShadow.frag">
+      <Filter>Shaders\Shadow\Directional Shadows</Filter>
+    </None>
+    <None Include="directionalShadow.vert">
+      <Filter>Shaders\Shadow\Directional Shadows</Filter>
+    </None>
+    <None Include="shadow.frag">
+      <Filter>Shaders\Shadow\Point Shadows</Filter>
+    </None>
+    <None Include="shadow.geom">
+      <Filter>Shaders\Shadow\Point Shadows</Filter>
+    </None>
+    <None Include="shadow.vert">
+      <Filter>Shaders\Shadow\Point Shadows</Filter>
+    </None>
+    <None Include="CSM.vert">
+      <Filter>Shaders\Shadow\Cascaded Shadows</Filter>
+    </None>
+    <None Include="CSM.frag">
+      <Filter>Shaders\Shadow\Cascaded Shadows</Filter>
+    </None>
+    <None Include="CSM.geom">
+      <Filter>Shaders\Shadow\Cascaded Shadows</Filter>
     </None>
   </ItemGroup>
 </Project>

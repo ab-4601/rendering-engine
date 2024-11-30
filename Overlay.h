@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "Mesh.h"
+#include "Camera.h"
 #include "Window.h"
 
 class Overlay {
@@ -19,6 +20,7 @@ private:
 
 	void DrawVec3Control(const std::string& label, float* values, float resetValue = 0.f, float columnWidth = 120.f);
 	void DrawDragFloat(const std::string& label, float* values, float speed = 1.f, float columnWidth = 120.f);
+	void DrawSliderFloat(const std::string& label, float* values, float min, float max, float columnWidth = 120.f);
 
 public:
 	Overlay() : transformOperation{ ImGuizmo::TRANSLATE }, mainfont{ nullptr } {};
@@ -28,10 +30,11 @@ public:
 	void _newFrame();
 	void _updateTransformOperation(const Window& window);
 	void renderGUIWindow(
-		ImGuiIO& io, float& exposure, float& filterRadius, bool& drawSkybox, bool& enableBloom, bool& enableWireframe, 
-		bool& enableShadows, bool& enableHDR, glm::vec3& dirLightLocation, Mesh* currMesh = nullptr
+		ImGuiIO& io, float& exposure, float& filterRadius, bool& drawSkybox, bool& displayGrid,
+		bool& displayCoordinateSystem, bool& enableBloom, bool& enableWireframe, 
+		bool& enableShadows, bool& enableHDR, bool& enableSSAO, glm::vec3& dirLightLocation, Mesh* currMesh = nullptr
 	);
-	void renderTransformWidget(int bufferWidth, int bufferHeight, glm::mat4& projection, glm::mat4& view, Mesh* mesh);
+	void renderTransformWidget(int bufferWidth, int bufferHeight, const Camera& camera, Mesh* mesh);
 
 	~Overlay();
 };

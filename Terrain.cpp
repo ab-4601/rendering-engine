@@ -129,8 +129,6 @@ void Terrain::generateTerrain(float scale) {
 	this->scale = scale;
 	float height = 0.f;
 	
-	int count = (int)this->heightMaps.size();
-
 	std::vector<float> finalHeightMap{};
 
 	for (int i = 0; i < this->rows * this->cols; i++) {

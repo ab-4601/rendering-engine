@@ -24,8 +24,8 @@ public:
 	void generateParticles(glm::vec3 &systemCenter, float rotationAngle = 0.f);
 
 	void renderParticles(const Window* const currWindow, const Camera* const camera,
-		glm::mat4& model, const glm::mat4& projection) {
-		this->master.renderParticles(currWindow, camera, model, projection);
+		glm::mat4& model) {
+		this->master.renderParticles(currWindow, camera, model, camera->getProjectionMatrix());
 	}
 
 	void updateParticles(float delta, glm::vec3 cameraPosition) {

@@ -3,7 +3,7 @@
 Window::Window()
     : window{ nullptr }, windowWidth{ 0 }, windowHeight{ 0 }, bufferWidth { 0 }, bufferHeight{ 0 },
     lastX{ 0.f }, lastY{ 0.f }, XChange{ 0.f }, YChange{ 0.f }, mouseFirstMoved{ true }, scrollChange{ 0.f }, 
-    LMBPressed{ false }, RMBPressed{ false }, viewportX{ 0 }, viewportY{ 0 } {
+    LMBPressed{ false }, RMBPressed{ false }, viewportX{0}, viewportY{0} {
 
     for (size_t i = 0; i < 1024; i++)
         this->keys[i] = false;

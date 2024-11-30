@@ -17,11 +17,13 @@ ImGuiIO& Overlay::_init(GLFWwindow* window) {
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowBorderSize = 1.f;
     style.WindowRounding = 8.f;
-    style.Colors[ImGuiCol_Border] = ImVec4(253.f / 255.f, 106.f / 255.f, 0.f / 255.f, 1.f);
-    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(253.f / 255.f, 106.f / 255.f, 0.f / 255.f, 1.f);
+    style.Colors[ImGuiCol_Border] = ImVec4(0.9f, 0.41f, 0.f, 1.f);
+    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.9f, 0.41f, 0.f, 1.f);
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.f, 0.f, 0.f, 0.9f);
     style.Colors[ImGuiCol_FrameBg] = ImVec4(0.05f, 0.05f, 0.05f, 1.f);
     style.Colors[ImGuiCol_Header] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.9f, 0.41f, 0.f, 1.f);
+    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.9f, 0.41f, 0.f, 1.f);
     style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.4f, 0.4f, 0.4f, 1.f);
     style.Colors[ImGuiCol_HeaderHovered] = style.Colors[ImGuiCol_FrameBgHovered];
 
@@ -116,34 +118,55 @@ void Overlay::DrawDragFloat(const std::string& label, float* values, float speed
     ImGui::PopID();
 }
 
-void Overlay::renderGUIWindow(ImGuiIO& io, float& exposure, float& filterRadius, bool& drawSkybox,bool& enableBloom, 
-    bool& enableWireframe, bool& enableShadows, bool& enableHDR, glm::vec3& dirLightLocation, Mesh* currMesh) 
+void Overlay::DrawSliderFloat(const std::string& label, float* values, float min, float max, float columnWidth) 
+{
+    ImGui::PushID(label.c_str());
+
+    ImGui::Columns(2);
+    ImGui::SetColumnWidth(0, columnWidth);
+    ImGui::Text(label.c_str());
+    ImGui::NextColumn();
+
+    std::string labelID = "##" + label;
+    ImGui::SliderFloat(labelID.c_str(), values, min, max, "%.4f");
+    ImGui::Columns(1);
+    ImGui::PopID();
+}
+
+void Overlay::renderGUIWindow(ImGuiIO& io, float& exposure, float& filterRadius, bool& drawSkybox, bool& displayGrid,
+    bool& displayCoordinateSystem, bool& enableBloom, bool& enableWireframe, bool& enableShadows,
+    bool& enableHDR, bool& enableSSAO, glm::vec3& dirLightLocation, Mesh* currMesh) 
 {
     ImGui::PushFont(this->mainfont);
-    ImGui::Begin("ImGui window");
+    ImGui::Begin("Scene Information and modifiers");
 
-    ImGui::Text("Scene Information and modifiers");
     ImGui::Checkbox("Render Skybox", &drawSkybox);
+    ImGui::Checkbox("Display Coordinate System", &displayCoordinateSystem);
+    ImGui::Checkbox("Display Grid", &displayGrid);
     ImGui::Checkbox("Bloom", &enableBloom);
     ImGui::Checkbox("HDR", &enableHDR);
     ImGui::Checkbox("Wireframe", &enableWireframe);
     ImGui::Checkbox("Shadows", &enableShadows);
+    ImGui::Checkbox("SSAO", &enableSSAO);
+    ImGui::NewLine();
 
     this->DrawDragFloat("Exposure", &exposure, 0.01f, 150.f);
     this->DrawDragFloat("Filter Radius", &filterRadius, 0.0001f, 150.f);
     ImGui::NewLine();
 
     if (ImGui::TreeNode("Material Properties")) {
-        ImGui::Columns(2);
-        ImGui::SetColumnWidth(0, 120.f);
-        ImGui::Text("Albedo");
-        ImGui::NextColumn();
-        ImGui::ColorEdit4("##color", this->colorBuffer);
-        ImGui::Columns(1);
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 3.f);
+            ImGui::Columns(2);
+            ImGui::SetColumnWidth(0, 120.f);
+            ImGui::Text("Albedo");
+            ImGui::NextColumn();
+            ImGui::ColorEdit4("##color", this->colorBuffer);
+            ImGui::Columns(1);
 
-        this->DrawDragFloat("Metallic", &this->metallic, 0.01f);
-        this->DrawDragFloat("Roughness", &this->roughness, 0.01f);
-        this->DrawDragFloat("AO", &this->ao, 0.01f);
+            this->DrawSliderFloat("Metallic", &this->metallic, 0.f, 1.f);
+            this->DrawSliderFloat("Roughness", &this->roughness, 0.f, 1.f);
+            this->DrawSliderFloat("AO", &this->ao, 0.f, 1.f);
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 3.f);
 
         ImGui::TreePop();
     }
@@ -191,16 +214,14 @@ void Overlay::renderGUIWindow(ImGuiIO& io, float& exposure, float& filterRadius,
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Overlay::renderTransformWidget(int windowWidth, int windowHeight, glm::mat4& projection, glm::mat4& view, 
-    Mesh* mesh)
-{
+void Overlay::renderTransformWidget(int windowWidth, int windowHeight, const Camera& camera, Mesh* mesh) {
     ImGuizmo::BeginFrame();
     ImGuizmo::Enable(true);
     ImGuizmo::AllowAxisFlip(false);
     ImGuizmo::SetOrthographic(false);
     ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
     ImGuizmo::SetRect(0, 0, windowWidth, windowHeight);
-    ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection),
+    ImGuizmo::Manipulate(glm::value_ptr(camera.generateViewMatrix()), glm::value_ptr(camera.getProjectionMatrix()),
         transformOperation, ImGuizmo::WORLD, glm::value_ptr(mesh->getModelMatrix()));
     ImGuizmo::DecomposeMatrixToComponents(
         glm::value_ptr(mesh->getModelMatrix()), this->translation, this->rotation, this->scale

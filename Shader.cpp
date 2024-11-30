@@ -2,8 +2,8 @@
 
 Shader::Shader(std::string vertFileName, std::string fragFileName, std::string geomFileName)
 	: vertexShader{ nullptr }, fragmentShader{ nullptr }, geometryShader{ nullptr },
-	vertFileName{ vertFileName }, fragFileName{ fragFileName }, geomFileName{ geomFileName },
-	vertexShaderID{ 0 }, fragmentShaderID{ 0 }, geometryShaderID{ 0 }, programID{ 0 } 
+	vertFileName{ vertFileName }, fragFileName{ fragFileName }, geomFileName{ geomFileName }, compFileName{ "" },
+	vertexShaderID{ 0 }, fragmentShaderID{ 0 }, geometryShaderID{ 0 }, computeShaderID{ 0 }, programID { 0 }
 {
 	this->readFile(this->vertFileName, this->vertexShader);
 	this->readFile(this->fragFileName, this->fragmentShader);
@@ -23,6 +23,18 @@ Shader::Shader(std::string vertFileName, std::string fragFileName, std::string g
 
 	glDeleteShader(this->vertexShaderID);
 	glDeleteShader(this->fragmentShaderID);
+}
+
+Shader::Shader(std::string compFileName)
+	: vertexShader{ nullptr }, fragmentShader{ nullptr }, geometryShader{ nullptr },
+	vertFileName{ "" }, fragFileName{ "" }, geomFileName{ "" }, compFileName{ compFileName },
+	vertexShaderID{ 0 }, fragmentShaderID{ 0 }, geometryShaderID{ 0 }, computeShaderID{ 0 }, programID{ 0 }
+{
+	this->readFile(this->compFileName, this->computeShader);
+	this->compileShader(this->computeShaderID, this->computeShader, GL_COMPUTE_SHADER);
+	this->attachShader({ this->computeShaderID });
+
+	glDeleteShader(this->computeShaderID);
 }
 
 void Shader::readFile(std::string fileName, char*& shader) {

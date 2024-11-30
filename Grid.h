@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Camera.h"
 #include "Shader.h"
 
 class Grid {
@@ -23,7 +24,7 @@ private:
 public:
 	Grid();
 
-	void renderGrid(glm::mat4& model, const glm::mat4& projection, const glm::mat4& view, glm::vec3 camPos);
+	void renderGrid(glm::mat4& model, const Camera& camera);
 
 	~Grid();
 };

@@ -35,17 +35,17 @@ void CoordinateSystem::createCoordinateSystem() {
 }
 
 void CoordinateSystem::drawCoordinateSystem(GLint windowHeight, GLint windowWidth, GLint bufferWidth,
-    GLint bufferHeight, const Camera* const camera, glm::mat4& model, const glm::mat4& projection) 
+    GLint bufferHeight, const Camera* const camera) 
 {
     this->shader.useProgram();
 
-    model = glm::mat4(1.f);
+    this->model = glm::mat4(1.f);
 
-    this->shader.setMat4("projection", projection);
+    this->shader.setMat4("projection", camera->getProjectionMatrix());
     this->shader.setMat4("view", camera->generateViewMatrix());
 
-    model = glm::scale(model, glm::vec3(INT_MAX));
-    this->shader.setMat4("model", model);
+    this->model = glm::scale(this->model, glm::vec3(INT_MAX));
+    this->shader.setMat4("model", this->model);
 
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(5.f);
@@ -55,13 +55,13 @@ void CoordinateSystem::drawCoordinateSystem(GLint windowHeight, GLint windowWidt
         elem->renderMesh();
     }
 
-    model = glm::mat4(1.f);
+    this->model = glm::mat4(1.f);
 
     glm::vec3 axisPosition = camera->getCameraPosition() + glm::normalize(camera->getCameraLookDirection()) * 100.f;
-    model = glm::translate(model, axisPosition);
-    model = glm::scale(model, glm::vec3(200.f));
+    this->model = glm::translate(this->model, axisPosition);
+    this->model = glm::scale(this->model, glm::vec3(200.f));
 
-    this->shader.setMat4("model", model);
+    this->shader.setMat4("model", this->model);
 
     glViewport(windowWidth / 50, windowHeight / 50, bufferWidth / 12, bufferHeight / 12);
 

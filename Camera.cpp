@@ -1,11 +1,16 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position, glm::vec3 worldUpDir, GLfloat pitch, GLfloat yaw, GLfloat moveSpeed, GLfloat turnSpeed) :
+Camera::Camera(glm::vec3 position, int windowWidth, int windowHeight, glm::vec3 worldUpDir,
+	GLfloat pitch, GLfloat yaw, GLfloat moveSpeed, GLfloat turnSpeed) :
 	position{ position }, worldUpDir{ worldUpDir }, pitch{ pitch }, yaw{ yaw },
-	movementSpeed{ moveSpeed }, turnSpeed{ turnSpeed }, movementSpeedMultiplier{ 1.f } {
+	movementSpeed{ moveSpeed }, turnSpeed{ turnSpeed }, movementSpeedMultiplier{ 1.f } 
+{
 
 	glm::vec3 origin(0.f, 0.f, 0.f);
 	this->front = glm::normalize(this->position - origin);
+
+	float aspect = (float)windowWidth / windowHeight;
+	this->projection = glm::perspective(glm::radians(45.f), aspect, ::near_plane, ::far_plane);
 
 	update();
 }

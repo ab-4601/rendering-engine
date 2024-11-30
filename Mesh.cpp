@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 Mesh::Mesh()
-	: VAO{ 0 }, VBO{ 0 }, IBO{ 0 }, color{ 1.f, 1.f, 1.f }, model{ glm::mat4(1.f) }, objectID{ 0 },
+	: VAO{ 0 }, VBO{ 0 }, IBO{ 0 }, color{ 1.f, 1.f, 1.f }, model{ glm::mat4(1.f) }, objectID{ 0 }, enableSSAO{ false },
 	useTexture{ false }, drawIndexed{ false }, useNormalMap{ false }, calcShadows{ false }, useMaterialMap{ false }
 {
 	meshList.push_back(this);
@@ -243,9 +243,9 @@ void Mesh::createModel() {
 	glBindVertexArray(0);
 }
 
-void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>& pointLights, int pointLightCount, 
-	std::vector<SpotLight>& spotLights, int spotLightCount, const glm::mat4& projection, 
-	const glm::mat4& view, glm::vec3 cameraPos)
+void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>& pointLights, int pointLightCount,
+	std::vector<SpotLight>& spotLights, int spotLightCount, int numCascades, std::vector<float> cascadePlanes,
+	const Camera& camera)
 {
 	glUseProgram(this->shader.getProgramID());
 
@@ -253,49 +253,37 @@ void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>
 	this->shader.setPointLights(pointLights.data(), pointLightCount);
 	this->shader.setSpotLights(spotLights.data(), spotLightCount);
 
-	glUniformMatrix4fv(this->shader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(view));
-	glUniform3fv(this->shader.getEyePosition(), 1, glm::value_ptr(cameraPos));
+	glUniformMatrix4fv(this->shader.getUniformProjection(), 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
+	glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(camera.generateViewMatrix()));
+	glUniform3fv(this->shader.getEyePosition(), 1, glm::value_ptr(camera.getCameraPosition()));
 	glUniform1f(this->shader.getUniformFarPlane(), ::far_plane);
+	glUniform1i(this->shader.getUniformCascadeCount(), numCascades);
 	glUniform1i(this->shader.getUniformCalcShadows(), this->calcShadows);
+	glUniform1i(this->shader.getUniformSSAObool(), this->enableSSAO);
+
+	for (int i = 0; i < cascadePlanes.size(); i++)
+		glUniform1f(this->shader.getUniformCascadePlaneDistance(i), cascadePlanes[i]);
 
 	glUniform1i(this->shader.getUniformDiffuseSampler(), 0);
 	glUniform1i(this->shader.getUniformNormalSampler(), 1);
 	glUniform1i(this->shader.getUniformDepthSampler(), 2);
 	glUniform1i(this->shader.getUniformMetallicSampler(), 3);
 	glUniform1i(this->shader.getUniformRoughnessSampler(), 4);
-	glUniform1i(this->shader.getUniformDirectionalShadowSampler(), 5);
-	glUniform1i(this->shader.getUniformPointShadowSampler(), 6);
+	glUniform1i(this->shader.getUniformBRDFSampler(), 5);
+	glUniform1i(this->shader.getUniformPrefilterSampler(), 6);
 	glUniform1i(this->shader.getUniformIrradianceSampler(), 7);
-	glUniform1i(this->shader.getUniformPrefilterSampler(), 8);
-	glUniform1i(this->shader.getUniformBRDFSampler(), 9);
+	glUniform1i(this->shader.getUniformPointShadowSampler(), 8);
+	glUniform1i(this->shader.getUniformCSMSampler(), 9);
 }
 
 void Mesh::setMeshMaterial(float roughness, float metallic, float ao) {
-	if (roughness < 0.f)
-		this->roughness = 0.f;
-	else if (roughness > 1.f)
-		this->roughness = 1.f;
-	else
-		this->roughness = roughness;
-
-	if (metallic > 1.f)
-		this->metallic = 1.f;
-	else if (metallic < 0.f)
-		this->metallic = 0.f;
-	else
-		this->metallic = metallic;
-
-	if (ao > 1.f)
-		this->ao = 1.f;
-	else if (ao < 0.f)
-		this->ao = 0.f;
-	else
-		this->ao = ao;
+	this->roughness = roughness;
+	this->metallic = metallic;
+	this->ao = ao;
 }
 
-void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform,
-	GLuint directionalShadowMap, GLuint pointShadowMap, GLuint irradianceMap, GLuint brdfSampler, GLuint prefilterSampler)
+void Mesh::renderMesh(GLenum renderMode, GLuint pointShadowMap, GLuint cascadedShadowMap,
+	GLuint irradianceMap, GLuint brdfSampler, GLuint prefilterSampler)
 {
 	glUniform3fv(this->shader.getUniformAlbedo(), 1, glm::value_ptr(this->color));
 	glUniform1f(this->shader.getUniformAo(), this->ao);
@@ -307,25 +295,24 @@ void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform,
 	glUniform1i(this->shader.getUniformUseMaterialMap(), this->useMaterialMap);
 
 	glUniformMatrix4fv(this->shader.getUniformModel(), 1, GL_FALSE, glm::value_ptr(this->model));
-	glUniformMatrix4fv(this->shader.getUniformLightSpaceTransform(), 1, GL_FALSE, glm::value_ptr(lightSpaceTransform));
 	glUniform3fv(this->shader.getUniformColor(), 1, glm::value_ptr(this->color));
-	glBindVertexArray(this->VAO);
 
 	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_2D, directionalShadowMap);
+	glBindTexture(GL_TEXTURE_2D, brdfSampler);
 
 	glActiveTexture(GL_TEXTURE6);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, pointShadowMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterSampler);
 
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
 
 	glActiveTexture(GL_TEXTURE8);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterSampler);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, pointShadowMap);
 
 	glActiveTexture(GL_TEXTURE9);
-	glBindTexture(GL_TEXTURE_2D, brdfSampler);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, cascadedShadowMap);
 
+	glBindVertexArray(this->VAO);
 	if (this->drawIndexed) {
 		glDrawElements(renderMode, static_cast<GLsizei>(this->indices.size()), GL_UNSIGNED_INT, this->indices.data());
 	}
@@ -336,29 +323,16 @@ void Mesh::renderMesh(GLenum renderMode, glm::mat4 lightSpaceTransform,
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glActiveTexture(GL_TEXTURE8);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-	glActiveTexture(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-	glActiveTexture(GL_TEXTURE6);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
 }
 
-void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection, const glm::mat4& view,
+void Mesh::renderMeshWithOutline(GLenum renderMode, const Camera& camera,
 	DirectionalLight& dirLight, std::vector<PointLight>& pointLights, int pointLightCount,
-	std::vector<SpotLight>& spotLights, int spotLightCount, glm::vec3 cameraPosition, 
-	glm::mat4 lightSpaceTransform, bool calcShadows, GLuint directionalShadowMap, GLuint pointShadowMap,
-	GLuint irradianceMap, GLuint brdfSampler, GLuint prefilterSampler)
+	std::vector<SpotLight>& spotLights, int spotLightCount, int numCascades, 
+	std::vector<float> cascadePlanes, bool calcShadows,
+	GLuint pointShadowMap, GLuint cascadedShadowMap, GLuint irradianceMap, GLuint brdfSampler, GLuint prefilterSampler)
 {
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -366,8 +340,7 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0xFF);
 
-	this->renderMesh(renderMode, lightSpaceTransform, directionalShadowMap,
-		pointShadowMap, irradianceMap, brdfSampler, prefilterSampler);
+	this->renderMesh(renderMode, pointShadowMap, cascadedShadowMap, irradianceMap, brdfSampler, prefilterSampler);
 
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilMask(0x00);
@@ -375,13 +348,13 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 
 	this->outlineShader.useProgram();
 
-	this->outlineShader.setMat4("projection", projection);
-	this->outlineShader.setMat4("view", view);
+	this->outlineShader.setMat4("projection", camera.getProjectionMatrix());
+	this->outlineShader.setMat4("view", camera.generateViewMatrix());
 
 	this->outlineModel = glm::scale(this->model, glm::vec3(1.05f, 1.05f, 1.05f));
 	this->outlineShader.setMat4("model", this->outlineModel);
 
-	this->renderMesh(renderMode);
+	this->renderMesh(GL_TRIANGLES);
 
 	glStencilMask(0xFF);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -391,7 +364,9 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const glm::mat4& projection,
 	this->setShadowBoolUniform(calcShadows);
 	this->outlineShader.endProgram();
 
-	this->setShader(dirLight, pointLights, pointLightCount, spotLights, spotLightCount, projection, view, cameraPosition);
+	this->setShader(
+		dirLight, pointLights, pointLightCount, spotLights, spotLightCount, numCascades, cascadePlanes, camera
+	);
 }
 
 void Mesh::clearMesh() {

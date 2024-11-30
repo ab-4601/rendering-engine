@@ -1,9 +1,11 @@
 #version 450 core
+#extension GL_NV_shadow_samplers_cube : enable
 
-const float PI = 3.14159265359;
+#define PI 3.1415926535897932384626433832795
 
 const int MAX_POINT_LIGHTS = 3;
 const int MAX_SPOT_LIGHTS = 3;
+const int MAX_CASCADES = 16;
 
 layout (location = 0) out vec4 fragColor;
 
@@ -13,7 +15,7 @@ in GEOM_DATA {
     vec3 normal;
 	vec3 tangent;
     vec4 fragPos;
-	vec4 lightSpaceFragPos;
+	mat4 view;
 } data_in;
 
 struct Light {
@@ -59,20 +61,28 @@ uniform sampler2D normalMap;
 uniform sampler2D depthMap;
 uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
-uniform sampler2D directionalShadowMap;
-uniform samplerCube pointShadowMap;
 uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
+uniform samplerCube pointShadowMap;
+uniform sampler2DArray cascadedShadowMap;
+uniform sampler3D noiseTexture;
 
 uniform bool useTexture;
 uniform bool useNormalMap;
 uniform bool useMaterialMap;
 uniform bool calcShadows;
+uniform bool enableSSAO;
 
 uniform float farPlane;
+uniform int cascadeCount;
+uniform float cascadePlaneDistances[MAX_CASCADES];
 
 uniform vec3 cameraPos;
+
+layout (std140, binding = 0) uniform LightSpaceMatrices {
+	mat4 lightSpaceMatrices[16];
+};
 
 //const float minLayers = 8.f;
 //const float maxLayers = 32.f;
@@ -87,11 +97,11 @@ uniform vec3 cameraPos;
 	//vec2 deltaTexel = P / numLayers;
 
 	//vec2 currTexel = data_in.texel;
-	//float currDepth = texture(depthMap, currTexel).r;
+	//float currDepth = texture2D(depthMap, currTexel).r;
 
 	//while(currentLayerDepth < currDepth) {
 		//currTexel -= deltaTexel;
-		//currDepth = texture(depthMap, currTexel).r;
+		//currDepth = texture2D(depthMap, currTexel).r;
 		//currentLayerDepth += layerDepth;
 	//}
 
@@ -142,40 +152,51 @@ float rand(vec2 v){
     return fract(sin(dot(v, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-const vec2 poissonSamples[] = vec2[](
-    vec2( 0.334,  0.334), vec2( 0.557,  0.334), vec2( 0.778,  0.334), vec2( 1.0,  0.334),
-    vec2( 0.334,  0.557), vec2( 0.557,  0.557), vec2( 0.778,  0.557), vec2( 1.0,  0.557),
-    vec2( 0.334,  0.778), vec2( 0.557,  0.778), vec2( 0.778,  0.778), vec2( 1.0,  0.778),
-    vec2( 0.334,  1.0),   vec2( 0.557,  1.0),   vec2( 0.778,  1.0),   vec2( 1.0,  1.0),
-    vec2( 0.25,   0.25),  vec2( 0.5,    0.25),  vec2( 0.75,   0.25),  vec2( 1.0,  0.25),
-    vec2( 0.25,   0.5),   vec2( 0.5,    0.5),   vec2( 0.75,   0.5),   vec2( 1.0,  0.5),
-    vec2( 0.25,   0.75),  vec2( 0.5,    0.75),  vec2( 0.75,   0.75),  vec2( 1.0,  0.75)
-);
+float calcCSMShadows() {
+	vec4 fragPosViewSpace = data_in.view * data_in.fragPos;
+	float depthVal = abs(fragPosViewSpace.z);
 
-float calculateDirectionalShadow() {
-	vec3 projectionCoords = data_in.lightSpaceFragPos.xyz / data_in.lightSpaceFragPos.w;
-	projectionCoords = projectionCoords * 0.5f + 0.5f;
+	int layer = -1;
+	for(int i = 0; i < cascadeCount; i++) {
+		if(depthVal < cascadePlaneDistances[i]) {
+			layer = i;
+			break;
+		}
+	}
 
-	float closestDepth = texture2D(directionalShadowMap, projectionCoords.xy).r;
-	float currentDepth = projectionCoords.z;
+	if(layer == -1)
+		layer = cascadeCount;
+
+	vec4 lightSpaceFragPos = lightSpaceMatrices[layer] * data_in.fragPos;
+	vec3 projCoords = lightSpaceFragPos.xyz / lightSpaceFragPos.w;
+	projCoords = projCoords * 0.5f + 0.5f;
+
+	float currentDepth = projCoords.z;
+
+	if(currentDepth > 1.f)
+		return 1.f;
+
+	const float biasModifier = 0.5f;
 
 	float shadow = 0.f;
-	float shadowSamples = 28.f;
-	float shadowThreshold = 0.6f;
+	float shadowSamples = 32.f;
 
-	float shadowMapVal = texture(directionalShadowMap, projectionCoords.xy).r;
-	float lightSpaceFragDepth = data_in.lightSpaceFragPos.z;
+	ivec3 offsetCoord;
+	vec2 f = mod(gl_FragCoord.xy, vec2(textureSize(noiseTexture, 0)));
+	offsetCoord.yz = ivec2(f);
+	float sum = 0.f;
 
-	// PCF with random sampling
-	if(abs(lightSpaceFragDepth - shadowMapVal) < shadowThreshold) {
-		for(float i = 0.f; i < shadowSamples; i++) {
-			vec2 randomOffset = poissonSamples[int(i)] * 2.f - 1.f;
-			randomOffset *= 0.001;
+	for(float i = 0.f; i < shadowSamples; i++) {
+		vec2 randomOffset = vec2(
+			rand(projCoords.xy + i) - 0.5f,
+			rand(projCoords.xy + i * 0.5f) - 0.5f
+		);
 
-			float sampleDepth = texture(directionalShadowMap, projectionCoords.xy + randomOffset).r;
+		randomOffset *= 0.001f;
 
-			shadow += currentDepth > sampleDepth ? 1.f : 0.f;
-		}
+		float sampleDepth = texture(cascadedShadowMap, vec3(randomOffset + projCoords.xy, layer)).r;
+
+		shadow += currentDepth > sampleDepth ? 1.f : 0.f;
 	}
 
 	shadow /= shadowSamples;
@@ -183,7 +204,7 @@ float calculateDirectionalShadow() {
 	return shadow;
 }
 
-vec4 calcPBRLighting(Light light, vec3 direction, vec3 normal, float metallic, float roughness, float ao) {
+vec4 calcPBRLighting(Light light, vec3 direction, vec3 normal, float metallic, float roughness) {
 	vec3 N = normalize(normal);
 	vec3 V = normalize(cameraPos - data_in.fragPos.xyz);
 
@@ -197,7 +218,7 @@ vec4 calcPBRLighting(Light light, vec3 direction, vec3 normal, float metallic, f
 
 	float NDF = DistributionGGX(N, H, roughness);
 	float G = GeometrySmith(N, V, L, roughness);
-	vec3 F = fresnelSchlick(max(dot(H, V), 0.f), F0);
+	vec3 F = fresnelSchlickRoughness(max(dot(H, V), 0.f), F0, roughness);
 
 	vec3 kS = F;
 	vec3 kD = 1.f - kS;
@@ -211,37 +232,37 @@ vec4 calcPBRLighting(Light light, vec3 direction, vec3 normal, float metallic, f
 	Lo = (kD / PI + specular) * light.color * NdotL;
 
 	if(calcShadows) {
-		float shadow = calculateDirectionalShadow();
+		float shadow = calcCSMShadows();
 		Lo = (1 - shadow) * Lo;
 	}
 
 	return vec4(Lo, 1.f);
 }
 
-vec4 calcDirectionalLights(vec3 normal, float metallic, float roughness, float ao) {
+vec4 calcDirectionalLights(vec3 normal, float metallic, float roughness) {
 	vec3 direction = directionalLight.direction;
-	return calcPBRLighting(directionalLight.base, direction, normal, metallic, roughness, ao);
+	return calcPBRLighting(directionalLight.base, direction, normal, metallic, roughness);
 }
 
-vec4 calcPointLight(PointLight pointLight, vec3 normal, float metallic, float roughness, float ao) {
+vec4 calcPointLight(PointLight pointLight, vec3 normal, float metallic, float roughness) {
 	vec3 direction = pointLight.position - vec3(data_in.fragPos);
 	float dist = length(direction);
 
-	vec4 currColor = calcPBRLighting(pointLight.base, direction, normal, metallic, roughness, ao);
+	vec4 currColor = calcPBRLighting(pointLight.base, direction, normal, metallic, roughness);
 	float attenuation = (pointLight.exponent * pow(dist, 2)) + 
 						(pointLight.linear * dist) + pointLight.constant;;
 
 	return currColor / attenuation;
 }
 
-vec4 calcSpotLight(SpotLight spotLight, vec3 normal, float metallic, float roughness, float ao) {
+vec4 calcSpotLight(SpotLight spotLight, vec3 normal, float metallic, float roughness) {
 	vec3 direction = normalize(spotLight.base.position - vec3(data_in.fragPos));
 	float theta = dot(direction, normalize(-spotLight.direction));
 	
 	vec4 spotLightColor = vec4(0.f, 0.f, 0.f, 1.f);
 
 	if(theta > spotLight.edge) {
-		spotLightColor = calcPointLight(spotLight.base, normal, metallic, roughness, ao);
+		spotLightColor = calcPointLight(spotLight.base, normal, metallic, roughness);
 		float clampVal = 1.f - ((1.f - theta) * (1.f / (1.f - spotLight.edge)));
 		spotLightColor *= clampVal;
 	}
@@ -249,21 +270,21 @@ vec4 calcSpotLight(SpotLight spotLight, vec3 normal, float metallic, float rough
 	return spotLightColor;
 }
 
-vec4 calcPointLights(vec3 normal, float metallic, float roughness, float ao) {
+vec4 calcPointLights(vec3 normal, float metallic, float roughness) {
 	vec4 totalPointLightColor = vec4(0.f);
 
 	for(int i = 0; i < pointLightCount; i++) {
-		totalPointLightColor += calcPointLight(pointLights[i], normal, metallic, roughness, ao);
+		totalPointLightColor += calcPointLight(pointLights[i], normal, metallic, roughness);
 	}
 
 	return totalPointLightColor;
 }
 
-vec4 calcSpotLights(vec3 normal, float metallic, float roughness, float ao) {
+vec4 calcSpotLights(vec3 normal, float metallic, float roughness) {
 	vec4 totalSpotLightColor = vec4(0.f);
 
 	for(int i = 0; i < spotLightCount; i++) {
-		totalSpotLightColor += calcSpotLight(spotLights[i], normal, metallic, roughness, ao);
+		totalSpotLightColor += calcSpotLight(spotLights[i], normal, metallic, roughness);
 	}
 
 	return totalSpotLightColor;
@@ -278,8 +299,9 @@ void main() {
 
 	if(useNormalMap) {
 		//texel = parallaxMapping(data_in.texel, eyePosition - vec3(data_in.fragPos));
-		normal = texture(normalMap, data_in.texel).rgb;
+		normal = texture2D(normalMap, data_in.texel).rgb;
 		normal = normalize(normal * 2.f - 1.f);
+		//normal = normalize(1.f - normal * 2.f);
 		
 		vec3 T = normalize(data_in.tangent);
 		vec3 N = normalize(data_in.normal);
@@ -291,20 +313,20 @@ void main() {
 	}
 
 	if(useMaterialMap) {
-		//ao = texture(metallicMap, data_in.texel).r;
-		ao = 1.f;
-		roughness = texture(metallicMap, data_in.texel).g;
-		metallic = texture(metallicMap, data_in.texel).b;
+		//ao = texture2D(metallicMap, data_in.texel).r;
+		ao = 0.5f;
+		roughness = texture2D(metallicMap, data_in.texel).g;
+		metallic = texture2D(metallicMap, data_in.texel).b;
 	}
 
-	vec4 finalColor = calcDirectionalLights(normal, metallic, roughness, ao) + 
-					  calcPointLights(normal, metallic, roughness, ao) + 
-					  calcSpotLights(normal, metallic, roughness, ao);
+	vec4 finalColor = calcDirectionalLights(normal, metallic, roughness) + 
+					  calcPointLights(normal, metallic, roughness) + 
+					  calcSpotLights(normal, metallic, roughness);
 
 	vec3 F0 = vec3(0.04f);
 	F0 = mix(F0, material.albedo, metallic);
 
-	vec3 N = normalize(data_in.normal);
+	vec3 N = normalize(normal);
 	vec3 V = normalize(cameraPos - data_in.fragPos.xyz);
 
 	vec3 R = reflect(-V, N);
@@ -316,11 +338,11 @@ void main() {
 	vec3 kD = 1.f - kS;
 	kD *= 1.f - metallic;
 
-	vec3 irradiance = texture(irradianceMap, N).rgb;
+	vec3 irradiance = textureCube(irradianceMap, N).rgb;
 	vec3 diffuse = irradiance * material.albedo;
 
 	vec3 prefilteredColor = textureLod(prefilterMap, R, roughness * MAX_REFLECTION_LOD).rgb;
-	vec2 envBRDF = texture(brdfLUT, vec2(max(dot(N, V), 0.f), roughness)).rg;
+	vec2 envBRDF = texture2D(brdfLUT, vec2(max(dot(N, V), 0.f), roughness)).rg;
 	vec3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
 
 	vec3 ambient = (kD * diffuse + specular) * ao;
@@ -331,7 +353,7 @@ void main() {
 		finalColor *= data_in.color;
 	}
 	else {
-		vec4 texColor = texture(diffuseMap, data_in.texel);
+		vec4 texColor = texture2D(diffuseMap, data_in.texel);
 
 		if(texColor.a < 0.1f)
 			discard;

@@ -1,12 +1,44 @@
 #include "Model.h"
 
-Model::Model(std::string fileName, std::string texFolderPath) : texFolderPath{ texFolderPath } {
+Model::Model(std::string fileName, std::string texFolderPath,
+	aiTextureType diffuseMap, aiTextureType normalMap, aiTextureType metallicMap)
+	: texFolderPath{ texFolderPath }
+{
 	this->meshList.clear();
 	this->meshToTex.clear();
 	this->diffuseMaps.clear();
 	this->heightMaps.clear();
 
-	this->loadModel(fileName);
+	this->loadModel(fileName, diffuseMap, normalMap, metallicMap);
+}
+
+void Model::createModel() {
+	glGenVertexArrays(1, &this->VAO);
+	glBindVertexArray(this->VAO);
+
+	glGenBuffers(1, &this->VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(float), this->vertices.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)(sizeof(float) * 5));
+	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (void*)(sizeof(float) * 8));
+	glEnableVertexAttribArray(3);
+
+	glGenBuffers(1, &this->IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(uint), this->indices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 void Model::_loadNode(aiNode* node, const aiScene* const scene) {
@@ -45,7 +77,6 @@ void Model::_loadMesh(aiMesh* mesh, const aiScene* const scene) {
 	currMesh->setObjectID(-1);
 	currMesh->setVertices(this->vertices);
 	currMesh->setIndices(this->indices);
-	currMesh->setMeshMaterial(1.f, 0.f, 0.f);
 	currMesh->createModel();
 
 	this->meshList.push_back(currMesh);
@@ -93,7 +124,7 @@ void Model::_loadMaterialMap(const aiScene* const scene, std::vector<Texture*>& 
 	}
 }
 
-void Model::loadModel(std::string fileName) {
+void Model::loadModel(std::string fileName, aiTextureType diffuseMap, aiTextureType normalMap, aiTextureType metallicMap) {
 	if (fileName == "") {
 		std::cout << "No file path specified" << std::endl;
 		return;
@@ -109,14 +140,14 @@ void Model::loadModel(std::string fileName) {
 	}
 
 	this->_loadNode(scene->mRootNode, scene);
-	this->_loadMaterialMap(scene, this->diffuseMaps, aiTextureType_DIFFUSE);
-	this->_loadMaterialMap(scene, this->normalMaps, aiTextureType_NORMALS);
-	this->_loadMaterialMap(scene, this->metalnessMaps, aiTextureType_METALNESS);
+	this->_loadMaterialMap(scene, this->diffuseMaps, diffuseMap);
+	this->_loadMaterialMap(scene, this->normalMaps, normalMap);
+	this->_loadMaterialMap(scene, this->metalnessMaps, metallicMap);
 	this->_loadMaterialMap(scene, this->heightMaps, aiTextureType_DIFFUSE_ROUGHNESS);
 }
 
-void Model::renderModel(glm::mat4 lightSpaceTransform, GLuint directionalShadowMap,
-	GLuint pointShadowMap, GLuint irradianceMap, GLuint brdfMap, GLuint prefilterMap) 
+void Model::renderModel(GLuint pointShadowMap, GLuint cascadedShadowMap, GLuint irradianceMap,
+	GLuint brdfMap, GLuint prefilterMap)
 {
 	for (size_t i = 0; i < this->meshList.size(); i++) {
 		uint materialIndex = this->meshToTex[i];
@@ -138,7 +169,8 @@ void Model::renderModel(glm::mat4 lightSpaceTransform, GLuint directionalShadowM
 		}
 
 		meshList[i]->renderMesh(
-			GL_TRIANGLES, lightSpaceTransform, directionalShadowMap, pointShadowMap, irradianceMap, brdfMap, prefilterMap
+			GL_TRIANGLES, pointShadowMap,
+			cascadedShadowMap, irradianceMap, brdfMap, prefilterMap
 		);
 
 		glBindTexture(GL_TEXTURE_2D, 0);

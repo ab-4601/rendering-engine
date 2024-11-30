@@ -2,37 +2,53 @@
 
 #include "Core.h"
 #include "Mesh.h"
+#include "Camera.h"
 #include "Shader.h"
 
 class CascadedShadows {
 private:
-	static const int shadowWidth = 1024, shadowHeight = 1024;
+	static const int shadowWidth = 4096, shadowHeight = 4096;
 	static const uint numCascades = 3;
 
-	GLuint FBO[numCascades];
-	GLuint shadowMaps[numCascades];
+	GLuint FBO{ 0 }, UBO{ 0 };
+	GLuint shadowMaps{ 0 }, randomOffset{ 0 };
 
-	float cascadeSplits[numCascades];
-	glm::mat4 lightSpaceMatrices[numCascades];
+	std::vector<float> cascadeSplits;
+	std::vector<float> offsetData;
+	std::vector<glm::mat4> lightSpaceMatrices;
+	std::vector<glm::vec4> frustumCorners;
 
-	Shader shader;
+	Shader shader{ "CSM.vert", "CSM.frag", "CSM.geom" };
+
+	float jitter(float x, float y) {
+		static std::default_random_engine generator;
+		static std::uniform_real_distribution<float> randomFloat(x, y);
+
+		return randomFloat(generator);
+	}
 
 	bool checkFramebufferStatus();
 	void calcSplitDepths(float lambda);
+	void calcFrustumCorners(const Camera& camera);
+	void genRandomOffsetData(int windowSize, int filterSize);
+	void genRandomOffsetTexture(int windowSize, int filterSize);
+
+	glm::mat4 calcLightSpaceMatrix(const Camera& camera, glm::vec3 lightDir, int windowWidth, int windowHeight,
+		const float& nearPlane, const float& farPlane);
+
+	void calcLightSpaceMatrices(const Camera& camera, glm::vec3 lightDir, int windowWidth, int windowHeight);
 
 public:
 	CascadedShadows(float lambda = 0.5f);
 
 	void _init();
 
-	std::vector<glm::vec3> calcFrustumCorners(const glm::mat4& view, const glm::mat4& projection);
-	void calcLightSpaceBoundingBox(
-		const std::vector<glm::vec3>& frustumCorners, glm::vec3& lightDirection,glm::vec3& outMin, glm::vec3& outMax
-	);
-	void calcLightSpaceMatrices(const glm::vec3& lightDirection, const glm::mat4& view, const glm::mat4& projection);
+	inline GLuint getNumCascades() const { return this->numCascades; }
+	inline GLuint csmDepthBuffer() const { return this->shadowMaps; }
+	inline std::vector<float> cascadePlanes() const { return this->cascadeSplits; }
 
-	void calculateShadows(int windowWidth, int windowHeight, std::vector<Mesh*>& meshes, glm::vec3 lightPosition,
-		GLuint currentFramebuffer = 0);
+	void calculateShadows(const Camera& camera, int windowWidth, int windowHeight, std::vector<Mesh*>& meshes, 
+		glm::vec3 lightPosition, GLuint currFramebuffer = 0);
 
 	~CascadedShadows();
 };
