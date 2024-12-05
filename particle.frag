@@ -1,6 +1,6 @@
 #version 450 core
 
-layout (location = 0) out vec4 fragColor;
+out vec4 fragColor;
 
 in GS_OUT {
 	vec4 color;
@@ -21,5 +21,5 @@ void main() {
 	if(finalColor.a < 0.1)
 		discard;
 
-	fragColor = pow(finalColor * 1.5f, vec4(2.2));
+	fragColor = pow(finalColor * 3.f, vec4(2.2));
 }

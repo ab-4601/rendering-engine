@@ -91,7 +91,7 @@ void SSAO::calcSSAO(GLuint gPosition, GLuint gNormal, const glm::mat4& projectio
 	glBindFramebuffer(GL_FRAMEBUFFER, this->FBO);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	this->shader.useProgram();
+	this->shader.useShader();
 
 	this->shader.setMat4("projection", projection);
 	this->shader.setInt("gPosition", 0);
@@ -121,7 +121,7 @@ void SSAO::calcSSAO(GLuint gPosition, GLuint gNormal, const glm::mat4& projectio
 
 	this->quad.renderQuad();
 
-	this->shader.endProgram();
+	this->shader.endShader();
 
 	this->ssaoBlur();
 
@@ -132,7 +132,7 @@ void SSAO::ssaoBlur() {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->blurFBO);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	this->blurShader.useProgram();
+	this->blurShader.useShader();
 	this->blurShader.setInt("ssao", 0);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -140,5 +140,5 @@ void SSAO::ssaoBlur() {
 
 	this->quad.renderQuad();
 
-	this->blurShader.endProgram();
+	this->blurShader.endShader();
 }

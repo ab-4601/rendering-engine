@@ -21,7 +21,7 @@ uniform sampler2D normalMap;
 uniform sampler2D metalnessMap;
 
 void main() {
-	gPosition = fragPos / 1000.f;
+	gPosition = fragPos / 7000.f;
 
 	if(useNormalMap) {
 		vec3 vNormal = texture(normalMap, texel).rgb;

@@ -50,7 +50,7 @@ void GBuffer::updateGbuffer(const std::vector<Mesh*>& meshes, const std::vector<
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	this->shader.useProgram();
+	this->shader.useShader();
 
 	this->shader.setMat4("projection", camera.getProjectionMatrix());
 	this->shader.setMat4("view", camera.generateViewMatrix());
@@ -94,7 +94,7 @@ void GBuffer::updateGbuffer(const std::vector<Mesh*>& meshes, const std::vector<
 		models[i]->renderModel();
 	}
 
-	this->shader.endProgram();
+	this->shader.endShader();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, currFramebuffer);
 	glDrawBuffer(GL_COLOR_ATTACHMENT0);

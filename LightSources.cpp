@@ -8,7 +8,7 @@ void LightSources::renderLightSources(const glm::mat4& projection, const glm::ma
 	DirectionalLight& directionalLight, std::vector<PointLight>& pointLights, std::vector<SpotLight>& spotLights,
 	int pointLightCount, int spotLightCount) 
 {
-	this->shader.useProgram();
+	this->shader.useShader();
 
 	glm::mat4 model = glm::mat4(1.F);
 
@@ -43,5 +43,5 @@ void LightSources::renderLightSources(const glm::mat4& projection, const glm::ma
 		this->sourceMesh.renderMesh();
 	}
 
-	this->shader.endProgram();
+	this->shader.endShader();
 }

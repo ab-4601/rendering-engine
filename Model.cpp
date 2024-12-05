@@ -168,10 +168,7 @@ void Model::renderModel(GLuint pointShadowMap, GLuint cascadedShadowMap, GLuint 
 			this->metalnessMaps[materialIndex]->useMetalnessMap();
 		}
 
-		meshList[i]->renderMesh(
-			GL_TRIANGLES, pointShadowMap,
-			cascadedShadowMap, irradianceMap, brdfMap, prefilterMap
-		);
+		meshList[i]->renderMesh(GL_TRIANGLES, pointShadowMap, cascadedShadowMap, irradianceMap, brdfMap, prefilterMap);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 

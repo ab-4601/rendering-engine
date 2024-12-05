@@ -7,7 +7,7 @@ const int MAX_POINT_LIGHTS = 3;
 const int MAX_SPOT_LIGHTS = 3;
 const int MAX_CASCADES = 16;
 
-layout (location = 0) out vec4 fragColor;
+out vec4 fragColor;
 
 in GEOM_DATA {
 	vec4 color;
@@ -66,7 +66,6 @@ uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
 uniform samplerCube pointShadowMap;
 uniform sampler2DArray cascadedShadowMap;
-uniform sampler3D noiseTexture;
 
 uniform bool useTexture;
 uniform bool useNormalMap;
@@ -75,6 +74,7 @@ uniform bool calcShadows;
 uniform bool enableSSAO;
 
 uniform float farPlane;
+uniform float nearPlane;
 uniform int cascadeCount;
 uniform float cascadePlaneDistances[MAX_CASCADES];
 
@@ -176,15 +176,10 @@ float calcCSMShadows() {
 	if(currentDepth > 1.f)
 		return 1.f;
 
-	const float biasModifier = 0.5f;
-
 	float shadow = 0.f;
-	float shadowSamples = 32.f;
-
-	ivec3 offsetCoord;
-	vec2 f = mod(gl_FragCoord.xy, vec2(textureSize(noiseTexture, 0)));
-	offsetCoord.yz = ivec2(f);
-	float sum = 0.f;
+	float shadowSamples = 16.f;
+	
+	vec2 texelSize = 3.f / vec2(textureSize(cascadedShadowMap, 0));
 
 	for(float i = 0.f; i < shadowSamples; i++) {
 		vec2 randomOffset = vec2(
@@ -192,7 +187,7 @@ float calcCSMShadows() {
 			rand(projCoords.xy + i * 0.5f) - 0.5f
 		);
 
-		randomOffset *= 0.001f;
+		randomOffset *= texelSize;
 
 		float sampleDepth = texture(cascadedShadowMap, vec3(randomOffset + projCoords.xy, layer)).r;
 
@@ -237,6 +232,10 @@ vec4 calcPBRLighting(Light light, vec3 direction, vec3 normal, float metallic, f
 	}
 
 	return vec4(Lo, 1.f);
+}
+
+float linearizeDepth(float depth) {
+	return (2.f * nearPlane * farPlane) / (farPlane + nearPlane - (depth * 2.f - 1.f) * (farPlane - nearPlane));
 }
 
 vec4 calcDirectionalLights(vec3 normal, float metallic, float roughness) {
@@ -314,7 +313,7 @@ void main() {
 
 	if(useMaterialMap) {
 		//ao = texture2D(metallicMap, data_in.texel).r;
-		ao = 0.5f;
+		ao = 0.4f;
 		roughness = texture2D(metallicMap, data_in.texel).g;
 		metallic = texture2D(metallicMap, data_in.texel).b;
 	}
@@ -330,7 +329,7 @@ void main() {
 	vec3 V = normalize(cameraPos - data_in.fragPos.xyz);
 
 	vec3 R = reflect(-V, N);
-	const float MAX_REFLECTION_LOD = 4.f;
+	const float MAX_REFLECTION_LOD = 6.f;
 
 	vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.f), F0, roughness);	
 

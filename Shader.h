@@ -27,8 +27,8 @@ public:
 	void compileShader(GLuint& shaderID, const char* shader, GLenum shaderType);
 	void attachShader(std::vector<GLuint> shaderIDs);
 
-	inline void useProgram() const { glUseProgram(this->programID); }
-	inline void endProgram() const { glUseProgram(0); }
+	inline void useShader() const { glUseProgram(this->programID); }
+	inline void endShader() const { glUseProgram(0); }
 
 	inline void setInt(const char* varName, const int& value) {
 		this->checkUniform(varName);
@@ -63,6 +63,11 @@ public:
 	inline void setVec4(const char* varName, const glm::vec4& value) {
 		this->checkUniform(varName);
 		glUniform4fv(this->shaderUniforms[varName], 1, glm::value_ptr(value));
+	}
+
+	inline void setMat2(const char* varName, const glm::mat2& value) {
+		this->checkUniform(varName);
+		glUniformMatrix2fv(this->shaderUniforms[varName], 1, GL_FALSE, glm::value_ptr(value));
 	}
 
 	inline void setMat3(const char* varName, const glm::mat3& value) {

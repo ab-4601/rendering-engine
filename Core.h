@@ -8,13 +8,13 @@ typedef unsigned int uint;
 const uint MAX_POINT_LIGHTS = 3;
 const uint MAX_SPOT_LIGHTS = 3;
 const uint MAX_CASCADES = 16;
-const uint samples = 8;
+const uint samples = 4;
 
 const double PI = 3.14159265;
 const float GRAVITY = -10.f;
 
-const float near_plane = 1.f;
-const float far_plane = 5000.f;
+const float near_plane = 3.f;
+const float far_plane = 7000.f;
 
 #include <iostream>
 #include <vector>

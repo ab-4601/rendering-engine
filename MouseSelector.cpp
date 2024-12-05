@@ -9,7 +9,7 @@ void MouseSelector::pickingPhase(std::vector<Mesh*>& meshes, const Camera& camer
 	this->pixelInfo.enableWriting();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	this->shader.useProgram();
+	this->shader.useShader();
 
 	this->shader.setMat4("projection", camera.getProjectionMatrix());
 	this->shader.setMat4("view", camera.generateViewMatrix());
@@ -24,7 +24,7 @@ void MouseSelector::pickingPhase(std::vector<Mesh*>& meshes, const Camera& camer
 
 	this->pixelInfo.disableWriting(framebuffer);
 
-	this->shader.endProgram();
+	this->shader.endShader();
 }
 
 int MouseSelector::mouseSelectionResult(int windowHeight, int x, int y) {

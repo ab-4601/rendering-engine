@@ -23,6 +23,10 @@ Shader::Shader(std::string vertFileName, std::string fragFileName, std::string g
 
 	glDeleteShader(this->vertexShaderID);
 	glDeleteShader(this->fragmentShaderID);
+
+	delete[] this->vertexShader;
+	delete[] this->fragmentShader;
+	delete[] this->geometryShader;
 }
 
 Shader::Shader(std::string compFileName)
@@ -110,15 +114,5 @@ void Shader::attachShader(std::vector<GLuint> shaderIDs) {
 }
 
 Shader::~Shader() {
-	delete[] this->vertexShader;
-	delete[] this->fragmentShader;
-	delete[] this->geometryShader;
-
-	glDeleteShader(this->vertexShaderID);
-	glDeleteShader(this->fragmentShaderID);
-
-	if (this->geometryShaderID != 0)
-		glDeleteShader(this->geometryShaderID);
-
 	glDeleteProgram(this->programID);
 }

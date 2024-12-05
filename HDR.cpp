@@ -98,7 +98,7 @@ void HDR::_initIntermediateFBO(int width, int height) {
 void HDR::renderToDefaultBuffer(float exposure, GLuint bloomBuffer, bool enableBloom) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	this->shader.useProgram();
+	this->shader.useShader();
 
 	this->shader.setFloat("exposure", exposure);
 
@@ -120,7 +120,7 @@ void HDR::renderToDefaultBuffer(float exposure, GLuint bloomBuffer, bool enableB
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	this->shader.endProgram();
+	this->shader.endShader();
 }
 
 void HDR::renderToDefaultBufferMSAA(float exposure, GLuint bloomBuffer, int windowWidth,
@@ -133,7 +133,7 @@ void HDR::renderToDefaultBufferMSAA(float exposure, GLuint bloomBuffer, int wind
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	this->shader.useProgram();
+	this->shader.useShader();
 
 	this->shader.setInt("hdrBuffer", 0);
 	this->shader.setInt("bloomBuffer", 1);
@@ -150,13 +150,9 @@ void HDR::renderToDefaultBufferMSAA(float exposure, GLuint bloomBuffer, int wind
 
 	this->quad.renderQuad();
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
-	this->shader.endProgram();
+	this->shader.endShader();
 }
 
 HDR::~HDR() {

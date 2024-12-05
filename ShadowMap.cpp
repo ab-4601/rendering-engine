@@ -75,7 +75,7 @@ void ShadowMap::calculateShadowMap(std::vector<Mesh*>& meshes, int windowWidth, 
 
 	glCullFace(GL_FRONT);
 
-	this->shader.useProgram();
+	this->shader.useShader();
 
 	this->shader.setFloat("farPlane", this->farPlane);
 	this->shader.setVec3("lightPosition", lightPosition);

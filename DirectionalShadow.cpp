@@ -52,7 +52,7 @@ void DirectionalShadow::calculateShadows(int windowWidth, int windowHeight,
 	glBindFramebuffer(GL_FRAMEBUFFER, this->FBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	this->shader.useProgram();
+	this->shader.useShader();
 
 	this->view = glm::lookAt(
 		lightPosition,
@@ -76,7 +76,7 @@ void DirectionalShadow::calculateShadows(int windowWidth, int windowHeight,
 	glBindFramebuffer(GL_FRAMEBUFFER, currentFramebuffer);
 	glViewport(0, 0, windowWidth, windowHeight);
 
-	this->shader.endProgram();
+	this->shader.endShader();
 }
 
 DirectionalShadow::~DirectionalShadow() {

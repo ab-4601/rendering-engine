@@ -133,7 +133,7 @@ void Skybox::_initFBO() {
 }
 
 void Skybox::_generateCubemap(int windowWidth, int windowHeight) {
-	this->hdrToCubeShader.useProgram();
+	this->hdrToCubeShader.useShader();
 
 	this->hdrToCubeShader.setMat4("projection", this->projection);
 	this->hdrToCubeShader.setInt("equirectangularMap", 0);
@@ -165,7 +165,7 @@ void Skybox::_generateCubemap(int windowWidth, int windowHeight) {
 
 	glViewport(0, 0, windowWidth, windowHeight);
 
-	this->hdrToCubeShader.endProgram();
+	this->hdrToCubeShader.endShader();
 }
 
 void Skybox::_generateIrradianceMap(int windowWidth, int windowHeight) {
@@ -173,7 +173,7 @@ void Skybox::_generateIrradianceMap(int windowWidth, int windowHeight) {
 	glBindRenderbuffer(GL_RENDERBUFFER, this->RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, this->CONVOLUTION_WIDTH, this->CONVOLUTION_HEIGHT);
 
-	this->irradianceShader.useProgram();
+	this->irradianceShader.useShader();
 	this->irradianceShader.setMat4("projection", this->projection);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -194,13 +194,13 @@ void Skybox::_generateIrradianceMap(int windowWidth, int windowHeight) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
 
-	this->irradianceShader.endProgram();
+	this->irradianceShader.endShader();
 }
 
 void Skybox::_capturePrefilterMipmap(int windowWidth, int windowHeight) {
 	uint maxMipLevels = 5;
 
-	this->prefilterShader.useProgram();
+	this->prefilterShader.useShader();
 	this->prefilterShader.setInt("environmentMap", 0);
 	this->prefilterShader.setMat4("projection", this->projection);
 	this->prefilterShader.setFloat("cubemapResolution", this->CUBEMAP_WIDTH);
@@ -236,7 +236,7 @@ void Skybox::_capturePrefilterMipmap(int windowWidth, int windowHeight) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
 
-	this->prefilterShader.endProgram();
+	this->prefilterShader.endShader();
 }
 
 void Skybox::_calculateBRDF(int windowWidth, int windowHeight) {
@@ -247,7 +247,7 @@ void Skybox::_calculateBRDF(int windowWidth, int windowHeight) {
 
 	glViewport(0, 0, this->CUBEMAP_WIDTH, this->CUBEMAP_HEIGHT);
 
-	this->brdfShader.useProgram();
+	this->brdfShader.useShader();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	this->quad.renderQuad();
@@ -260,7 +260,7 @@ void Skybox::_calculateBRDF(int windowWidth, int windowHeight) {
 void Skybox::renderSkybox(const Camera& camera) {
 	glDepthFunc(GL_LEQUAL);
 
-	this->skyboxShader.useProgram();
+	this->skyboxShader.useShader();
 
 	this->skyboxShader.setInt("environmentMap", 0);
 	this->skyboxShader.setMat4("projection", camera.getProjectionMatrix());
@@ -273,5 +273,5 @@ void Skybox::renderSkybox(const Camera& camera) {
 
 	glDepthFunc(GL_LESS);
 
-	this->skyboxShader.endProgram();
+	this->skyboxShader.endShader();
 }

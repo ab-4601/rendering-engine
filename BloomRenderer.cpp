@@ -9,7 +9,7 @@ BloomRenderer::BloomRenderer(int windowWidth, int windowHeight) {
 void BloomRenderer::renderDownsamples(GLuint srcTexture) {
 	const std::vector<BloomMip>& mipChain = this->mFBO.mipChain();
 
-	this->downsampleShader.useProgram();
+	this->downsampleShader.useShader();
 
 	this->downsampleShader.setInt("srcTexture", 0);
 	this->downsampleShader.setVec2("srcResolution", this->srcViewportSizeFLT);
@@ -33,13 +33,13 @@ void BloomRenderer::renderDownsamples(GLuint srcTexture) {
 		glBindTexture(GL_TEXTURE_2D, mip.texture);
 	}
 
-	this->downsampleShader.endProgram();
+	this->downsampleShader.endShader();
 }
 
 void BloomRenderer::renderUpsamples(float filterRadius) {
 	const std::vector<BloomMip>& mipChain = this->mFBO.mipChain();
 
-	this->upsampleShader.useProgram();
+	this->upsampleShader.useShader();
 
 	this->upsampleShader.setInt("srcTexture", 0);
 	this->upsampleShader.setFloat("filterRadius", filterRadius);
@@ -64,7 +64,7 @@ void BloomRenderer::renderUpsamples(float filterRadius) {
 
 	glDisable(GL_BLEND);
 
-	this->upsampleShader.endProgram();
+	this->upsampleShader.endShader();
 }
 
 void BloomRenderer::_initIntermediateFBO(int width, int height) {

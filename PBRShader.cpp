@@ -16,9 +16,6 @@ PBRShader::PBRShader(std::string vertFileName, std::string fragFileName, std::st
 	glDeleteShader(this->geometryShaderID);
 	glDeleteShader(this->vertexShaderID);
 	glDeleteShader(this->fragmentShaderID);
-
-	for (int i = 0; i < MAX_CASCADES; i++)
-		this->uniformCascadePlaneDistances[i] = NULL;
 }
 
 void PBRShader::getUniformLocations() {
@@ -63,6 +60,7 @@ void PBRShader::getUniformLocations() {
 	this->uniformLightSpaceTransform = glGetUniformLocation(this->programID, "lightSpaceTransform");
 	this->uniformCalcShadows = glGetUniformLocation(this->programID, "calcShadows");
 	this->uniformSSAObool = glGetUniformLocation(this->programID, "enableSSAO");
+	this->uniformNearPlane = glGetUniformLocation(this->programID, "nearPlane");
 	this->uniformFarPlane = glGetUniformLocation(this->programID, "farPlane");
 
 	this->uniformPointLightCount = glGetUniformLocation(this->programID, "pointLightCount");
@@ -70,60 +68,60 @@ void PBRShader::getUniformLocations() {
 
 	std::string buffer{};
 
-	for (int i = 0; i < (int)::MAX_CASCADES; i++) {
+	for (uint i = 0; i < ::MAX_CASCADES; i++) {
 		buffer = "cascadePlaneDistances[" + std::to_string(i) + "]";
-		uniformCascadePlaneDistances[i] = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformCascadePlaneDistances[i] = glGetUniformLocation(this->programID, buffer.data());
 	}
 
 	buffer.clear();
 
 	for (int i = 0; i < (int)::MAX_POINT_LIGHTS; i++) {
 		buffer = "pointLights[" + std::to_string(i) + "].base.color";
-		uniformPointLight[i].uniformColor = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformPointLight[i].uniformColor = glGetUniformLocation(this->programID, buffer.data());
 
 		buffer = "pointLights[" + std::to_string(i) + "].position";
-		uniformPointLight[i].uniformPosition = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformPointLight[i].uniformPosition = glGetUniformLocation(this->programID, buffer.data());
 
 		buffer = "pointLights[" + std::to_string(i) + "].constant";
-		uniformPointLight[i].uniformConstant = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformPointLight[i].uniformConstant = glGetUniformLocation(this->programID, buffer.data());
 
 		buffer = "pointLights[" + std::to_string(i) + "].linear";
-		uniformPointLight[i].uniformLinear = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformPointLight[i].uniformLinear = glGetUniformLocation(this->programID, buffer.data());
 
 		buffer = "pointLights[" + std::to_string(i) + "].exponent";
-		uniformPointLight[i].uniformExponent = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformPointLight[i].uniformExponent = glGetUniformLocation(this->programID, buffer.data());
 	}
 
 	buffer.clear();
 
 	for (int i = 0; i < (int)::MAX_SPOT_LIGHTS; i++) {
 		buffer = "spotLights[" + std::to_string(i) + "].base.base.color";
-		uniformSpotLight[i].uniformColor = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformSpotLight[i].uniformColor = glGetUniformLocation(this->programID, buffer.data());
 
 		buffer = "spotLights[" + std::to_string(i) + "].base.position";
-		uniformSpotLight[i].uniformPosition = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformSpotLight[i].uniformPosition = glGetUniformLocation(this->programID, buffer.data());
 
 		buffer = "spotLights[" + std::to_string(i) + "].base.constant";
-		uniformSpotLight[i].uniformConstant = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformSpotLight[i].uniformConstant = glGetUniformLocation(this->programID, buffer.data());
 
 		buffer = "spotLights[" + std::to_string(i) + "].base.linear";
-		uniformSpotLight[i].uniformLinear = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformSpotLight[i].uniformLinear = glGetUniformLocation(this->programID, buffer.data());
 
 		buffer = "spotLights[" + std::to_string(i) + "].base.exponent";
-		uniformSpotLight[i].uniformExponent = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformSpotLight[i].uniformExponent = glGetUniformLocation(this->programID, buffer.data());
 
 		buffer = "spotLights[" + std::to_string(i) + "].direction";
-		uniformSpotLight[i].uniformDirection = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformSpotLight[i].uniformDirection = glGetUniformLocation(this->programID, buffer.data());
 
 		buffer = "spotLights[" + std::to_string(i) + "].edge";
-		uniformSpotLight[i].uniformEdge = glGetUniformLocation(this->programID, buffer.data());
+		this->uniformSpotLight[i].uniformEdge = glGetUniformLocation(this->programID, buffer.data());
 	}
 }
 
 void PBRShader::setDirectionalLight(DirectionalLight* directionalLight) {
-	directionalLight->useLight(uniformDirectionalLight.uniformAmbientIntensity,
-		uniformDirectionalLight.uniformAmbientColor, uniformDirectionalLight.uniformDiffuseIntensity,
-		uniformDirectionalLight.uniformDirection);
+	directionalLight->useLight(this->uniformDirectionalLight.uniformAmbientIntensity,
+		this->uniformDirectionalLight.uniformAmbientColor, this->uniformDirectionalLight.uniformDiffuseIntensity,
+		this->uniformDirectionalLight.uniformDirection);
 }
 
 void PBRShader::setPointLights(PointLight* pointLights, unsigned int lightCount) {
@@ -133,10 +131,10 @@ void PBRShader::setPointLights(PointLight* pointLights, unsigned int lightCount)
 	glUniform1i(this->uniformPointLightCount, lightCount);
 
 	for (size_t i = 0; i < lightCount; i++) {
-		pointLights[i].useLight(uniformPointLight[i].uniformAmbientIntensity,
-			uniformPointLight[i].uniformColor, uniformPointLight[i].uniformDiffuseIntensity,
-			uniformPointLight[i].uniformPosition, uniformPointLight[i].uniformConstant,
-			uniformPointLight[i].uniformLinear, uniformPointLight[i].uniformExponent);
+		pointLights[i].useLight(this->uniformPointLight[i].uniformAmbientIntensity,
+			this->uniformPointLight[i].uniformColor, this->uniformPointLight[i].uniformDiffuseIntensity,
+			this->uniformPointLight[i].uniformPosition, this->uniformPointLight[i].uniformConstant,
+			this->uniformPointLight[i].uniformLinear, this->uniformPointLight[i].uniformExponent);
 	}
 }
 
@@ -147,10 +145,10 @@ void PBRShader::setSpotLights(SpotLight* spotLights, unsigned int lightCount) {
 	glUniform1i(this->uniformSpotLightCount, lightCount);
 
 	for (size_t i = 0; i < lightCount; i++) {
-		spotLights[i].useLight(uniformSpotLight[i].uniformAmbientIntensity,
-			uniformSpotLight[i].uniformColor, uniformSpotLight[i].uniformDiffuseIntensity,
-			uniformSpotLight[i].uniformPosition, uniformSpotLight[i].uniformConstant,
-			uniformSpotLight[i].uniformLinear, uniformSpotLight[i].uniformExponent,
-			uniformSpotLight[i].uniformDirection, uniformSpotLight[i].uniformEdge);
+		spotLights[i].useLight(this->uniformSpotLight[i].uniformAmbientIntensity,
+			this->uniformSpotLight[i].uniformColor, this->uniformSpotLight[i].uniformDiffuseIntensity,
+			this->uniformSpotLight[i].uniformPosition, this->uniformSpotLight[i].uniformConstant,
+			this->uniformSpotLight[i].uniformLinear, this->uniformSpotLight[i].uniformExponent,
+			this->uniformSpotLight[i].uniformDirection, this->uniformSpotLight[i].uniformEdge);
 	}
 }

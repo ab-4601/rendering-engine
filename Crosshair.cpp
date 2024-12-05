@@ -21,7 +21,7 @@ Crosshair::Crosshair()
 
 void Crosshair::drawCrosshair() {
 	glClear(GL_DEPTH_BUFFER_BIT);
-	this->shader.useProgram();
+	this->shader.useShader();
 
 	glm::mat4 transformation(1.f);
 	transformation = glm::scale(transformation, glm::vec3(0.009f, 0.015f, 0.009f));
@@ -37,7 +37,7 @@ void Crosshair::drawCrosshair() {
 
 	glBindVertexArray(0);
 
-	this->shader.endProgram();
+	this->shader.endShader();
 }
 
 void Crosshair::clearMesh() {

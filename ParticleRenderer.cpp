@@ -128,8 +128,9 @@ void ParticleRenderer::render(const std::vector<CParticle*>& particles, const Wi
 
 	mat4 view = camera->generateViewMatrix();
 
-	this->shader.useProgram();
+	this->shader.useShader();
 
+	this->shader.setVec3("vColor", glm::vec3(1.f, 0.f, 0.f));
 	this->shader.setMat4("projectionMatrix", projection);
 	this->shader.setFloat("numberOfRows", this->texture.getNumberOfRows());
 	

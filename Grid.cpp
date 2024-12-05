@@ -18,7 +18,7 @@ Grid::Grid()
 }
 
 void Grid::renderGrid(glm::mat4& model, const Camera& camera) {
-	this->shader.useProgram();
+	this->shader.useShader();
 
 	model = glm::mat4(1.f);
 
@@ -38,7 +38,7 @@ void Grid::renderGrid(glm::mat4& model, const Camera& camera) {
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 
-	this->shader.endProgram();
+	this->shader.endShader();
 }
 
 Grid::~Grid() {

@@ -14,7 +14,7 @@ private:
 	GLuint uniformIrradianceSampler{ 0 }, uniformBRDFSampler{ 0 }, uniformPrefilterSampler{ 0 }, uniformSSAOSampler{ 0 };
 	GLuint uniformDiffuseSampler{ 0 }, uniformNormalSampler{ 0 }, uniformMetallicSampler{ 0 }, uniformRoughnessSampler{ 0 };
 	GLuint uniformHeightScale{ 0 }, uniformDepthSampler{ 0 }, uniformLightSpaceTransform{ 0 }, uniformCalcShadows{ 0 };
-	GLuint uniformPointShadowSampler{ 0 }, uniformFarPlane{ 0 };
+	GLuint uniformPointShadowSampler{ 0 }, uniformNearPlane{ 0 }, uniformFarPlane{ 0 };
 
 	GLuint uniformPointLightCount = 0;
 
@@ -89,6 +89,7 @@ public:
 	inline GLuint getUniformSSAOSampler() const { return this->uniformSSAOSampler; }
 	inline GLuint getUniformHeightScale() const { return this->uniformHeightScale; }
 	inline GLuint getUniformPointShadowSampler() const { return this->uniformPointShadowSampler; }
+	inline GLuint getUniformNearPlane() const { return this->uniformNearPlane; }
 	inline GLuint getUniformFarPlane() const { return this->uniformFarPlane; }
 	inline GLuint getUniformCascadePlaneDistance(int index) const { return this->uniformCascadePlaneDistances[index]; }
 	inline GLuint getUniformCascadeCount() const { return this->uniformCascadeCount; }

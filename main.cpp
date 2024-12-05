@@ -63,8 +63,7 @@ int main() {
     Skybox skybox{ window.getBufferWidth(), window.getBufferHeight() };
     DirectionalLight mainLight{ 0.1f, 0.5f, lightDirection, {1.f, 1.f, 1.f} };
     LightSources lightSources;
-    CascadedShadows csm{ 0.f };
-    DirectionalShadow dirShadowMap{ 1800.f, ::near_plane, ::far_plane};
+    CascadedShadows csm{ 1.f };
 
     std::vector<Mesh*> meshes{};
     std::vector<Model*> models{};
@@ -142,7 +141,7 @@ int main() {
     terrain.setColor(glm::vec3(0.2f, 0.2f, 0.2f));*/
 
     Model sponza(
-        "Models/Sponza/Sponza.gltf",
+        "Models/Sponza/sponza.gltf",
         "Models/Sponza/",
         aiTextureType_DIFFUSE,
         aiTextureType_NORMALS,
@@ -154,9 +153,9 @@ int main() {
 
     coordSystem.createCoordinateSystem();
 
-    ParticleTexture partTex("Textures/particleAtlas.png", 4.f);
+    ParticleTexture partTex("Textures/cosmic.png", 4.f);
     glm::vec3 particlePosition{ 20.f, 20.f, 20.f }, velocity{ 10.f, 50.f, 10.f }, particleColor{ 1.f, 0.5f, 0.05f };
-    ParticleSystem pSystem(particleColor, 10.f, -15.f, 1.f, 6.f, partTex);
+    ParticleSystem pSystem(particleColor, 10.f, 15.f, 1.f, 6.f, partTex);
 
     ParticleTexture fire("Textures/fire.png", 8.f);
     glm::vec3 fireParticlePosition{ 1125.f, 120.f, 400.f };
@@ -165,7 +164,6 @@ int main() {
     ImGuiIO& io = overlay._init(window.getGlfwWindow());
 
     hdrBuffer._initMSAA(window.getBufferWidth(), window.getBufferHeight());
-    dirShadowMap._init();
 
     int shadowMapID{ -1 };
     GLuint currFramebuffer = 0;
@@ -227,9 +225,6 @@ int main() {
                 csm.calculateShadows(
                     camera, window.getWindowWidth(), window.getWindowHeight(), meshes, lightDirection, currFramebuffer
                 );
-
-                dirShadowMap.calculateShadows(window.getBufferWidth(), window.getBufferHeight(), meshes, lightDirection,
-                    currFramebuffer);
 
                 shadowMapID = csm.csmDepthBuffer();
             }

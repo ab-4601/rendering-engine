@@ -257,12 +257,13 @@ void Mesh::setShader(DirectionalLight& directionalLight, std::vector<PointLight>
 	glUniformMatrix4fv(this->shader.getUniformView(), 1, GL_FALSE, glm::value_ptr(camera.generateViewMatrix()));
 	glUniform3fv(this->shader.getEyePosition(), 1, glm::value_ptr(camera.getCameraPosition()));
 	glUniform1f(this->shader.getUniformFarPlane(), ::far_plane);
+	glUniform1f(this->shader.getUniformNearPlane(), ::near_plane);
 	glUniform1i(this->shader.getUniformCascadeCount(), numCascades);
 	glUniform1i(this->shader.getUniformCalcShadows(), this->calcShadows);
 	glUniform1i(this->shader.getUniformSSAObool(), this->enableSSAO);
 
-	for (int i = 0; i < cascadePlanes.size(); i++)
-		glUniform1f(this->shader.getUniformCascadePlaneDistance(i), cascadePlanes[i]);
+	for (size_t i = 0; i < cascadePlanes.size(); i++)
+		glUniform1f(this->shader.getUniformCascadePlaneDistance((int)i), cascadePlanes[i]);
 
 	glUniform1i(this->shader.getUniformDiffuseSampler(), 0);
 	glUniform1i(this->shader.getUniformNormalSampler(), 1);
@@ -346,7 +347,7 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const Camera& camera,
 	glStencilMask(0x00);
 	//glDisable(GL_DEPTH_TEST);
 
-	this->outlineShader.useProgram();
+	this->outlineShader.useShader();
 
 	this->outlineShader.setMat4("projection", camera.getProjectionMatrix());
 	this->outlineShader.setMat4("view", camera.generateViewMatrix());
@@ -362,7 +363,7 @@ void Mesh::renderMeshWithOutline(GLenum renderMode, const Camera& camera,
 	//glEnable(GL_DEPTH_TEST);
 
 	this->setShadowBoolUniform(calcShadows);
-	this->outlineShader.endProgram();
+	this->outlineShader.endShader();
 
 	this->setShader(
 		dirLight, pointLights, pointLightCount, spotLights, spotLightCount, numCascades, cascadePlanes, camera

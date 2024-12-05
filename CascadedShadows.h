@@ -7,8 +7,8 @@
 
 class CascadedShadows {
 private:
-	static const int shadowWidth = 4096, shadowHeight = 4096;
-	static const uint numCascades = 3;
+	static const int mapResolution = 2048;
+	static const uint numCascades = 4;
 
 	GLuint FBO{ 0 }, UBO{ 0 };
 	GLuint shadowMaps{ 0 }, randomOffset{ 0 };
@@ -29,17 +29,17 @@ private:
 
 	bool checkFramebufferStatus();
 	void calcSplitDepths(float lambda);
-	void calcFrustumCorners(const Camera& camera);
+	void calcFrustumCorners(glm::mat4 projection, glm::mat4 view);
 	void genRandomOffsetData(int windowSize, int filterSize);
 	void genRandomOffsetTexture(int windowSize, int filterSize);
 
-	glm::mat4 calcLightSpaceMatrix(const Camera& camera, glm::vec3 lightDir, int windowWidth, int windowHeight,
+	void calcLightSpaceMatrix(const Camera& camera, glm::vec3 lightDir, int windowWidth, int windowHeight,
 		const float& nearPlane, const float& farPlane);
 
 	void calcLightSpaceMatrices(const Camera& camera, glm::vec3 lightDir, int windowWidth, int windowHeight);
 
 public:
-	CascadedShadows(float lambda = 0.5f);
+	CascadedShadows(float lambda = 0.5f, int windowSize = 4, int filterSize = 4);
 
 	void _init();
 

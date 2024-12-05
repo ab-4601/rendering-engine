@@ -37,7 +37,7 @@ void CoordinateSystem::createCoordinateSystem() {
 void CoordinateSystem::drawCoordinateSystem(GLint windowHeight, GLint windowWidth, GLint bufferWidth,
     GLint bufferHeight, const Camera* const camera) 
 {
-    this->shader.useProgram();
+    this->shader.useShader();
 
     this->model = glm::mat4(1.f);
 
@@ -78,7 +78,7 @@ void CoordinateSystem::drawCoordinateSystem(GLint windowHeight, GLint windowWidt
     glLineWidth((GLfloat)1.f);
     glDisable(GL_LINE_SMOOTH);
 
-    this->shader.endProgram();
+    this->shader.endShader();
 }
 
 CoordinateSystem::~CoordinateSystem() {
