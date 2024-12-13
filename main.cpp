@@ -53,7 +53,7 @@ int main() {
     glm::vec3 spotLightPosition(300.0, 80.f, 300.f);
 
     Window window;
-    Camera camera{ {-300, 100, 0}, window.getBufferWidth(), window.getBufferHeight() };
+    Camera camera{ {0, 400, 400}, window.getBufferWidth(), window.getBufferHeight() };
     Overlay overlay;
     HDR hdrBuffer{ window.getBufferWidth(), window.getBufferHeight() };
     BloomRenderer bloom{ (int)window.getWindowWidth(), (int)window.getWindowHeight() };
@@ -115,13 +115,13 @@ int main() {
     sphere.createMeshWithNormals();
 
     model = glm::mat4(1.f);
-    model = glm::translate(model, glm::vec3(250.f, 150.f, 0.f));
+    model = glm::translate(model, glm::vec3(450.f, 450.f, 0.f));
     model = glm::scale(model, glm::vec3(100.f, 100.f, 100.f));
 
     sphere.setModelMatrix(model);
 
     model = glm::mat4(1.f);
-    model = glm::translate(model, glm::vec3(0.f, 100.f, 0.f));
+    model = glm::translate(model, glm::vec3(-450.f, 450.f, 0.f));
     model = glm::scale(model, glm::vec3(100.f, 100.f, 100.f));
 
     Cube cube;
@@ -143,24 +143,24 @@ int main() {
     terrain.setModelMatrix(model);
     terrain.setColor(glm::vec3(0.2f, 0.2f, 0.2f));*/
 
-    /*Model suntemple(
+    Model suntemple(
         "Models/SunTemple/SunTemple.fbx",
         "Models/SunTemple/Textures/",
         aiTextureType_DIFFUSE,
         aiTextureType_NORMALS,
         aiTextureType_SPECULAR,
         true
-    );*/
+    );
 
-    Model sponza(
+    /*Model sponza(
         "Models/Sponza/Sponza.gltf",
         "Models/Sponza/",
         aiTextureType_DIFFUSE,
         aiTextureType_NORMALS,
         aiTextureType_METALNESS
     );
-    models.push_back(&sponza);
-    //models.push_back(&suntemple);
+    models.push_back(&sponza);*/
+    models.push_back(&suntemple);
 
     coordSystem.createCoordinateSystem();
 
@@ -208,7 +208,7 @@ int main() {
         pSystem.updateParticles(deltaTime, cameraPosition);
         //fireSystem.updateParticles(deltaTime, cameraPosition);
 
-        //if (elapsedTime >= 0.012f)
+        if (elapsedTime >= 0.012f)
         {
             currFramebuffer = 0;
             elapsedTime = 0.f;
@@ -253,8 +253,8 @@ int main() {
             if (drawWireframe)
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-            sponza.renderModel(pbrShader, cameraPosition);
-            //suntemple.renderModel(pbrShader, cameraPosition);
+            //sponza.renderModel(pbrShader, cameraPosition);
+            suntemple.renderModel(pbrShader, cameraPosition);
 
             glm::vec2 mouseClickCoords = window.getViewportCoord();
 

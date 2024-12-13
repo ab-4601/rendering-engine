@@ -292,7 +292,7 @@ vec4 calculateLighting(Light light, vec3 direction, vec3 albedo, vec3 normal, fl
 	vec3 specular = numerator / denominator;
 
 	float NdotL = max(dot(N, L), 0.f);
-	Lo = (kD * albedo / PI + specular) * NdotL;
+	Lo = (kD * albedo / PI + specular) * light.color * NdotL;
 
 	if(calcShadows) {
 		float shadow = calcCSMShadows();
@@ -307,11 +307,7 @@ float linearizeDepth(float depth) {
 }
 
 vec4 calcDirectionalLights(vec3 albedo, vec3 normal, float metallic, float roughness) {
-	vec3 direction = directionalLight.direction;
-	vec4 dirLightColor = calculateLighting(directionalLight.base, direction, albedo, normal, metallic, roughness);
-	vec4 radiance = vec4(directionalLight.base.color, 1.f);
-
-	return dirLightColor * radiance;
+	return calculateLighting(directionalLight.base, directionalLight.direction, albedo, normal, metallic, roughness);
 }
 
 vec4 calcPointLight(PointLight pointLight, vec3 albedo, vec3 normal, float metallic, float roughness) {
@@ -320,11 +316,9 @@ vec4 calcPointLight(PointLight pointLight, vec3 albedo, vec3 normal, float metal
 
 	vec4 pointLightColor = calculateLighting(pointLight.base, direction, albedo, normal, metallic, roughness);
 	float attenuation = (pointLight.exponent * pow(dist, 2)) + 
-						(pointLight.linear * dist) + pointLight.constant;;
+						(pointLight.linear * dist) + pointLight.constant;
 
-	vec4 radiance = vec4(pointLight.base.color, 1.f) / attenuation;
-
-	return pointLightColor * radiance;
+	return pointLightColor / attenuation;
 }
 
 vec4 calcSpotLight(SpotLight spotLight, vec3 albedo, vec3 normal, float metallic, float roughness) {
@@ -398,7 +392,7 @@ void main() {
 
 	if(useMaterialMap) {
 		//ao = texture2D(metallicMap, data_in.texel).r;
-		ao = 0.5f;
+		ao = 0.3f;
 		roughness = texture2D(metallicMap, data_in.texel).g;
 		metallic = texture2D(metallicMap, data_in.texel).b;
 	}
