@@ -3,13 +3,13 @@
 #include "Core.h"
 #include "stb_image.h"
 
-#define FOURCC_DXT1 0x31545844
-#define FOURCC_DXT3 0x33545844
-#define FOURCC_DXT5 0x35545844
-#define FOURCC_ATI1N 0x31495441
-#define FOURCC_ATI2N 0x32495441
-#define FOURCC_BC6H 0x48364342
-#define FOURCC_BC7 0x75364342
+constexpr auto FOURCC_DXT1 = 0x31545844;
+constexpr auto FOURCC_DXT3 = 0x33545844;
+constexpr auto FOURCC_DXT5 = 0x35545844;
+constexpr auto FOURCC_ATI1N = 0x31495441;
+constexpr auto FOURCC_ATI2N = 0x32495441;
+constexpr auto FOURCC_BC6H = 0x48364342;
+constexpr auto FOURCC_BC7 = 0x75364342;
 
 struct DDSHeader {
 	uint32_t magic;
@@ -55,7 +55,7 @@ public:
 	Texture& operator=(Texture&& rhs) noexcept;
 
 	bool loadDDSTexture();
-	bool loadTexture(int numChannels = 4);
+	bool loadTexture();
 	void useTexture(GLenum textureLocation = GL_TEXTURE0) const;
 	void clearTexture();
 

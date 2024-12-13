@@ -128,18 +128,34 @@ bool Texture::loadDDSTexture() {
 	return this->textureID;
 }
 
-bool Texture::loadTexture(int numChannels) {
-	unsigned char* texData = stbi_load(this->fileLocation.data(), &this->width, &this->height, &this->bitDepth, numChannels);
+bool Texture::loadTexture() {
+	unsigned char* texData = stbi_load(this->fileLocation.data(), &this->width, &this->height, &this->bitDepth, 0);
 
 	if (!texData) {
 		std::cerr << "Invalid file location. Error loading file" << std::endl;
 		return false;
 	}
 
+	GLenum format;
+	switch (bitDepth) {
+		case 1:
+			format = GL_RED;
+			break;
+		case 3:
+			format = GL_RGB;
+			break;
+		case 4:
+			format = GL_RGBA;
+			break;
+		default:
+			std::cerr << "Invalid format" << std::endl;
+			return false;
+	}
+
 	glGenTextures(1, &this->textureID);
 	glBindTexture(GL_TEXTURE_2D, this->textureID);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, this->width, this->height, 0, format, GL_UNSIGNED_BYTE, texData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

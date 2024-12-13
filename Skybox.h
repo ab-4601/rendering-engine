@@ -8,9 +8,9 @@
 
 class Skybox : public Texture {
 private:
-    static const int CUBEMAP_WIDTH = 1024, CUBEMAP_HEIGHT = 1024;
-    static const int CONVOLUTION_WIDTH = 64, CONVOLUTION_HEIGHT = 64;
-    static const int PREFILTER_WIDTH = 512, PREFILTER_HEIGHT = 512;
+    static const int CUBEMAP_RESOLUTION = 512;
+    static const int CONVOLUTION_RESOLUTION = 32;
+    static const int PREFILTER_RESOLUTION = 512;
 
     GLuint VAO{ 0 }, VBO{ 0 };
 
@@ -90,10 +90,10 @@ private:
     }
 
     void _initFBO();
-    void _generateCubemap(int windowWidth, int windowHeight);
-    void _generateIrradianceMap(int windowWidth, int windowHeight);
-    void _capturePrefilterMipmap(int windowWidth, int windowHeight);
-    void _calculateBRDF(int windowWidth, int windowHeight);
+    void _generateCubemap();
+    void _generateIrradianceMap();
+    void _generatePrefilterMipmap();
+    void _generateBRDFMap();
 
 public:
     Skybox(int windowWidth, int windowHeight, const char* fileName = "Textures/skybox/village_cloudy_sky_dome_4k.hdr");

@@ -60,7 +60,7 @@ int main() {
     Grid grid;
     MouseSelector selection{ (uint)window.getBufferWidth(), (uint)window.getBufferHeight() };
     CoordinateSystem coordSystem;
-    Skybox skybox{ window.getBufferWidth(), window.getBufferHeight(), "Textures/skybox/newport_loft.hdr"};
+    Skybox skybox{ window.getBufferWidth(), window.getBufferHeight() };
     DirectionalLight mainLight{ 0.1f, 0.5f, lightDirection, { 1.f, 1.f, 1.f } };
     LightSources lightSources;
     CascadedShadows csm{ 0.5f, 512, 10, 10 };
@@ -97,7 +97,7 @@ int main() {
     spotLightCount++;*/
 
     bool drawSkybox = true;
-    bool enableBloom = false;
+    bool enableBloom = true;
     bool drawWireframe = false;
     bool enableShadows = false;
     bool enableSSAO = false;
@@ -133,6 +133,8 @@ int main() {
     model = glm::mat4(1.f);
     model = glm::scale(model, glm::vec3(5.f, 5.f, 5.f));
 
+    meshes = Mesh::meshList;
+
     /*Terrain terrain(gridSize, gridSize);
     terrain.generateHeightMaps(3);
     terrain.setMeshMaterial(0.f, 1.f, 1.f);
@@ -141,19 +143,24 @@ int main() {
     terrain.setModelMatrix(model);
     terrain.setColor(glm::vec3(0.2f, 0.2f, 0.2f));*/
 
-    std::vector<Mesh*> selectionMeshes = Mesh::meshList;
-
-    /*Model sponza(
+    /*Model suntemple(
         "Models/SunTemple/SunTemple.fbx",
         "Models/SunTemple/Textures/",
         aiTextureType_DIFFUSE,
         aiTextureType_NORMALS,
         aiTextureType_SPECULAR,
         true
-    );
-    models.push_back(&sponza);*/
+    );*/
 
-    meshes = Mesh::meshList;
+    Model sponza(
+        "Models/Sponza/Sponza.gltf",
+        "Models/Sponza/",
+        aiTextureType_DIFFUSE,
+        aiTextureType_NORMALS,
+        aiTextureType_METALNESS
+    );
+    models.push_back(&sponza);
+    //models.push_back(&suntemple);
 
     coordSystem.createCoordinateSystem();
 
@@ -161,9 +168,9 @@ int main() {
     glm::vec3 particlePosition{ 20.f, 20.f, 20.f }, velocity{ 10.f, 50.f, 10.f }, particleColor{ 1.f, 0.5f, 0.05f };
     ParticleSystem pSystem(particleColor, 10.f, 15.f, 1.f, 6.f, partTex);
 
-    ParticleTexture fire("Textures/fire.png", 8.f);
+    /*ParticleTexture fire("Textures/fire.png", 8.f);
     glm::vec3 fireParticlePosition{ 1125.f, 120.f, 400.f };
-    ParticleSystem fireSystem(particleColor, 30, -30.f, 1.f, 30.f, fire);
+    ParticleSystem fireSystem(particleColor, 30, -30.f, 1.f, 30.f, fire);*/
 
     ImGuiIO& io = overlay._init(window.getGlfwWindow());
 
@@ -199,9 +206,9 @@ int main() {
         view = camera.generateViewMatrix();
 
         pSystem.updateParticles(deltaTime, cameraPosition);
-        fireSystem.updateParticles(deltaTime, cameraPosition);
+        //fireSystem.updateParticles(deltaTime, cameraPosition);
 
-        if (elapsedTime >= 0.012f)
+        //if (elapsedTime >= 0.012f)
         {
             currFramebuffer = 0;
             elapsedTime = 0.f;
@@ -236,7 +243,7 @@ int main() {
                 );
             }
 
-            selection.pickingPhase(selectionMeshes, currFramebuffer);
+            selection.pickingPhase(meshes, currFramebuffer);
 
             glUseProgram(pbrShader.getProgramID());
 
@@ -246,7 +253,8 @@ int main() {
             if (drawWireframe)
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-            //sponza.renderModel(pbrShader, cameraPosition);
+            sponza.renderModel(pbrShader, cameraPosition);
+            //suntemple.renderModel(pbrShader, cameraPosition);
 
             glm::vec2 mouseClickCoords = window.getViewportCoord();
 
@@ -256,7 +264,7 @@ int main() {
                 prevIndex = -1;
             }
 
-            if (window.getLMBPressed()) {
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left, false)) {
                 index = selection.mouseSelectionResult(window.getWindowHeight(), mouseClickCoords.x, mouseClickCoords.y);
 
                 if (prevIndex != index)
@@ -295,14 +303,14 @@ int main() {
 // ----------------------------------------------------------------------------------------------------------------
 
             particlePosition = cameraPosition + camera.getCameraLookDirection() * 200.f;
-            fireSystem.generateParticles(fireParticlePosition, 0.f);
+            //fireSystem.generateParticles(fireParticlePosition, 0.f);
 
             if (window.getKeyPress(GLFW_KEY_R)) {
                 pSystem.generateParticles(particlePosition, 0.f);
             }
 
             pSystem.renderParticles(&window, camera, model);
-            fireSystem.renderParticles(&window, camera, model);
+            //fireSystem.renderParticles(&window, camera, model);
 
             if(enableHDR && enableBloom)
                 bloom.renderBloomTextureMSAA(filterRadius, currFramebuffer);

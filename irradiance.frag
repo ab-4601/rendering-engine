@@ -6,6 +6,8 @@ out vec4 fragColor;
 
 in vec3 texel;
 
+uniform samplerCube environmentMap;
+
 mat3 aces_input_matrix = mat3(
 	vec3(0.59719f, 0.35458f, 0.04823f),
     vec3(0.07600f, 0.90834f, 0.01566f),
@@ -37,8 +39,6 @@ vec3 aces(vec3 color) {
     color = rtt_and_odt_fit(color);
     return mul(aces_output_matrix, color);
 }
-
-uniform samplerCube environmentMap;
 
 void main() {
 	vec3 normal = normalize(texel);
