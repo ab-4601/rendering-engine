@@ -2,7 +2,8 @@
 
 Mesh::Mesh()
 	: VAO{ 0 }, VBO{ 0 }, IBO{ 0 }, color{ 1.f, 1.f, 1.f }, model{ glm::mat4(1.f) }, objectID{ 0 }, enableSSAO{ false },
-	useTexture{ false }, drawIndexed{ false }, useNormalMap{ false }, calcShadows{ false }, useMaterialMap{ false }
+	useTexture{ false }, drawIndexed{ false }, useNormalMap{ false }, calcShadows{ false }, useMaterialMap{ false },
+	strippedNormalMap{ false }
 {
 	meshList.push_back(this);
 	this->objectID = this->meshCount++;
