@@ -4,9 +4,9 @@ out vec4 fragColor;
 
 in vec2 texel;
 
-uniform sampler2D hdrBuffer;
-uniform sampler2D bloomBuffer;
-uniform sampler2D blendWeightTexture;
+layout (binding = 0) uniform sampler2D hdrBuffer;
+layout (binding = 1) uniform sampler2D bloomBuffer;
+layout (binding = 2) uniform sampler2D blendWeightTexture;
 uniform vec2 screenResolution;
 
 uniform float exposure;

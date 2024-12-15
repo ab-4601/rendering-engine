@@ -181,6 +181,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParticleRenderer.cpp" />
     <ClCompile Include="Quad.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SelectionTexture.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
@@ -242,6 +243,7 @@
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="ParticleRenderer.h" />
     <ClInclude Include="Quad.h" />
+    <ClInclude Include="Renderer.h" />
     <ClInclude Include="SelectionTexture.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderLoader.h" />

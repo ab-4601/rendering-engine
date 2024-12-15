@@ -2,7 +2,7 @@
 
 Mesh::Mesh()
 	: VAO{ 0 }, VBO{ 0 }, IBO{ 0 }, color{ 1.f, 1.f, 1.f }, model{ glm::mat4(1.f) }, objectID{ 0 }, enableSSAO{ false },
-	useTexture{ false }, drawIndexed{ false }, useNormalMap{ false }, calcShadows{ false }, useMaterialMap{ false },
+	useDiffuseMap{ false }, drawIndexed{ false }, useNormalMap{ false }, calcShadows{ false }, useMaterialMap{ false },
 	strippedNormalMap{ false }
 {
 	meshList.push_back(this);
@@ -35,7 +35,7 @@ void Mesh::createUnindexedMesh() {
 }
 
 void Mesh::createUnindexedTexturedMesh() {
-	this->useTexture = true;
+	this->useDiffuseMap = true;
 
 	glGenVertexArrays(1, &this->VAO);
 	glBindVertexArray(this->VAO);
@@ -83,7 +83,7 @@ void Mesh::createTexturedMesh() {
 	std::vector<GLfloat> tmpVertices = this->vertices;
 	this->vertices.clear();
 
-	this->useTexture = true;
+	this->useDiffuseMap = true;
 	this->drawIndexed = true;
 
 	for (size_t i = 0, j = 0; i < tmpVertices.size(); i++) {
@@ -162,7 +162,7 @@ void Mesh::createMeshWithNormals() {
 }
 
 void Mesh::createMesh() {
-	this->useTexture = true;
+	this->useDiffuseMap = true;
 	this->drawIndexed = true;
 
 	if(this->normals.size() != 0 && this->texCoords.size() != 0) {
@@ -211,7 +211,7 @@ void Mesh::createMesh() {
 }
 
 void Mesh::createModel(bool isStrippedNormal) {
-	this->useTexture = true;
+	this->useDiffuseMap = true;
 	this->drawIndexed = true;
 	this->useNormalMap = true;
 	this->useMaterialMap = true;
@@ -274,7 +274,7 @@ void Mesh::renderMesh(PBRShader& shader, glm::vec3 cameraPosition, GLenum render
 	glUniform1f(shader.getUniformMetallic(), this->metallic);
 	glUniform1f(shader.getUniformRoughness(), this->roughness);
 
-	glUniform1ui(shader.getUniformTextureBool(), this->useTexture);
+	glUniform1ui(shader.getUniformTextureBool(), this->useDiffuseMap);
 	glUniform1ui(shader.getUniformNormalMapBool(), this->useNormalMap);
 	glUniform1ui(shader.getUniformUseMaterialMap(), this->useMaterialMap);
 	glUniform1ui(shader.getUniformStrippedNormalBool(), this->strippedNormalMap);

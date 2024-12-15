@@ -14,6 +14,7 @@ private:
 	GLenum colorAttachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
 
 	void genTexture(GLuint& texID, GLenum colorAttachment, int windowWidth, int windowHeight);
+	void _init(int windowWidth, int windowHeight);
 
 public:
 	GBuffer(int windowWidth, int windowHeight);
@@ -24,7 +25,6 @@ public:
 	inline GLuint getAlbedoBuffer() const { return this->gAlbedo; }
 	inline GLuint getMetallicBuffer() const { return this->gMetallic; }
 
-	void _init(int windowWidth, int windowHeight);
 	void updateGbuffer(PBRShader& shader, const std::vector<Mesh*>& meshes, const std::vector<Model*>& models, 
 		glm::vec3 cameraPosition, GLuint currFramebuffer = 0);
 

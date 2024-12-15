@@ -6,6 +6,14 @@
 #include "Texture.h"
 #include "PBRShader.h"
 
+struct Vertex {
+	glm::vec3 position{ 0.f };
+	glm::vec3 normal{ 0.f };
+	glm::vec3 tangent{ 0.f };
+	glm::vec3 biTangent{ 0.f };
+	glm::vec2 texel{ 0.f };
+};
+
 class Mesh {
 protected:
 	static uint meshCount;
@@ -31,7 +39,7 @@ protected:
 	Texture* metallicMap = nullptr;
 	Texture* roughnessMap = nullptr;
 
-	bool useTexture;
+	bool useDiffuseMap;
 	bool useNormalMap;
 	bool strippedNormalMap;
 	bool useMaterialMap;
@@ -56,7 +64,7 @@ public:
 	inline float getAO() const { return this->ao; }
 	inline bool isDrawIndexed() const { return this->drawIndexed; }
 
-	inline bool getDiffuseMapBool() const { return this->useTexture; }
+	inline bool getDiffuseMapBool() const { return this->useDiffuseMap; }
 	inline bool getNormalMapBool() const { return this->useNormalMap; }
 	inline bool getMaterialMapBool() const { return this->useMaterialMap; }
 

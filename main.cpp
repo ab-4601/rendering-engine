@@ -53,7 +53,7 @@ int main() {
     glm::vec3 spotLightPosition(300.0, 80.f, 300.f);
 
     Window window;
-    Camera camera{ {0, 400, 400}, window.getBufferWidth(), window.getBufferHeight() };
+    Camera camera{ {-300, 100, 0}, window.getBufferWidth(), window.getBufferHeight() };
     Overlay overlay;
     HDR hdrBuffer{ window.getBufferWidth(), window.getBufferHeight() };
     BloomRenderer bloom{ (int)window.getWindowWidth(), (int)window.getWindowHeight() };
@@ -115,13 +115,13 @@ int main() {
     sphere.createMeshWithNormals();
 
     model = glm::mat4(1.f);
-    model = glm::translate(model, glm::vec3(450.f, 450.f, 0.f));
+    model = glm::translate(model, glm::vec3(400.f, 100.f, 0.f));
     model = glm::scale(model, glm::vec3(100.f, 100.f, 100.f));
 
     sphere.setModelMatrix(model);
 
     model = glm::mat4(1.f);
-    model = glm::translate(model, glm::vec3(-450.f, 450.f, 0.f));
+    model = glm::translate(model, glm::vec3(0.f, 100.f, 0.f));
     model = glm::scale(model, glm::vec3(100.f, 100.f, 100.f));
 
     Cube cube;
@@ -133,34 +133,35 @@ int main() {
     model = glm::mat4(1.f);
     model = glm::scale(model, glm::vec3(5.f, 5.f, 5.f));
 
-    meshes = Mesh::meshList;
-
     /*Terrain terrain(gridSize, gridSize);
     terrain.generateHeightMaps(3);
     terrain.setMeshMaterial(0.f, 1.f, 1.f);
     terrain.generateTerrain();
-    terrain.createMesh();
+    terrain.createMeshWithNormals();
     terrain.setModelMatrix(model);
     terrain.setColor(glm::vec3(0.2f, 0.2f, 0.2f));*/
 
-    Model suntemple(
+    meshes = Mesh::meshList;
+
+    /*Model suntemple(
         "Models/SunTemple/SunTemple.fbx",
         "Models/SunTemple/Textures/",
         aiTextureType_DIFFUSE,
         aiTextureType_NORMALS,
         aiTextureType_SPECULAR,
         true
-    );
+    );*/
 
-    /*Model sponza(
+    Model sponza(
         "Models/Sponza/Sponza.gltf",
         "Models/Sponza/",
         aiTextureType_DIFFUSE,
         aiTextureType_NORMALS,
         aiTextureType_METALNESS
     );
-    models.push_back(&sponza);*/
-    models.push_back(&suntemple);
+
+    //models.push_back(&sponza);
+    //models.push_back(&suntemple);
 
     coordSystem.createCoordinateSystem();
 
@@ -247,14 +248,18 @@ int main() {
 
             glUseProgram(pbrShader.getProgramID());
 
+            pbrShader.setDirectionalLight(&mainLight);
+            pbrShader.setPointLights(pointLights.data(), pointLightCount);
+            pbrShader.setSpotLights(spotLights.data(), spotLightCount);
+
             glUniform1i(pbrShader.getUniformShadowBool(), enableShadows);
             glUniform1i(pbrShader.getUniformSSAObool(), enableSSAO);
 
             if (drawWireframe)
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-            //sponza.renderModel(pbrShader, cameraPosition);
-            suntemple.renderModel(pbrShader, cameraPosition);
+            sponza.renderModel(pbrShader, cameraPosition);
+            //suntemple.renderModel(pbrShader, cameraPosition);
 
             glm::vec2 mouseClickCoords = window.getViewportCoord();
 
@@ -264,7 +269,7 @@ int main() {
                 prevIndex = -1;
             }
 
-            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left, false)) {
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
                 index = selection.mouseSelectionResult(window.getWindowHeight(), mouseClickCoords.x, mouseClickCoords.y);
 
                 if (prevIndex != index)

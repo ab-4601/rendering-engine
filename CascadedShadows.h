@@ -6,7 +6,7 @@
 
 class CascadedShadows {
 private:
-	static const int mapResolution = 4096;
+	static const int mapResolution = 2048;
 	static const uint numCascades = 4;
 
 	GLuint FBO{ 0 }, UBO{ 0 };

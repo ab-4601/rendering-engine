@@ -187,6 +187,12 @@
     <Filter Include="Header Files\CoreDependencies\Engine Core\Scene Core">
       <UniqueIdentifier>{fc2e15a8-f105-41bb-ad5f-58ae177a8877}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\CoreDependencies\Engine Core\Renderer">
+      <UniqueIdentifier>{e8297241-64c0-4c03-8770-e6dde879919e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreDependencies\Engine Core\Renderer">
+      <UniqueIdentifier>{8c33551d-17c0-48a7-b772-b245d59cd0b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -356,6 +362,9 @@
     </ClCompile>
     <ClCompile Include="GBuffer.cpp">
       <Filter>Source Files\CoreDependencies\Engine Core\Scene Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files\CoreDependencies\Engine Core\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -535,6 +544,9 @@
     </ClInclude>
     <ClInclude Include="GBuffer.h">
       <Filter>Header Files\CoreDependencies\Engine Core\Scene Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Header Files\CoreDependencies\Engine Core\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

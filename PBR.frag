@@ -54,19 +54,19 @@ uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 uniform Material material;
 
-uniform sampler2D diffuseMap;
-uniform sampler2D normalMap;
-uniform sampler2D depthMap;
-uniform sampler2D metallicMap;
-uniform sampler2D roughnessMap;
-uniform samplerCube irradianceMap;
-uniform samplerCube prefilterMap;
-uniform sampler2D brdfLUT;
-uniform samplerCube pointShadowMap;
-uniform sampler2DArray cascadedShadowMap;
-uniform sampler3D randomOffsets;
+layout (binding = 0) uniform sampler2D diffuseMap;
+layout (binding = 1) uniform sampler2D normalMap;
+layout (binding = 2) uniform sampler2D depthMap;
+layout (binding = 3) uniform sampler2D metallicMap;
+layout (binding = 4) uniform sampler2D roughnessMap;
+layout (binding = 5) uniform samplerCube irradianceMap;
+layout (binding = 6) uniform samplerCube prefilterMap;
+layout (binding = 7) uniform sampler2D brdfLUT;
+layout (binding = 8) uniform samplerCube pointShadowMap;
+layout (binding = 9) uniform sampler2DArray cascadedShadowMap;
+layout (binding = 10) uniform sampler3D randomOffsets;
 
-uniform bool useTexture;
+uniform bool useDiffuseMap;
 uniform bool useNormalMap;
 uniform bool strippedNormalMap;
 uniform bool useMaterialMap;
@@ -91,31 +91,18 @@ layout (std140, binding = 1) uniform LightSpaceMatrices {
 	mat4 lightSpaceMatrices[16];
 };
 
-//const float minLayers = 8.f;
-//const float maxLayers = 32.f;
+vec3 N = normalize(data_in.normal);
+vec3 L = vec3(0.f);
+vec3 H = vec3(0.f);
+vec3 V = normalize(cameraPos - vec3(data_in.fragPos));
+vec3 F0 = vec3(0.04f);
 
-//vec2 parallaxMapping(vec2 texel, vec3 viewDir) {
-	//float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.f, 0.f, 1.f), viewDir), 0.f));
-	//float layerDepth = 1.f / numLayers;
+vec3 albedo = material.albedo;
+float metallic = material.metallic;
+float roughness = material.roughness;
+float ao = material.ao;
 
-	//float currentLayerDepth = 0.f;
-
-	//vec2 P = viewDir.xy * height_scale;
-	//vec2 deltaTexel = P / numLayers;
-
-	//vec2 currTexel = data_in.texel;
-	//float currDepth = texture2D(depthMap, currTexel).r;
-
-	//while(currentLayerDepth < currDepth) {
-		//currTexel -= deltaTexel;
-		//currDepth = texture2D(depthMap, currTexel).r;
-		//currentLayerDepth += layerDepth;
-	//}
-
-	//return currTexel;
-//}
-
-float DistributionGGX(vec3 N, vec3 H, float roughness) {
+float DistributionGGX() {
 	float a = roughness * roughness;
 	float a2 = a * a;
 	float NdotH = max(dot(N, H), 0.f);
@@ -128,7 +115,7 @@ float DistributionGGX(vec3 N, vec3 H, float roughness) {
 	return numerator / denominator;
 }
 
-float GeometrySchlickGGX(float NdotV, float roughness) {
+float GeometrySchlickGGX(float NdotV) {
 	float r = (roughness + 1.f);
 	float k = (r * r) / 8.f;
 
@@ -138,20 +125,20 @@ float GeometrySchlickGGX(float NdotV, float roughness) {
 	return numerator / denominator;
 }
 
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+float GeometrySmith() {
 	float NdotV = max(dot(N, V), 0.f);
 	float NdotL = max(dot(N, L), 0.f);
-	float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-	float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+	float ggx2 = GeometrySchlickGGX(NdotV);
+	float ggx1 = GeometrySchlickGGX(NdotL);
 
 	return ggx1 * ggx2;
 }
 
-vec3 fresnelSchlick(float theta, vec3 F0) {
+vec3 fresnelSchlick(float theta) {
 	return F0 + (1.f - F0) * pow(clamp(1.f - theta, 0.f, 1.f), 5.f);
 }
 
-vec3 fresnelSchlickRoughness(float theta, vec3 F0, float roughness) {
+vec3 fresnelSchlickRoughness(float theta) {
 	return F0 + (max(vec3(1.f - roughness), F0) - F0) * pow(clamp(1.f - theta, 0.f, 1.f), 5.f);
 }
 
@@ -268,20 +255,15 @@ float calcCSMShadows() {
 	return shadowFactor;
 }
 
-vec4 calculateLighting(Light light, vec3 direction, vec3 albedo, vec3 normal, float metallic, float roughness) {
-	vec3 N = normal;
-	vec3 V = normalize(cameraPos - vec3(data_in.fragPos));
-	vec3 L = normalize(direction);
-	vec3 H = normalize(V + L);
-
-	vec3 F0 = vec3(0.04f);
-	F0 = mix(F0, albedo, metallic);
+vec4 calculateLighting(Light light, vec3 direction) {
+	L = normalize(direction);
+	H = normalize(V + L);
 
 	vec3 Lo = vec3(0.f);
 
-	float NDF = DistributionGGX(N, H, roughness);
-	float G = GeometrySmith(N, V, L, roughness);
-	vec3 F = fresnelSchlickRoughness(max(dot(H, V), 0.f), F0, roughness);
+	float NDF = DistributionGGX();
+	float G = GeometrySmith();
+	vec3 F = fresnelSchlick(max(dot(H, V), 0.f));
 
 	vec3 kS = F;
 	vec3 kD = 1.f - kS;
@@ -306,29 +288,29 @@ float linearizeDepth(float depth) {
 	return (2.f * nearPlane * farPlane) / (farPlane + nearPlane - (depth * 2.f - 1.f) * (farPlane - nearPlane));
 }
 
-vec4 calcDirectionalLights(vec3 albedo, vec3 normal, float metallic, float roughness) {
-	return calculateLighting(directionalLight.base, directionalLight.direction, albedo, normal, metallic, roughness);
+vec4 calcDirectionalLights() {
+	return calculateLighting(directionalLight.base, directionalLight.direction);
 }
 
-vec4 calcPointLight(PointLight pointLight, vec3 albedo, vec3 normal, float metallic, float roughness) {
+vec4 calcPointLight(PointLight pointLight) {
 	vec3 direction = pointLight.position - vec3(data_in.fragPos);
 	float dist = length(direction);
 
-	vec4 pointLightColor = calculateLighting(pointLight.base, direction, albedo, normal, metallic, roughness);
+	vec4 pointLightColor = calculateLighting(pointLight.base, direction);
 	float attenuation = (pointLight.exponent * pow(dist, 2)) + 
 						(pointLight.linear * dist) + pointLight.constant;
 
 	return pointLightColor / attenuation;
 }
 
-vec4 calcSpotLight(SpotLight spotLight, vec3 albedo, vec3 normal, float metallic, float roughness) {
+vec4 calcSpotLight(SpotLight spotLight) {
 	vec3 direction = normalize(spotLight.base.position - vec3(data_in.fragPos));
 	float theta = dot(direction, normalize(-spotLight.direction));
 	
 	vec4 spotLightColor = vec4(0.f, 0.f, 0.f, 1.f);
 
 	if(theta > spotLight.edge) {
-		spotLightColor = calcPointLight(spotLight.base, albedo, normal, metallic, roughness);
+		spotLightColor = calcPointLight(spotLight.base);
 		float clampVal = 1.f - ((1.f - theta) * (1.f / (1.f - spotLight.edge)));
 		spotLightColor *= clampVal;
 	}
@@ -336,35 +318,28 @@ vec4 calcSpotLight(SpotLight spotLight, vec3 albedo, vec3 normal, float metallic
 	return spotLightColor;
 }
 
-vec4 calcPointLights(vec3 albedo, vec3 normal, float metallic, float roughness) {
+vec4 calcPointLights() {
 	vec4 totalPointLightColor = vec4(0.f);
 
 	for(int i = 0; i < pointLightCount; i++) {
-		totalPointLightColor += calcPointLight(pointLights[i], albedo, normal, metallic, roughness);
+		totalPointLightColor += calcPointLight(pointLights[i]);
 	}
 
 	return totalPointLightColor;
 }
 
-vec4 calcSpotLights(vec3 albedo, vec3 normal, float metallic, float roughness) {
+vec4 calcSpotLights() {
 	vec4 totalSpotLightColor = vec4(0.f);
 
 	for(int i = 0; i < spotLightCount; i++) {
-		totalSpotLightColor += calcSpotLight(spotLights[i], albedo, normal, metallic, roughness);
+		totalSpotLightColor += calcSpotLight(spotLights[i]);
 	}
 
 	return totalSpotLightColor;
 }
 
 void main() {
-    vec3 normal = normalize(data_in.normal);
-	//vec2 texel = data_in.texel;
-	vec3 albedo = material.albedo;
-	float metallic = material.metallic;
-	float roughness = material.roughness;
-	float ao = material.ao;
-
-	if(useTexture) {
+	if(useDiffuseMap) {
 		vec4 texColor = texture2D(diffuseMap, data_in.texel);
 		if(texColor.a < 0.1f)
 			discard;
@@ -374,43 +349,33 @@ void main() {
 
 	if(useNormalMap) {
 		//texel = parallaxMapping(data_in.texel, eyePosition - vec3(data_in.fragPos));
-		normal = texture2D(normalMap, data_in.texel).rgb;
+		N = texture2D(normalMap, data_in.texel).rgb;
+		N = normalize(N * 2.f - 1.f);
 
-		if(!strippedNormalMap)
-			normal = normalize(normal * 2.f - 1.f);
-		else
-			normal = normalize(1.f - normal * 2.f);
+		if(strippedNormalMap)
+			N *= -1.f;
 		
-		vec3 T = normalize(data_in.tangent);
-		vec3 N = normalize(data_in.normal);
+		vec3 tang = normalize(data_in.tangent);
+		vec3 norm = normalize(data_in.normal);
 
-		T = normalize(T - dot(T, N) * N);
-		vec3 B = cross(N, T);
+		tang = normalize(tang - dot(tang, norm) * norm);
+		vec3 biTang = cross(norm, tang);
 
-		normal = normalize(mat3(T, B, N) * normal);
+		N = normalize(mat3(tang, biTang, norm) * N);
 	}
 
 	if(useMaterialMap) {
-		//ao = texture2D(metallicMap, data_in.texel).r;
 		ao = 0.3f;
 		roughness = texture2D(metallicMap, data_in.texel).g;
 		metallic = texture2D(metallicMap, data_in.texel).b;
 	}
 
-	vec4 finalColor = calcDirectionalLights(albedo, normal, metallic, roughness) +
-					  calcPointLights(albedo, normal, metallic, roughness) + 
-					  calcSpotLights(albedo, normal, metallic, roughness);
-
-	vec3 F0 = vec3(0.04f);
 	F0 = mix(F0, albedo, metallic);
-
-	vec3 N = normal;
-	vec3 V = normalize(cameraPos - vec3(data_in.fragPos));
 
 	vec3 R = reflect(-V, N);
 	const float MAX_REFLECTION_LOD = 9.f;
 
-	vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.f), F0, roughness);
+	vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.f));
 
 	vec3 kS = F;
 	vec3 kD = 1.f - kS;
@@ -424,6 +389,8 @@ void main() {
 	vec3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
 
 	vec3 ambient = (kD * diffuse + specular) * ao;
+
+	vec4 finalColor = calcDirectionalLights() + calcPointLights() + calcSpotLights();
 
 	finalColor += vec4(ambient, 0.f);
 

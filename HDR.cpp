@@ -198,10 +198,6 @@ void HDR::renderToDefaultBuffer(float exposure, GLuint bloomBuffer, bool enableB
 
 	this->shader.useShader();
 
-	this->shader.setInt("hdrBuffer", 0);
-	this->shader.setInt("bloomBuffer", 1);
-	this->shader.setInt("blendWeightTexture", 2);
-
 	this->shader.setFloat("exposure", exposure);
 	this->shader.setInt("enableBloom", enableBloom);
 	this->shader.setVec2("screenResolution", this->screenResolution);
@@ -238,10 +234,6 @@ void HDR::renderToDefaultBufferMSAA(float exposure, GLuint bloomBuffer, bool ena
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	this->shader.useShader();
-
-	this->shader.setInt("hdrBuffer", 0);
-	this->shader.setInt("bloomBuffer", 1);
-	this->shader.setInt("blendWeightTexture", 2);
 
 	this->shader.setFloat("exposure", exposure);
 	this->shader.setInt("enableBloom", enableBloom);

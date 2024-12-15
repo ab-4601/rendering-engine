@@ -42,7 +42,7 @@ void PBRShader::getUniformLocations() {
 
 	this->uniformCameraPosition = glGetUniformLocation(this->programID, "cameraPos");
 
-	this->uniformTextureBool = glGetUniformLocation(this->programID, "useTexture");
+	this->uniformTextureBool = glGetUniformLocation(this->programID, "useDiffuseMap");
 	this->uniformUseNormalMap = glGetUniformLocation(this->programID, "useNormalMap");
 	this->uniformStrippedNormalBool = glGetUniformLocation(this->programID, "strippedNormalMap");
 	this->uniformUseMaterialMap = glGetUniformLocation(this->programID, "useMaterialMap");
@@ -179,26 +179,14 @@ void PBRShader::setGeneralUniforms(DirectionalLight& directionalLight, std::vect
 	for (size_t i = 0; i < cascadePlanes.size(); i++)
 		glUniform1f(this->uniformCascadePlaneDistances[i], cascadePlanes[i]);
 
-	glUniform1i(this->uniformDiffuseSampler, 0);
-	glUniform1i(this->uniformNormalSampler, 1);
-	glUniform1i(this->uniformDepthSampler, 2);
-	glUniform1i(this->uniformMetallicSampler, 3);
-	glUniform1i(this->uniformRoughnessSampler, 4);
-	glUniform1i(this->uniformBRDFSampler, 5);
-	glUniform1i(this->uniformPrefilterSampler, 6);
-	glUniform1i(this->uniformIrradianceSampler, 7);
-	glUniform1i(this->uniformPointShadowSampler, 8);
-	glUniform1i(this->uniformCSMSampler, 9);
-	glUniform1i(this->uniformRandomOffsetSampler, 10);
-
 	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_2D, brdfSampler);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
 
 	glActiveTexture(GL_TEXTURE6);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterSampler);
 
 	glActiveTexture(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+	glBindTexture(GL_TEXTURE_2D, brdfSampler);
 
 	glActiveTexture(GL_TEXTURE8);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, pointShadowMap);
